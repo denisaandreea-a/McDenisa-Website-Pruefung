@@ -1,0 +1,77 @@
+/* Dunkler Hintergrund der den Rest der Seite abdunkelt */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Die Box in der Mitte – wie das Avalonia-Fenster */
+.dialog-box {
+  background: #FAEBD7;
+  border: 2px solid #800000;
+  border-radius: 14px;
+  padding: 28px 24px 20px;
+  width: 360px;
+  max-width: 95vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.dialog-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #800000;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.dialog-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* Weiße Options-Buttons wie in Avalonia */
+.dialog-option-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  background: #fff;
+  color: #000;
+  border: 1.5px solid #aaa;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.12s, transform 0.1s;
+}
+
+.dialog-option-btn:hover {
+  background-color: #f0e0c0;
+  border-color: #800000;
+  transform: scale(1.02);
+}
+
+/* Abbrechen-Button – rot wie in Avalonia */
+.dialog-cancel-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  background: #CD5C5C;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background-color 0.12s;
+}
+
+.dialog-cancel-btn:hover {
+  background-color: #b04040;
+}

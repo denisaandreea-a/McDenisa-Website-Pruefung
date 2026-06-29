@@ -1,0 +1,4 @@
+/* Produktname im Warenkorb: begrenzte Breite damit der Preis nicht verdrängt wird */
+.cart-item-name {
+  max-width: 140px;
+}

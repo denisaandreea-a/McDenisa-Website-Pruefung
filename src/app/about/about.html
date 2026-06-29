@@ -1,0 +1,55 @@
+<div class="container mt-4">
+<h4>Über uns</h4>
+
+<!-- Bootstrap-Grid: auf großen Bildschirmen zwei Spalten, auf Handy untereinander -->
+<div class="row mt-4">
+
+  <!-- LINKE SPALTE: Text, Adresse, Öffnungszeiten -->
+  <div class="col-md-6">
+    <h5>Geschichte</h5>
+    <p>
+      Das McDonald's in Ahlen ist seit vielen Jahren ein fester Bestandteil der Stadt.
+      Das Restaurant befindet sich an der Beckumer Straße und bedient täglich hunderte
+      Gäste aus Ahlen und Umgebung. Das Team legt großen Wert auf Freundlichkeit,
+      Schnelligkeit und Qualität.
+    </p>
+
+    <h5 class="mt-4">Kontakt & Adresse</h5>
+    <!-- list-unstyled: Bootstrap entfernt die Aufzählungspunkte -->
+    <ul class="list-unstyled">
+      <li><strong>Adresse:</strong> Beckumer Str. 105, 59229 Ahlen</li>
+      <li><strong>Telefon:</strong> +49 2382 60942</li>
+    </ul>
+
+    <h5 class="mt-4">Öffnungszeiten</h5>
+    <!-- Bootstrap-Tabelle: table-sm macht die Abstände kompakter -->
+    <table class="table table-bordered table-sm">
+      <thead class="table-dark">
+        <tr><th>Tag</th><th>Öffnungszeiten</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Montag – Donnerstag</td><td>08:00 – 02:00 Uhr</td></tr>
+        <tr><td>Freitag – Samstag</td><td>08:00 – 04:00 Uhr</td></tr>
+        <tr><td>Sonntag</td><td>09:00 – 02:00 Uhr</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- RECHTE SPALTE: Google Maps Karte -->
+  <div class="col-md-6">
+    <h5>So findest du uns</h5>
+    <!-- iframe bettet eine externe Webseite (hier Google Maps) ein.
+         Kein API-Key nötig – wir nutzen den eingebetteten Karten-Modus von Google.
+         title ist wichtig für die Barrierefreiheit (Screenreader).
+         loading="lazy": Die Karte wird erst geladen wenn sie sichtbar wird – spart Ladezeit. -->
+    <iframe
+      title="McDonald's Ahlen auf Google Maps"
+      class="maps-frame"
+      width="100%"
+      height="350"
+      loading="lazy"
+      src="https://www.google.com/maps?q=Beckumer+Str.+105,+59229+Ahlen&output=embed">
+    </iframe>
+  </div>
+</div>
+</div>

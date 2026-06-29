@@ -1,0 +1,28 @@
+<!-- Bootstrap-Tabelle zur Anzeige aller Produkte -->
+<div class="container mt-4">
+  <h2>Produktliste</h2>
+
+  <table class="table table-striped table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Preis</th>
+        <th>Kategorie</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Alle Produkte mit @for durchgehen und anzeigen -->
+      @for (product of products; track product.id) {
+        <tr>
+          <!-- Laufende Nummer mit $index, startet bei 0, deshalb +1 -->
+          <td>{{ $index + 1 }}</td>
+          <td>{{ product.name }}</td>
+          <!-- Preis wird als Euro-Betrag formatiert -->
+          <td>{{ product.price | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}</td>
+          <td>{{ product.category }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

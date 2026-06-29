@@ -1,0 +1,28 @@
+<!-- Dunkler Hintergrund (Overlay) – Klick darauf schließt den Dialog -->
+<!-- (click)="cancelled.emit()" sendet das Abbrechen-Ereignis nach aussen -->
+<div class="dialog-overlay" (click)="cancelled.emit()">
+
+  <!-- Die eigentliche Dialog-Box -->
+  <!-- $event.stopPropagation() verhindert dass ein Klick innen den Overlay-Klick auslöst -->
+  <div class="dialog-box" (click)="$event.stopPropagation()">
+
+    <!-- Titel: die Frage die gestellt wird, z.B. "Welches Getränk?" -->
+    <div class="dialog-title">{{ title }}</div>
+
+    <!-- Alle Optionen als Buttons – genau wie im Avalonia OptionWindow -->
+    <div class="dialog-options">
+      @for (opt of options; track opt) {
+        <!-- chosen.emit(opt) sendet die gewählte Option zurück an den Order-Component -->
+        <button type="button" class="dialog-option-btn" (click)="chosen.emit(opt)">
+          {{ opt }}
+        </button>
+      }
+    </div>
+
+    <!-- Abbrechen-Button unten, rot wie in Avalonia -->
+    <button type="button" class="dialog-cancel-btn" (click)="cancelled.emit()">
+      Abbrechen
+    </button>
+
+  </div>
+</div>

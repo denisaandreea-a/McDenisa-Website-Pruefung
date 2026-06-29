@@ -1,0 +1,57 @@
+import { Component, OnInit } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ProductService } from '../shared/product';
+import { Product } from '../model/product';
+
+// Eine Component für zwei Modi: Neu anlegen (/admin/product/new) und Bearbeiten (/admin/product/:id)
+@Component({
+  selector: 'app-product-form',
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  templateUrl: './product-form.html',
+  styleUrl: './product-form.css',
+})
+export class ProductForm implements OnInit {
+
+  isEditMode = false;
+  productId: string | null = null;
+
+  form = new FormGroup({
+    name:     new FormControl('', [Validators.required, Validators.minLength(2)]),
+    price:    new FormControl<number | null>(null, [Validators.required, Validators.min(0.01)]),
+    category: new FormControl('', [Validators.required]),
+  });
+
+  readonly categories = ['Menüs', 'Happy Meal', 'Burger', 'Chicken & Nuggets', 'Beilagen', 'Getränke', 'McCafé', 'Desserts'];
+
+  constructor(
+    private productService: ProductService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.productId  = this.route.snapshot.paramMap.get('id');
+    this.isEditMode = this.productId !== null;
+    if (this.isEditMode) { this.loadProduct(); }
+  }
+
+  async loadProduct(): Promise<void> {
+    const product = await this.productService.getById(this.productId!);
+    if (product) {
+      this.form.setValue({ name: product.name, price: product.price, category: product.category });
+    }
+  }
+
+  async onSubmit(): Promise<void> {
+    if (this.form.invalid) return;
+    const { name, price, category } = this.form.value;
+    if (this.isEditMode) {
+      await this.productService.update(new Product(this.productId!, name!, price!, category!));
+    } else {
+      await this.productService.add(new Product(Date.now().toString(), name!, price!, category!));
+    }
+    this.router.navigate(['/admin']);
+  }
+}

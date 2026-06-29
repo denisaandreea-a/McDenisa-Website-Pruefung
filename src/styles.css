@@ -1,0 +1,467 @@
+/* Globale Stile – moderner, weißer Hintergrund, angelehnt an Avalonia */
+
+:root {
+  --mc-maroon:    #800000;
+  --mc-brown:     #8B4513;
+  --mc-white:     #ffffff;
+
+  /* Kategorie-Farben wie im Avalonia-Projekt */
+  --cat-menus:    #DAA520; /* Goldenrod      */
+  --cat-happy:    #E9967A; /* DarkSalmon     – Happy Meal wie in Avalonia */
+  --cat-burger:   #F4A460; /* SandyBrown     */
+  --cat-chicken:  #CD853F; /* Peru           */
+  --cat-beilagen: #E9967A; /* DarkSalmon     */
+  --cat-getraenk: #D2691E; /* Chocolate      */
+  --cat-mccafe:   #D2B48C; /* Tan            */
+  --cat-desserts: #BC8F8F; /* RosyBrown      */
+}
+
+body {
+  background-color: #FAEBD7; /* AntiqueWhite – wie im Avalonia-Projekt */
+  font-family: 'Segoe UI', sans-serif;
+  color: #111;
+}
+
+/* ===== KASSENSEITE – POS-LAYOUT ===== */
+
+/* Gesamtes Layout: Warenkorb links, Inhalt rechts – Avalonia-Stil */
+.pos-layout {
+  display: flex;
+  height: calc(100vh - 62px);
+}
+
+/* Linke Spalte: Warenkorb */
+.pos-cart {
+  width: 280px;
+  min-width: 280px;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.cart-header {
+  background-color: var(--mc-maroon);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.cart-footer {
+  background-color: #f9f9f9;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.cart-total-price {
+  color: #2E8B57;
+}
+
+.btn-bezahlen {
+  background-color: #2E8B57;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 8px;
+  padding: 0.6rem 0;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-bezahlen:hover:not(:disabled) {
+  background-color: #256d45;
+}
+
+.btn-bezahlen:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}
+
+.cart-item-qty {
+  font-size: 0.78rem;
+}
+
+.btn-remove {
+  font-size: 0.75rem;
+  border-radius: 5px;
+  padding: 1px 5px;
+  line-height: 1.2;
+}
+
+/* ===== RECHTE SEITE: KATEGORIE + PRODUKTE ===== */
+
+.pos-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  background: #FAEBD7;
+}
+
+/* Kategorie-Karten: füllen die volle Breite – kein horizontales Scrollen */
+.category-slider {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0 12px;
+}
+
+.cat-card {
+  flex: 1;           /* jede Karte bekommt gleich viel Platz */
+  min-width: 0;      /* darf schrumpfen */
+  height: 140px;     /* etwas größer */
+  border-radius: 14px;
+  border: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 8px 4px;
+}
+
+.cat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.cat-card--active {
+  border-color: var(--mc-maroon) !important;
+  box-shadow: 0 0 0 3px rgba(128,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+  transform: translateY(-3px);
+}
+
+.cat-icon {
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+/* Farben der Kategorie-Karten */
+.cat-menus     { background: var(--cat-menus);    }
+.cat-happy     { background: var(--cat-happy);    }
+.cat-burger    { background: var(--cat-burger);   }
+.cat-chicken   { background: var(--cat-chicken);  }
+.cat-beilagen  { background: var(--cat-beilagen); }
+.cat-getraenk  { background: var(--cat-getraenk); }
+.cat-mccafe    { background: var(--cat-mccafe); color: #3d2000; }
+.cat-desserts  { background: var(--cat-desserts); }
+
+/* ===== PRODUKTKACHELN ===== */
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.tile {
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  min-height: 70px;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.25;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.tile:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.tile-menus     { background: var(--cat-menus);    }
+.tile-happy     { background: var(--cat-happy);    }
+.tile-burger    { background: var(--cat-burger);   }
+.tile-chicken   { background: var(--cat-chicken);  }
+.tile-beilagen  { background: var(--cat-beilagen); }
+.tile-getraenk  { background: var(--cat-getraenk); }
+.tile-mccafe    { background: var(--cat-mccafe); color: #3d2000; text-shadow: none; }
+.tile-desserts  { background: var(--cat-desserts); }
+
+.tile-price {
+  font-size: 0.78rem;
+  opacity: 0.9;
+}
+
+/* ===== NAVBAR ===== */
+
+.navbar-mc {
+  background-color: var(--mc-maroon) !important;
+}
+
+.navbar-mc .navbar-brand {
+  color: #fff !important;
+  font-size: 1.6rem !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.5px;
+}
+
+.navbar-mc .nav-link {
+  color: rgba(255,255,255,0.85) !important;
+  font-weight: 500;
+}
+
+.navbar-mc .nav-link:hover,
+.navbar-mc .nav-link.active {
+  color: #FFD700 !important;
+}
+
+.navbar-mc .navbar-toggler {
+  border-color: rgba(255,255,255,0.4);
+}
+
+.navbar-mc .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* ===== BON ===== */
+
+.bon-card {
+  background: #fff;
+  border: 2px solid #2E8B57;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.bon-header {
+  background-color: #2E8B57;
+  color: #fff;
+  text-align: center;
+  padding: 0.5rem;
+  font-weight: 700;
+  border-radius: 10px 10px 0 0;
+}
+
+.bon-date {
+  font-size: 0.78rem;
+}
+
+/* ===== AKKUMULIERTER DIALOG (zentriert unter den Produktkacheln) ===== */
+
+/* Container: Produkte + Fragen zentriert, volle nutzbare Breite */
+.acc-dialog {
+  margin: 20px auto 0;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Ein Schritt (Produktauswahl oder Frage) – weißer Kasten */
+.acc-step {
+  background: #fff;
+  border: 2px solid #c8b89a;
+  border-radius: 12px;
+  padding: 16px 18px 14px;
+  transition: border-color 0.15s;
+}
+
+/* Bereits beantworteter Schritt: leicht abgedunkelt, bleibt änderbar */
+.acc-step--answered {
+  background: #fdf8f0;
+  border-color: #b0a090;
+}
+
+/* Fragetitel zentriert */
+.acc-step-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--mc-maroon);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* Buttons zentriert, umbrechen wenn nötig */
+.acc-step-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Option-Button – kein Textumbruch innerhalb des Buttons */
+.acc-opt-btn {
+  padding: 9px 16px;
+  background: #FAEBD7;
+  color: #111;
+  border: 2px solid #c0b0a0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  white-space: nowrap; /* verhindert Zeilenumbruch im Button-Text */
+  transition: background 0.1s, border-color 0.1s, transform 0.1s;
+}
+
+.acc-opt-btn:hover {
+  background: #f0d8b0;
+  border-color: var(--mc-maroon);
+  transform: scale(1.04);
+}
+
+/* Ausgewählt */
+.acc-opt-btn--selected {
+  background: var(--mc-maroon) !important;
+  color: #fff !important;
+  border-color: var(--mc-maroon) !important;
+}
+
+/* Produkt-Button: Name + Preis untereinander */
+.product-opt-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 16px;
+}
+
+.product-price-tag {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.65;
+}
+
+.acc-opt-btn--selected .product-price-tag {
+  opacity: 0.85;
+  color: #fff;
+}
+
+.acc-dialog-footer {
+  text-align: center;
+  padding-top: 4px;
+}
+
+.acc-cancel-btn {
+  padding: 8px 24px;
+  background: #CD5C5C;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.acc-cancel-btn:hover {
+  background: #b04040;
+}
+
+/* ===== KONTAKT / KARRIERE SEITEN ===== */
+
+.page-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e0e0e0;
+  padding: 2rem;
+  width: 100%;
+}
+
+/* Rechtes Info-Panel auf Karriere- und Kontaktseite */
+.side-info-card {
+  background: var(--mc-maroon);
+  color: #fff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  position: sticky;
+  top: 1rem;
+}
+
+.side-info-header {
+  font-weight: 800;
+  font-size: 1rem;
+  color: #FFD700;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.side-info-list {
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.side-info-list li {
+  padding: 5px 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.side-info-list li:last-child {
+  border-bottom: none;
+}
+
+.side-info-card p,
+.side-info-card td {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.9);
+}
+
+.side-info-card hr {
+  border-color: rgba(255,255,255,0.25);
+}
+
+/* Sternebewertung */
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+  padding: 2px;
+  color: #ccc;
+}
+
+.star-btn.active {
+  color: #DAA520;
+}
+
+.star-btn:hover {
+  transform: scale(1.2);
+}
+
+/* ===== ADMIN ===== */
+
+.btn-checkout-action {
+  background-color: var(--mc-maroon);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.btn-checkout-action:hover {
+  background-color: var(--mc-brown);
+  color: #fff;
+}

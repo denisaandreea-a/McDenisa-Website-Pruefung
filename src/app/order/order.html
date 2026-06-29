@@ -1,0 +1,122 @@
+<div class="pos-layout">
+
+  <div class="pos-cart">
+    <div class="cart-header">
+      <span>Warenkorb</span>
+      <button type="button" class="btn btn-sm btn-outline-light" (click)="clearCart()">Leeren</button>
+    </div>
+
+    <div class="cart-items">
+      @if (items.length === 0) {
+        <p class="text-muted text-center p-4 small">Noch nichts ausgewählt.</p>
+      }
+      @for (item of items; track item.product.id) {
+        <div class="d-flex justify-content-between align-items-start px-3 py-2 border-bottom">
+          <div class="cart-item-name">
+            <div class="fw-semibold small">{{ item.product.name }}</div>
+            <div class="text-muted cart-item-qty">x{{ item.quantity }}</div>
+          </div>
+          <div class="d-flex align-items-center gap-1">
+            <span class="small fw-bold">{{ item.product.price * item.quantity | currency:'EUR' }}</span>
+            <button type="button" class="btn btn-sm btn-danger btn-remove"
+                    (click)="removeItem(item)">✕</button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="cart-footer">
+      <div class="d-flex justify-content-between fw-bold mb-2">
+        <span>Gesamt</span>
+        <span class="cart-total-price">{{ total | currency:'EUR' }}</span>
+      </div>
+      <button type="button" class="btn-bezahlen"
+              [disabled]="items.length === 0"
+              (click)="checkout()">
+        Bestellung abschließen
+      </button>
+    </div>
+  </div>
+
+  <div class="pos-content">
+
+    <div class="category-slider">
+      @for (cat of categoryDefs; track cat.name) {
+        <button type="button"
+                class="cat-card"
+                [ngClass]="[cat.css, selectedCategory === cat.name ? 'cat-card--active' : '']"
+                (click)="selectCategory(cat.name)">
+          <span class="cat-icon">{{ cat.icon }}</span>
+          <span>{{ cat.name }}</span>
+        </button>
+      }
+    </div>
+
+    @if (selectedCategory) {
+      <div class="acc-dialog">
+
+        <div class="acc-step" [class.acc-step--answered]="pendingProduct !== null">
+          <div class="acc-step-options">
+            @for (product of getByCategory(selectedCategory); track product.id) {
+              <button type="button"
+                      class="acc-opt-btn product-opt-btn"
+                      [class.acc-opt-btn--selected]="pendingProduct?.id === product.id"
+                      (click)="onProductSelected(product)">
+                <span>{{ product.name }}</span>
+                <span class="product-price-tag">{{ product.price | currency:'EUR' }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        @for (step of accSteps; track $index; let i = $index) {
+          <div class="acc-step" [class.acc-step--answered]="step.selected !== null">
+            <div class="acc-step-title">{{ step.title }}</div>
+            <div class="acc-step-options">
+              @for (opt of step.options; track opt) {
+                <button type="button"
+                        class="acc-opt-btn"
+                        [class.acc-opt-btn--selected]="step.selected === opt"
+                        (click)="onStepChosen(i, opt)">
+                  {{ opt }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (pendingProduct !== null) {
+          <div class="acc-dialog-footer">
+            <button type="button" class="acc-cancel-btn" (click)="onCancelDialog()">
+              Abbrechen
+            </button>
+          </div>
+        }
+
+      </div>
+    } @else {
+      <p class="text-muted mt-4 text-center">Bitte wähle eine Kategorie.</p>
+    }
+
+  </div>
+</div>
+
+@if (lastOrder) {
+  <div class="bon-card mt-3 mx-3">
+    <div class="bon-header">Bestellung #{{ lastOrder.id }} – Vielen Dank!</div>
+    <div class="p-3">
+      @for (item of lastOrder.items; track item.product.id) {
+        <div class="d-flex justify-content-between small">
+          <span>{{ item.product.name }} x{{ item.quantity }}</span>
+          <span>{{ item.product.price * item.quantity | currency:'EUR' }}</span>
+        </div>
+      }
+      <hr>
+      <div class="d-flex justify-content-between fw-bold">
+        <span>Gesamt</span>
+        <span>{{ lastOrder.total | currency:'EUR' }}</span>
+      </div>
+      <p class="text-muted bon-date mt-2 mb-0">{{ lastOrder.createdAt }}</p>
+    </div>
+  </div>
+}

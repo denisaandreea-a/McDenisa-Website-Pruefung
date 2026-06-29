@@ -1,0 +1,8 @@
+﻿{
+  "solution": {
+    "path": "McDonaldsKasse.sln",
+    "projects": [
+      "McDonaldsKasse\\McDonaldsKasse.csproj"
+    ]
+  }
+}

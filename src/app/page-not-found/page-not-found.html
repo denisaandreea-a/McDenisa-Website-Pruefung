@@ -1,0 +1,9 @@
+<!-- Diese Seite erscheint wenn jemand eine URL aufruft die nicht existiert (404-Fehler) -->
+<!-- Sie wird durch die Wildcard-Route { path: '**', component: PageNotFound } angezeigt -->
+<div class="container"><div class="text-center mt-5">
+  <h1 class="display-1 text-muted">404</h1>
+  <h4>Seite nicht gefunden</h4>
+  <p class="text-muted">Die aufgerufene Seite existiert nicht.</p>
+  <!-- routerLink statt href: kein Seiten-Reload, Angular navigiert intern -->
+  <a routerLink="/order" class="btn btn-dark mt-2">Zurück zur Kasse</a>
+</div></div>

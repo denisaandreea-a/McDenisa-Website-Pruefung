@@ -1,0 +1,51 @@
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a routerLink="/admin" class="btn btn-outline-secondary">&larr; Zurück</a>
+  <h4 class="mb-0">{{ isEditMode ? 'Produkt bearbeiten' : 'Neues Produkt' }}</h4>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="product-form" novalidate>
+
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Name *</label>
+    <input type="text" class="form-control" formControlName="name"
+           title="Name des Produkts" placeholder="z.B. Big Mac"
+           [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid">
+    @if (form.controls.name.touched && form.controls.name.invalid) {
+      <div class="invalid-feedback">Name ist erforderlich (mind. 2 Zeichen).</div>
+    }
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Preis (€) *</label>
+    <input type="number" class="form-control" formControlName="price"
+           title="Preis in Euro" placeholder="z.B. 5.49"
+           step="0.01" min="0.01"
+           [class.is-invalid]="form.controls.price.touched && form.controls.price.invalid">
+    @if (form.controls.price.touched && form.controls.price.invalid) {
+      <div class="invalid-feedback">Preis ist erforderlich und muss größer als 0 sein.</div>
+    }
+  </div>
+
+  <div class="mb-4">
+    <label class="form-label fw-semibold">Kategorie *</label>
+    <select class="form-select" formControlName="category"
+            title="Kategorie des Produkts"
+            [class.is-invalid]="form.controls.category.touched && form.controls.category.invalid">
+      <option value="">Bitte wählen...</option>
+      @for (cat of categories; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+    @if (form.controls.category.touched && form.controls.category.invalid) {
+      <div class="invalid-feedback">Bitte eine Kategorie auswählen.</div>
+    }
+  </div>
+
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-dark" [disabled]="form.invalid">
+      {{ isEditMode ? 'Speichern' : 'Produkt anlegen' }}
+    </button>
+    <a routerLink="/admin" class="btn btn-outline-secondary">Abbrechen</a>
+  </div>
+
+</form>
