@@ -8,7 +8,11 @@
 
     <div class="cart-items">
       @if (items.length === 0) {
-        <p class="text-muted text-center p-4 small">Noch nichts ausgewählt.</p>
+        <div class="cart-empty-state">
+          <div class="cart-empty-icon">🛒</div>
+          <div class="cart-empty-text">Noch nichts ausgewählt</div>
+          <div class="cart-empty-hint">Wähle eine Kategorie</div>
+        </div>
       }
       @for (item of items; track item.product.id) {
         <div class="d-flex justify-content-between align-items-start px-3 py-2 border-bottom">
@@ -41,7 +45,7 @@
   <div class="pos-content">
 
     <div class="order-hero">
-      <img src="assets/menu/mcdenisa-banner.png" alt="McDenisa Kasse" title="McDenisa Kasse" />
+      <img src="assets/menu/mcdenisa-banner-wide.png" alt="McDenisa Kasse" title="McDenisa Kasse" />
     </div>
 
     <div class="quantity-bar">

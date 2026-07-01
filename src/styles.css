@@ -35,7 +35,7 @@ body {
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: center 40%;
+  object-position: center center;
 }
 
 .pos-layout {
