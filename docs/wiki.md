@@ -47,6 +47,112 @@ Dieses Dokument sammelt, was im Angular/WebFrontends-Projekt schon umgesetzt wur
   - Debug-Ausgabe aus Kontaktformular entfernt
   - App-Test an aktuelle Navbar angepasst
 
+## Diagramme
+
+### UML-Klassendiagramm
+
+```mermaid
+classDiagram
+  class Product {
+    +string id
+    +string name
+    +number price
+    +string category
+  }
+
+  class OrderItem {
+    +Product product
+    +number quantity
+  }
+
+  class Order {
+    +string id
+    +OrderItem[] items
+    +number total
+    +string createdAt
+    +string checkoutType
+    +string pickupTime
+  }
+
+  class ProductService {
+    -Product[] objects
+    +changedStream
+    +getAll()
+    +getById(id)
+    +add(product)
+    +update(product)
+    +remove(product) void
+  }
+
+  class OrderService {
+    -OrderItem[] currentItems
+    -number orderCounter
+    +changedStream
+    +getItems() OrderItem[]
+    +getTotal() number
+    +addProduct(product, quantity) void
+    +removeItem(item) void
+    +checkout(type, time) Order
+    +clearCart() void
+  }
+
+  Order "1" o-- "*" OrderItem
+  OrderItem "1" --> "1" Product
+  ProductService --> Product
+  OrderService --> Order
+  OrderService --> OrderItem
+```
+
+### Routing-Uebersicht
+
+```mermaid
+flowchart LR
+  Start["/"] --> Order["/order<br>Kasse"]
+  Navbar["Navbar"] --> Order
+  Navbar --> About["/about<br>Ueber uns"]
+  Navbar --> Career["/career<br>Bewerbung"]
+  Navbar --> Contact["/contact<br>Feedback"]
+  Navbar --> Admin["/admin<br>Produktverwaltung"]
+  Admin --> Guard{"adminGuard"}
+  Guard -->|nicht angemeldet| Login["/login"]
+  Guard -->|angemeldet| AdminList["Admin-Liste"]
+  AdminList --> NewProduct["/admin/product/new"]
+  AdminList --> EditProduct["/admin/product/:id"]
+  Unknown["unbekannte URL"] --> NotFound["404 PageNotFound"]
+```
+
+### Bestellablauf
+
+```mermaid
+flowchart TD
+  A["Kategorie waehlen"] --> B["Menge 1 bis 9 waehlen"]
+  B --> C["Produkt auswaehlen"]
+  C --> D{"Hat Produkt Optionen?"}
+  D -->|ja| E["Optionen beantworten<br>z. B. Sosse, Beilage, Getraenk"]
+  D -->|nein| F["Produkt in Warenkorb"]
+  E --> F
+  F --> G{"Weitere Produkte?"}
+  G -->|ja| A
+  G -->|nein| H["Bestellung abschliessen"]
+  H --> I["Checkout-Formular"]
+  I --> J{"Formular gueltig?"}
+  J -->|nein| I
+  J -->|ja| K["OrderService.checkout"]
+  K --> L["Bon mit Gesamtpreis,<br>Lieferart und Uhrzeit"]
+```
+
+### Arbeitsreihenfolge
+
+```mermaid
+flowchart TD
+  Done1["Bewerbungsformular erweitern<br>Status: erledigt"] --> Done2["Mengenauswahl<br>Status: erledigt"]
+  Done2 --> Done3["Checkout-Formular<br>Status: erledigt"]
+  Done3 --> Next["Produktdaten erweitern<br>Status: naechster Schritt"]
+  Next --> Open1["Zutaten bearbeiten<br>Status: offen"]
+  Open1 --> Open2["Quiz-Seite<br>Status: offen"]
+  Open2 --> Open3["Team-Karussell<br>Status: offen"]
+```
+
 ## Noch zu tun
 
 ### 1. Kategorie "Ueber uns" - Team-Karussell
