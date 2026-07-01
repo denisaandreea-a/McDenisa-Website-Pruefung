@@ -1,0 +1,20 @@
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+}
+
+.login-card {
+  background: #fff;
+  border: 2px solid #c8b89a;
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+}
+
+.login-logo  { font-size: 2.5rem; margin-bottom: 8px; }
+.login-title { font-weight: 800; color: var(--mc-maroon); margin-bottom: 4px; }
+.login-sub   { color: #888; font-size: 0.875rem; margin-bottom: 20px; }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { phoneValidator } from '../shared/validators';
 
 @Component({
   selector: 'app-career',
@@ -15,7 +16,7 @@ export class Career {
   form = new FormGroup({
     name:    new FormControl('', [Validators.required, Validators.minLength(2)]),
     email:   new FormControl('', [Validators.required, Validators.email]),
-    phone:   new FormControl(''),
+    phone:   new FormControl('', [phoneValidator]),
     area:    new FormControl('', [Validators.required]),
     message: new FormControl('')
   });

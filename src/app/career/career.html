@@ -43,7 +43,11 @@
             <div class="col-md-6">
               <label class="form-label fw-semibold">Telefon (optional)</label>
               <input type="tel" class="form-control" formControlName="phone"
-                     title="Deine Telefonnummer" placeholder="+49 123 456789">
+                     title="Deine Telefonnummer" placeholder="+49 123 456789"
+                     [class.is-invalid]="form.controls.phone.touched && form.controls.phone.invalid">
+              @if (form.controls.phone.touched && form.controls.phone.invalid) {
+                <div class="invalid-feedback">Nur Ziffern, +, Leerzeichen und Bindestriche erlaubt.</div>
+              }
             </div>
 
             <div class="col-md-6">

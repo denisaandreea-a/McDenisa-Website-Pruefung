@@ -1,0 +1,26 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-logo">🔐</div>
+    <h5 class="login-title">Admin-Bereich</h5>
+    <p class="login-sub">Nur für Schichtleitung</p>
+
+    @if (wrong) {
+      <div class="alert alert-danger py-2 small">Falscher PIN. Bitte nochmal versuchen.</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="mb-3">
+        <input type="password" class="form-control text-center"
+               formControlName="pin"
+               placeholder="PIN eingeben"
+               [class.is-invalid]="form.controls.pin.touched && form.controls.pin.invalid">
+        @if (form.controls.pin.touched && form.controls.pin.invalid) {
+          <div class="invalid-feedback">Bitte PIN eingeben.</div>
+        }
+      </div>
+      <button type="submit" class="btn btn-dark w-100" [disabled]="form.invalid">
+        Anmelden
+      </button>
+    </form>
+  </div>
+</div>
