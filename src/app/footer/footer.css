@@ -1,0 +1,82 @@
+.site-footer {
+  background-color: #2a0a0a;
+  color: #d4b8a8;
+  font-size: 0.875rem;
+  margin-top: auto;
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2.5rem 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-col {
+  flex: 1;
+  min-width: 180px;
+}
+
+.footer-col p {
+  margin: 0.3rem 0;
+  line-height: 1.6;
+}
+
+.footer-brand {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.5px;
+}
+
+.footer-heading {
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.6rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+
+.footer-links li {
+  margin-bottom: 0.35rem;
+}
+
+.footer-links a {
+  color: #d4b8a8;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-links a:hover {
+  color: #FFD700;
+}
+
+.footer-disclaimer {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: #8a6a5a;
+  line-height: 1.5;
+}
+
+.footer-bottom {
+  border-top: 1px solid #4a1a1a;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #6a4a3a;
+  max-width: 1200px;
+  margin: 0 auto;
+}
