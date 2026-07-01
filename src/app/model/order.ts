@@ -10,6 +10,9 @@ export class Order {
     public total: number,        // Der Gesamtpreis aller Positionen zusammen
     public createdAt: string,    // Datum und Uhrzeit der Bestellung als Text
     public checkoutType: string, // Abholen oder Liefern
-    public pickupTime: string    // Gewuenschte Uhrzeit
+    public pickupTime: string,   // Gewuenschte Uhrzeit
+    public customerName: string, // Name des Kunden
+    public phone: string,        // Handynummer fuer Rueckfragen
+    public address: string       // Lieferadresse, falls geliefert wird
   ) {}
 }

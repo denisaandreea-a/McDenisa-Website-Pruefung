@@ -6,6 +6,7 @@ import { OrderItem } from '../model/order-item';
 import { Order as OrderModel } from '../model/order';
 import { ProductService } from '../shared/product';
 import { OrderService } from '../shared/order';
+import { phoneValidator } from '../shared/validators';
 
 interface AccStep {
   title:    string;
@@ -36,7 +37,10 @@ export class Order implements OnInit {
 
   checkoutForm = new FormGroup({
     checkoutType: new FormControl('', [Validators.required]),
-    pickupTime:   new FormControl('', [Validators.required])
+    pickupTime:   new FormControl('', [Validators.required]),
+    customerName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+    phone:        new FormControl('', [Validators.required, phoneValidator]),
+    address:      new FormControl('')
   });
 
   readonly categoryDefs = [
@@ -64,6 +68,9 @@ export class Order implements OnInit {
     this.orderService.changed$.subscribe(() => {
       this.items = this.orderService.getItems();
       this.total = this.orderService.getTotal();
+    });
+    this.checkoutForm.controls.checkoutType.valueChanges.subscribe(() => {
+      this.updateAddressValidators();
     });
   }
 
@@ -240,27 +247,48 @@ export class Order implements OnInit {
     this.orderService.clearCart();
     this.checkoutVisible = false;
     this.checkoutForm.reset();
+    this.updateAddressValidators();
     this.lastOrder = null;
   }
 
   openCheckout(): void {
     this.checkoutVisible = true;
+    this.updateAddressValidators();
     this.lastOrder = null;
   }
 
   cancelCheckout(): void {
     this.checkoutVisible = false;
     this.checkoutForm.reset();
+    this.updateAddressValidators();
   }
 
   checkout(): void {
+    this.updateAddressValidators();
     if (this.checkoutForm.invalid) {
       this.checkoutForm.markAllAsTouched();
       return;
     }
-    const { checkoutType, pickupTime } = this.checkoutForm.value;
-    this.lastOrder = this.orderService.checkout(checkoutType!, pickupTime!) as OrderModel;
+    const { checkoutType, pickupTime, customerName, phone, address } = this.checkoutForm.value;
+    this.lastOrder = this.orderService.checkout(
+      checkoutType!,
+      pickupTime!,
+      customerName!,
+      phone!,
+      address ?? ''
+    ) as OrderModel;
     this.checkoutVisible = false;
     this.checkoutForm.reset();
+    this.updateAddressValidators();
+  }
+
+  private updateAddressValidators(): void {
+    const addressControl = this.checkoutForm.controls.address;
+    if (this.checkoutForm.controls.checkoutType.value === 'Liefern') {
+      addressControl.setValidators([Validators.required, Validators.minLength(5)]);
+    } else {
+      addressControl.clearValidators();
+    }
+    addressControl.updateValueAndValidity({ emitEvent: false });
   }
 }

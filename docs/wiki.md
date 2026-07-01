@@ -18,7 +18,7 @@ Dieses Dokument sammelt, was im Angular/WebFrontends-Projekt schon umgesetzt wur
 - Navbar mit `routerLink` und `routerLinkActive`.
 - Kassenseite mit Kategorien, Produktauswahl, Optionen und Warenkorb.
 - Kassenseite mit Mengenauswahl 1 bis 9.
-- Checkout-Formular mit Abholen/Liefern und Uhrzeit.
+- Checkout-Fenster mit Abholen/Liefern, Uhrzeit, Name, Handynummer und Lieferadresse.
 - Produktmodell in `src/app/model/product.ts`.
 - Bestellmodell in `src/app/model/order.ts`.
 - Bestellposition in `src/app/model/order-item.ts`.
@@ -265,18 +265,23 @@ Umgesetzt:
 Status: erledigt
 
 Ziel:
-- Nach Bestellabschluss soll ein Formular erscheinen.
+- Nach Bestellabschluss soll ein eigenes Fenster erscheinen.
 - Auswahl:
   - Liefern
   - Abholen
 - Uhrzeit angeben.
+- Name, Handynummer und bei Lieferung Adresse eingeben.
 
 Umgesetzt:
-- Reactive Form fuer Checkout gebaut.
+- Reactive Form fuer Checkout als modales Fenster gebaut.
 - Felder:
   - `checkoutType`
   - `pickupTime`
+- `customerName`
+- `phone`
+- `address`
 - Bestellmodell um Lieferart und Uhrzeit erweitert.
+- Bestellmodell um Kundendaten erweitert.
 - Bestellung wird erst abgeschlossen, wenn das Formular gueltig ist.
 
 ### 6. Produktdaten erweitern

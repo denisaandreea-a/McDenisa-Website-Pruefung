@@ -41,14 +41,23 @@ export class OrderService {
     }
   }
 
-  checkout(checkoutType: string, pickupTime: string): Order {
+  checkout(
+    checkoutType: string,
+    pickupTime: string,
+    customerName: string,
+    phone: string,
+    address: string
+  ): Order {
     const order = new Order(
       String(this.orderCounter++),
       this.currentItems.slice(),
       this.getTotal(),
       new Date().toLocaleString('de-DE'),
       checkoutType,
-      pickupTime
+      pickupTime,
+      customerName,
+      phone,
+      address
     );
     this.currentItems = [];
     this.changed.next();

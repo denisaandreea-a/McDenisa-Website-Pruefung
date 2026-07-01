@@ -35,43 +35,6 @@
               (click)="openCheckout()">
         Bestellung abschließen
       </button>
-
-      @if (checkoutVisible) {
-        <form [formGroup]="checkoutForm" (ngSubmit)="checkout()" class="checkout-form mt-3" novalidate>
-          <div class="checkout-title">Bestellung fertigstellen</div>
-
-          <div class="mb-2">
-            <label class="form-label small fw-semibold">Art *</label>
-            <select class="form-select form-select-sm" formControlName="checkoutType"
-                    [class.is-invalid]="checkoutForm.controls.checkoutType.touched && checkoutForm.controls.checkoutType.invalid">
-              <option value="">Bitte wählen...</option>
-              <option value="Abholen">Abholen</option>
-              <option value="Liefern">Liefern</option>
-            </select>
-            @if (checkoutForm.controls.checkoutType.touched && checkoutForm.controls.checkoutType.invalid) {
-              <div class="invalid-feedback">Bitte Abholen oder Liefern auswählen.</div>
-            }
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label small fw-semibold">Uhrzeit *</label>
-            <input type="time" class="form-control form-control-sm" formControlName="pickupTime"
-                   [class.is-invalid]="checkoutForm.controls.pickupTime.touched && checkoutForm.controls.pickupTime.invalid">
-            @if (checkoutForm.controls.pickupTime.touched && checkoutForm.controls.pickupTime.invalid) {
-              <div class="invalid-feedback">Bitte eine Uhrzeit angeben.</div>
-            }
-          </div>
-
-          <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-sm btn-success flex-fill" [disabled]="checkoutForm.invalid">
-              Bestätigen
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelCheckout()">
-              Abbrechen
-            </button>
-          </div>
-        </form>
-      }
     </div>
   </div>
 
@@ -157,6 +120,90 @@
   </div>
 </div>
 
+@if (checkoutVisible) {
+  <div class="checkout-overlay">
+    <form [formGroup]="checkoutForm" (ngSubmit)="checkout()" class="checkout-modal" novalidate>
+      <div class="checkout-modal-header">
+        <div>
+          <div class="checkout-title">Bestellung fertigstellen</div>
+          <div class="checkout-subtitle">{{ total | currency:'EUR' }}</div>
+        </div>
+        <button type="button" class="checkout-close" aria-label="Checkout schließen" (click)="cancelCheckout()">×</button>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Name *</label>
+          <input type="text" class="form-control" formControlName="customerName"
+                 placeholder="Dein Name"
+                 [class.is-invalid]="checkoutForm.controls.customerName.touched && checkoutForm.controls.customerName.invalid">
+          @if (checkoutForm.controls.customerName.touched && checkoutForm.controls.customerName.invalid) {
+            <div class="invalid-feedback">Bitte gib deinen Namen ein.</div>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Handynummer *</label>
+          <input type="tel" class="form-control" formControlName="phone"
+                 placeholder="+49 123 456789"
+                 [class.is-invalid]="checkoutForm.controls.phone.touched && checkoutForm.controls.phone.invalid">
+          @if (checkoutForm.controls.phone.touched && checkoutForm.controls.phone.invalid) {
+            <div class="invalid-feedback">Bitte gib eine gültige Handynummer ein.</div>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Art *</label>
+          <select class="form-select" formControlName="checkoutType"
+                  [class.is-invalid]="checkoutForm.controls.checkoutType.touched && checkoutForm.controls.checkoutType.invalid">
+            <option value="">Bitte wählen...</option>
+            <option value="Abholen">Abholen</option>
+            <option value="Liefern">Liefern</option>
+          </select>
+          @if (checkoutForm.controls.checkoutType.touched && checkoutForm.controls.checkoutType.invalid) {
+            <div class="invalid-feedback">Bitte Abholen oder Liefern auswählen.</div>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Uhrzeit *</label>
+          <input type="time" class="form-control" formControlName="pickupTime"
+                 [class.is-invalid]="checkoutForm.controls.pickupTime.touched && checkoutForm.controls.pickupTime.invalid">
+          @if (checkoutForm.controls.pickupTime.touched && checkoutForm.controls.pickupTime.invalid) {
+            <div class="invalid-feedback">Bitte eine Uhrzeit angeben.</div>
+          }
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">
+            Adresse @if (checkoutForm.controls.checkoutType.value === 'Liefern') { <span>*</span> }
+          </label>
+          <textarea class="form-control" formControlName="address" rows="2"
+                    placeholder="Straße, Hausnummer, PLZ, Ort"
+                    [class.is-invalid]="checkoutForm.controls.address.touched && checkoutForm.controls.address.invalid"></textarea>
+          @if (checkoutForm.controls.address.touched && checkoutForm.controls.address.invalid) {
+            <div class="invalid-feedback">Bitte gib die Lieferadresse ein.</div>
+          }
+        </div>
+      </div>
+
+      <div class="checkout-summary">
+        <span>{{ items.length }} Position(en)</span>
+        <strong>{{ total | currency:'EUR' }}</strong>
+      </div>
+
+      <div class="d-flex gap-2 mt-3">
+        <button type="submit" class="btn btn-success flex-fill" [disabled]="checkoutForm.invalid">
+          Bestellung bestätigen
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="cancelCheckout()">
+          Abbrechen
+        </button>
+      </div>
+    </form>
+  </div>
+}
+
 @if (lastOrder) {
   <div class="bon-card mt-3 mx-3">
     <div class="bon-header">Bestellung #{{ lastOrder.id }} – Vielen Dank!</div>
@@ -175,6 +222,13 @@
       <div class="d-flex justify-content-between small mt-2">
         <span>{{ lastOrder.checkoutType }}</span>
         <span>{{ lastOrder.pickupTime }} Uhr</span>
+      </div>
+      <div class="small mt-2">
+        <div><strong>Name:</strong> {{ lastOrder.customerName }}</div>
+        <div><strong>Handy:</strong> {{ lastOrder.phone }}</div>
+        @if (lastOrder.address) {
+          <div><strong>Adresse:</strong> {{ lastOrder.address }}</div>
+        }
       </div>
       <p class="text-muted bon-date mt-2 mb-0">{{ lastOrder.createdAt }}</p>
     </div>
