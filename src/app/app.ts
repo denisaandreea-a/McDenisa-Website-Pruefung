@@ -1,15 +1,17 @@
 import { Component } from '@angular/core';
-// RouterOutlet ist der Platzhalter im HTML, wo Angular die aktive Seite einblendet.
-import { RouterOutlet } from '@angular/router';
-// Die Navbar-Component, die wir selbst gebaut haben.
+import { Router, RouterOutlet } from '@angular/router';
 import { Navbar } from './navbar/navbar';
 
-// Das ist die Root-Component – also der äußerste Rahmen der ganzen App.
-// Hier passiert nicht viel Logik, sie hält nur Navbar und Router-Outlet zusammen.
 @Component({
-  selector: 'app-root',           // So heißt sie im HTML: <app-root>
-  imports: [RouterOutlet, Navbar], // Welche anderen Components hier benutzt werden
+  selector: 'app-root',
+  imports: [RouterOutlet, Navbar],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {}
+export class App {
+  constructor(public router: Router) {}
+
+  get showBanner(): boolean {
+    return !this.router.url.startsWith('/order');
+  }
+}

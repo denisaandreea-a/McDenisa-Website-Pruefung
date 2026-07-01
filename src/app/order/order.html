@@ -40,11 +40,6 @@
 
   <div class="pos-content">
 
-    <div class="order-hero">
-      <img src="/assets/menu/mcdenisa-banner.png"
-           alt="McDenisa Banner mit Burger, Pommes, Getränk und McCafé">
-    </div>
-
     <div class="quantity-bar">
       <span class="quantity-label">Menge</span>
       <div class="quantity-buttons">
@@ -65,7 +60,7 @@
                 class="cat-card"
                 [ngClass]="[cat.css, selectedCategory === cat.name ? 'cat-card--active' : '']"
                 (click)="selectCategory(cat.name)">
-          <img class="cat-image" [src]="cat.image" [alt]="cat.name">
+          <img class="cat-image" [src]="cat.image" [alt]="cat.name" [title]="cat.name">
           <span class="cat-name">{{ cat.name }}</span>
         </button>
       }
@@ -155,6 +150,7 @@
         <div class="col-md-6">
           <label class="form-label fw-semibold">Art *</label>
           <select class="form-select" formControlName="checkoutType"
+                  title="Abholen oder Liefern"
                   [class.is-invalid]="checkoutForm.controls.checkoutType.touched && checkoutForm.controls.checkoutType.invalid">
             <option value="">Bitte wählen...</option>
             <option value="Abholen">Abholen</option>
@@ -168,6 +164,7 @@
         <div class="col-md-6">
           <label class="form-label fw-semibold">Uhrzeit *</label>
           <input type="time" class="form-control" formControlName="pickupTime"
+                 title="Abholzeit" placeholder="HH:MM"
                  [class.is-invalid]="checkoutForm.controls.pickupTime.touched && checkoutForm.controls.pickupTime.invalid">
           @if (checkoutForm.controls.pickupTime.touched && checkoutForm.controls.pickupTime.invalid) {
             <div class="invalid-feedback">Bitte eine Uhrzeit angeben.</div>
