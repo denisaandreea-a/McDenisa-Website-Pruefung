@@ -1,0 +1,4 @@
+# Exclude binary assets and documentation from GitHub language statistics.
+*.ico linguist-vendored
+*.pdf linguist-documentation
+docs/** linguist-documentation
