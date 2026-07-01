@@ -77,6 +77,11 @@
 
   <div class="pos-content">
 
+    <div class="order-hero">
+      <img src="/assets/menu/mcdenisa-banner.png"
+           alt="McDenisa Banner mit Burger, Pommes, Getränk und McCafé">
+    </div>
+
     <div class="quantity-bar">
       <span class="quantity-label">Menge</span>
       <div class="quantity-buttons">
@@ -97,8 +102,8 @@
                 class="cat-card"
                 [ngClass]="[cat.css, selectedCategory === cat.name ? 'cat-card--active' : '']"
                 (click)="selectCategory(cat.name)">
-          <span class="cat-icon">{{ cat.icon }}</span>
-          <span>{{ cat.name }}</span>
+          <img class="cat-image" [src]="cat.image" [alt]="cat.name">
+          <span class="cat-name">{{ cat.name }}</span>
         </button>
       }
     </div>

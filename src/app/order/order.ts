@@ -40,14 +40,14 @@ export class Order implements OnInit {
   });
 
   readonly categoryDefs = [
-    { name: 'Menüs',             icon: '🍔', css: 'cat-menus'    },
-    { name: 'Happy Meal',        icon: '🎉', css: 'cat-happy'    },
-    { name: 'Burger',            icon: '🫔', css: 'cat-burger'   },
-    { name: 'Chicken & Nuggets', icon: '🍗', css: 'cat-chicken'  },
-    { name: 'Beilagen',          icon: '🍟', css: 'cat-beilagen' },
-    { name: 'Getränke',          icon: '🥤', css: 'cat-getraenk' },
-    { name: 'McCafé',            icon: '☕', css: 'cat-mccafe'   },
-    { name: 'Desserts',          icon: '🍦', css: 'cat-desserts' },
+    { name: 'Menüs',             image: '/assets/menu/category-burger.png',     css: 'cat-menus'    },
+    { name: 'Happy Meal',        image: '/assets/menu/category-happy-meal.png', css: 'cat-happy'    },
+    { name: 'Burger',            image: '/assets/menu/category-burger.png',     css: 'cat-burger'   },
+    { name: 'Chicken & Nuggets', image: '/assets/menu/category-chicken.png',    css: 'cat-chicken'  },
+    { name: 'Beilagen',          image: '/assets/menu/category-beilagen.png',   css: 'cat-beilagen' },
+    { name: 'Getränke',          image: '/assets/menu/category-getraenke.png',  css: 'cat-getraenk' },
+    { name: 'McCafé',            image: '/assets/menu/category-mccafe.png',     css: 'cat-mccafe'   },
+    { name: 'Desserts',          image: '/assets/menu/category-desserts.png',   css: 'cat-desserts' },
   ];
 
   accSteps: AccStep[] = [];

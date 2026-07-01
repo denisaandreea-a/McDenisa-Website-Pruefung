@@ -121,22 +121,23 @@ body {
 .cat-card {
   flex: 1;           /* jede Karte bekommt gleich viel Platz */
   min-width: 0;      /* darf schrumpfen */
-  height: 140px;     /* etwas größer */
-  border-radius: 14px;
+  height: 172px;
+  border-radius: 12px;
   border: 3px solid transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 7px;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   color: #fff;
   font-weight: 800;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   text-align: center;
-  padding: 8px 4px;
+  padding: 8px;
+  overflow: hidden;
 }
 
 .cat-card:hover {
@@ -153,6 +154,22 @@ body {
 .cat-icon {
   font-size: 2.6rem;
   line-height: 1;
+}
+
+.cat-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+}
+
+.cat-name {
+  min-height: 2.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.05;
 }
 
 /* Farben der Kategorie-Karten */
