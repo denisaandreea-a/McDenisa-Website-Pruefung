@@ -116,10 +116,16 @@ Bewerbungsformular (`career.ts`) hat folgende Felder:
 
 ### Banner
 
-- Bild: `public/assets/menu/mcdenisa-banner-wide.png` — zugeschnitten auf 2172×360 px (Verhältnis 6:1).
+- Bild: `public/assets/menu/mcdenisa-banner-wide.png` — 2172×240 px (Verhältnis ~9:1), minimalistisches Design.
+- Inhalt: „McDenisa | Lecker. Schnell. Einfach." links, Essens-Icons rechts (Burger, Pommes, Cola, Kaffee, Eis), cremefarbener Hintergrund.
 - Auf der Kassenseite: Banner als `order-hero` in `pos-content` (rechts neben dem Warenkorb), Höhe 150 px, `border-radius: 14px`.
 - Auf allen anderen Seiten: Banner global in `app.html` mit `@if (showBanner)`, Höhe 150 px, volle Breite.
 - `showBanner`-Getter in `app.ts` gibt `false` zurück wenn die URL mit `/order` beginnt.
+
+**Verlauf der Banner-Datei:**
+1. `mcdenisa-banner.png` — Original 2172×724 (3:1), zu hoch für Website-Banner.
+2. `mcdenisa-banner-wide.png` (erste Version) — per `sips` auf 2172×360 (6:1) aus dem Original zugeschnitten.
+3. `mcdenisa-banner-wide.png` (aktuelle Version) — neues, minimalistisches Design (erstellt mit KI-Bildgenerator), original 2172×724, Inhalt als schmaler Streifen vertikal zentriert. Per `sips` auf 2172×240 zugeschnitten (`--cropOffset 240 0`), sodass nur der Inhaltsstreifen ohne Whitespace sichtbar ist.
 
 ### Design-Details
 
@@ -137,6 +143,12 @@ Bewerbungsformular (`career.ts`) hat folgende Felder:
 ---
 
 ## Probleme und Lösungen
+
+### Banner-Format falsch (3:1 statt 6:1 oder schmaler)
+
+**Problem:** Das ursprüngliche Banner-Bild hatte das Format 2172×724 (Verhältnis ~3:1). Für einen flachen Website-Banner werden 6:1 oder schmaler benötigt. Bei niedriger Displayhöhe war das Bild abgeschnitten, bei vollständiger Anzeige zu hoch.
+
+**Lösung:** Zuerst per `sips` auf 2172×360 zugeschnitten. Danach durch ein neu erstelltes, minimalistisches Banner (KI-generiert) ersetzt, das auf 2172×240 zugeschnitten wurde. Der sichtbare Streifen zeigt nun das gesamte Motiv ohne Crop.
 
 ### Banner erschien dreifach
 
