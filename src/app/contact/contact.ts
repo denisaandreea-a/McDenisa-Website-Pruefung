@@ -32,7 +32,6 @@ export class Contact {
   onSubmit(): void {
     if (this.form.valid && this.bewertung > 0) {
       this.submitted = true;
-      console.log('Bewertung:', { ...this.form.value, sterne: this.bewertung });
     }
   }
 

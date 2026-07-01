@@ -15,7 +15,7 @@ export class Login {
     pin: new FormControl('', [Validators.required])
   });
 
-  constructor(private router: Router) {}
+  constructor(public router: Router) {}
 
   onSubmit(): void {
     if (this.form.value.pin === '1234') {

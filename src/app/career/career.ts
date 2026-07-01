@@ -14,11 +14,12 @@ export class Career {
   submitted = false;
 
   form = new FormGroup({
-    name:    new FormControl('', [Validators.required, Validators.minLength(2)]),
-    email:   new FormControl('', [Validators.required, Validators.email]),
-    phone:   new FormControl('', [phoneValidator]),
-    area:    new FormControl('', [Validators.required]),
-    message: new FormControl('')
+    name:          new FormControl('', [Validators.required, Validators.minLength(2)]),
+    email:         new FormControl('', [Validators.required, Validators.email]),
+    phone:         new FormControl('', [phoneValidator]),
+    area:          new FormControl('', [Validators.required]),
+    availableFrom: new FormControl('', [Validators.required]),
+    message:       new FormControl('')
   });
 
   onSubmit(): void {

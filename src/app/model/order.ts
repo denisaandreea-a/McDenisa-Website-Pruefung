@@ -8,6 +8,8 @@ export class Order {
     public id: string,           // Die Bestellnummer, z.B. "1", "2", "3"
     public items: OrderItem[],   // Alle bestellten Positionen als Liste (Array)
     public total: number,        // Der Gesamtpreis aller Positionen zusammen
-    public createdAt: string     // Datum und Uhrzeit der Bestellung als Text
+    public createdAt: string,    // Datum und Uhrzeit der Bestellung als Text
+    public checkoutType: string, // Abholen oder Liefern
+    public pickupTime: string    // Gewuenschte Uhrzeit
   ) {}
 }

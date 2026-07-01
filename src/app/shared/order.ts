@@ -23,12 +23,12 @@ export class OrderService {
     );
   }
 
-  addProduct(product: Product): void {
+  addProduct(product: Product, quantity: number = 1): void {
     const existing = this.currentItems.find(i => i.product.id === product.id);
     if (existing) {
-      existing.quantity++;
+      existing.quantity += quantity;
     } else {
-      this.currentItems.push(new OrderItem(product, 1));
+      this.currentItems.push(new OrderItem(product, quantity));
     }
     this.changed.next();
   }
@@ -41,12 +41,14 @@ export class OrderService {
     }
   }
 
-  checkout(): Order {
+  checkout(checkoutType: string, pickupTime: string): Order {
     const order = new Order(
       String(this.orderCounter++),
       this.currentItems.slice(),
       this.getTotal(),
-      new Date().toLocaleString('de-DE')
+      new Date().toLocaleString('de-DE'),
+      checkoutType,
+      pickupTime
     );
     this.currentItems = [];
     this.changed.next();

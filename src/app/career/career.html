@@ -56,12 +56,24 @@
                       title="Gewünschter Arbeitsbereich"
                       [class.is-invalid]="form.controls.area.touched && form.controls.area.invalid">
                 <option value="">Bitte wählen...</option>
-                <option value="service">Service</option>
                 <option value="kueche">Küche</option>
-                <option value="leitung">Schichtleitung</option>
+                <option value="vorne">Vorne</option>
+                <option value="egal">Egal</option>
               </select>
               @if (form.controls.area.touched && form.controls.area.invalid) {
                 <div class="invalid-feedback">Bitte wähle einen Bereich aus.</div>
+              }
+            </div>
+          </div>
+
+          <div class="row g-3 mt-0">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Ab wann verfügbar? *</label>
+              <input type="date" class="form-control" formControlName="availableFrom"
+                     title="Erster möglicher Arbeitstag"
+                     [class.is-invalid]="form.controls.availableFrom.touched && form.controls.availableFrom.invalid">
+              @if (form.controls.availableFrom.touched && form.controls.availableFrom.invalid) {
+                <div class="invalid-feedback">Bitte gib an, ab wann du verfügbar bist.</div>
               }
             </div>
           </div>

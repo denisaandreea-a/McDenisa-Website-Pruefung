@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Product } from '../model/product';
 import { OrderItem } from '../model/order-item';
 import { Order as OrderModel } from '../model/order';
@@ -18,7 +19,7 @@ const HM_DESSERT = ['Apfeltüte', 'Fruchtquatsch', 'McFreezy Eis'];
 
 @Component({
   selector: 'app-order',
-  imports: [CommonModule, CurrencyPipe],
+  imports: [CommonModule, CurrencyPipe, ReactiveFormsModule],
   templateUrl: './order.html',
   styleUrl: './order.css',
 })
@@ -29,6 +30,14 @@ export class Order implements OnInit {
   total: number = 0;
   lastOrder: OrderModel | null = null;
   selectedCategory: string | null = null;
+  selectedQuantity: number = 1;
+  checkoutVisible: boolean = false;
+  readonly quantities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  checkoutForm = new FormGroup({
+    checkoutType: new FormControl('', [Validators.required]),
+    pickupTime:   new FormControl('', [Validators.required])
+  });
 
   readonly categoryDefs = [
     { name: 'Menüs',             icon: '🍔', css: 'cat-menus'    },
@@ -45,8 +54,8 @@ export class Order implements OnInit {
   pendingProduct: Product | null = null;
 
   constructor(
-    private productService: ProductService,
-    private orderService: OrderService
+    public productService: ProductService,
+    public orderService: OrderService
   ) {}
 
   ngOnInit(): void {
@@ -84,6 +93,10 @@ export class Order implements OnInit {
     this.selectedCategory = name;
     this.accSteps         = [];
     this.pendingProduct   = null;
+  }
+
+  selectQuantity(quantity: number): void {
+    this.selectedQuantity = quantity;
   }
 
   onProductSelected(product: Product): void {
@@ -203,7 +216,8 @@ export class Order implements OnInit {
       varId, label,
       parseFloat((product.price + delta).toFixed(2)),
       product.category
-    ));
+    ), this.selectedQuantity);
+    this.selectedQuantity = 1;
     this.lastOrder = null;
   }
 
@@ -221,6 +235,32 @@ export class Order implements OnInit {
   }
 
   removeItem(item: OrderItem): void  { this.orderService.removeItem(item); }
-  clearCart(): void                  { this.orderService.clearCart(); this.lastOrder = null; }
-  checkout(): void                   { this.lastOrder = this.orderService.checkout() as OrderModel; }
+
+  clearCart(): void {
+    this.orderService.clearCart();
+    this.checkoutVisible = false;
+    this.checkoutForm.reset();
+    this.lastOrder = null;
+  }
+
+  openCheckout(): void {
+    this.checkoutVisible = true;
+    this.lastOrder = null;
+  }
+
+  cancelCheckout(): void {
+    this.checkoutVisible = false;
+    this.checkoutForm.reset();
+  }
+
+  checkout(): void {
+    if (this.checkoutForm.invalid) {
+      this.checkoutForm.markAllAsTouched();
+      return;
+    }
+    const { checkoutType, pickupTime } = this.checkoutForm.value;
+    this.lastOrder = this.orderService.checkout(checkoutType!, pickupTime!) as OrderModel;
+    this.checkoutVisible = false;
+    this.checkoutForm.reset();
+  }
 }

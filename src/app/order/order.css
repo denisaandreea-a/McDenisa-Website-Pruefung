@@ -2,3 +2,51 @@
 .cart-item-name {
   max-width: 140px;
 }
+
+.quantity-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.quantity-label {
+  font-weight: 700;
+  color: #4a1b1b;
+}
+
+.quantity-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.quantity-btn {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #d8b6b6;
+  border-radius: 6px;
+  background: #fff;
+  color: #4a1b1b;
+  font-weight: 700;
+}
+
+.quantity-btn--active {
+  background: #7a1212;
+  border-color: #7a1212;
+  color: #fff;
+}
+
+.checkout-form {
+  background: #fff;
+  border: 1px solid #e3caca;
+  border-radius: 6px;
+  color: #2f1717;
+  padding: 12px;
+}
+
+.checkout-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}

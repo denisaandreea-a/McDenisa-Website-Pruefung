@@ -32,13 +32,64 @@
       </div>
       <button type="button" class="btn-bezahlen"
               [disabled]="items.length === 0"
-              (click)="checkout()">
+              (click)="openCheckout()">
         Bestellung abschließen
       </button>
+
+      @if (checkoutVisible) {
+        <form [formGroup]="checkoutForm" (ngSubmit)="checkout()" class="checkout-form mt-3" novalidate>
+          <div class="checkout-title">Bestellung fertigstellen</div>
+
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Art *</label>
+            <select class="form-select form-select-sm" formControlName="checkoutType"
+                    [class.is-invalid]="checkoutForm.controls.checkoutType.touched && checkoutForm.controls.checkoutType.invalid">
+              <option value="">Bitte wählen...</option>
+              <option value="Abholen">Abholen</option>
+              <option value="Liefern">Liefern</option>
+            </select>
+            @if (checkoutForm.controls.checkoutType.touched && checkoutForm.controls.checkoutType.invalid) {
+              <div class="invalid-feedback">Bitte Abholen oder Liefern auswählen.</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Uhrzeit *</label>
+            <input type="time" class="form-control form-control-sm" formControlName="pickupTime"
+                   [class.is-invalid]="checkoutForm.controls.pickupTime.touched && checkoutForm.controls.pickupTime.invalid">
+            @if (checkoutForm.controls.pickupTime.touched && checkoutForm.controls.pickupTime.invalid) {
+              <div class="invalid-feedback">Bitte eine Uhrzeit angeben.</div>
+            }
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-success flex-fill" [disabled]="checkoutForm.invalid">
+              Bestätigen
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelCheckout()">
+              Abbrechen
+            </button>
+          </div>
+        </form>
+      }
     </div>
   </div>
 
   <div class="pos-content">
+
+    <div class="quantity-bar">
+      <span class="quantity-label">Menge</span>
+      <div class="quantity-buttons">
+        @for (quantity of quantities; track quantity) {
+          <button type="button"
+                  class="quantity-btn"
+                  [class.quantity-btn--active]="selectedQuantity === quantity"
+                  (click)="selectQuantity(quantity)">
+            {{ quantity }}
+          </button>
+        }
+      </div>
+    </div>
 
     <div class="category-slider">
       @for (cat of categoryDefs; track cat.name) {
@@ -115,6 +166,10 @@
       <div class="d-flex justify-content-between fw-bold">
         <span>Gesamt</span>
         <span>{{ lastOrder.total | currency:'EUR' }}</span>
+      </div>
+      <div class="d-flex justify-content-between small mt-2">
+        <span>{{ lastOrder.checkoutType }}</span>
+        <span>{{ lastOrder.pickupTime }} Uhr</span>
       </div>
       <p class="text-muted bon-date mt-2 mb-0">{{ lastOrder.createdAt }}</p>
     </div>

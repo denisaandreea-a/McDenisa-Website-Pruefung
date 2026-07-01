@@ -14,7 +14,7 @@ export class Admin implements OnInit {
 
   products: Product[] = [];
 
-  constructor(private productService: ProductService) {}
+  constructor(public productService: ProductService) {}
 
   ngOnInit(): void {
     this.loadProducts();

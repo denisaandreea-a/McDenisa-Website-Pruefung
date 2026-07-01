@@ -26,9 +26,9 @@ export class ProductForm implements OnInit {
   readonly categories = ['Menüs', 'Happy Meal', 'Burger', 'Chicken & Nuggets', 'Beilagen', 'Getränke', 'McCafé', 'Desserts'];
 
   constructor(
-    private productService: ProductService,
-    private route: ActivatedRoute,
-    private router: Router
+    public productService: ProductService,
+    public route: ActivatedRoute,
+    public router: Router
   ) {}
 
   ngOnInit(): void {
