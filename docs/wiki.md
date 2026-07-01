@@ -1,51 +1,257 @@
 # McDenisa Wiki
 
-Dieses Dokument sammelt, was im Angular/WebFrontends-Projekt schon umgesetzt wurde und was noch offen ist. Orientierung: nur das Kursbuch `docs/webfrontends-buch.pdf` und die Projektregeln aus `docs/projekt-vorgaben.md`.
+Dieses Dokument sammelt, was im Angular/WebFrontends-Projekt umgesetzt wurde, welche Probleme aufgetreten sind und was noch offen ist. Orientierung: Kursbuch `docs/webfrontends-buch.pdf` und Projektregeln `docs/projekt-vorgaben.md`.
+
+---
 
 ## Schon gemacht
 
+### Grundstruktur
+
 - Angular-Projekt mit Standalone-Components aufgebaut.
 - Routing eingerichtet:
-  - `/order`
-  - `/about`
-  - `/career`
-  - `/contact`
-  - `/login`
-  - `/admin`
-  - `/admin/product/new`
-  - `/admin/product/:id`
-  - Wildcard-Route fuer 404-Seite.
+  - `/order` — Kassenseite
+  - `/about` — Über uns
+  - `/career` — Bewerbung
+  - `/contact` — Kontakt / Feedback
+  - `/login` — Admin-Login
+  - `/admin` — Produktverwaltung (geschützt)
+  - `/admin/product/new` — Neues Produkt (geschützt)
+  - `/admin/product/:id` — Produkt bearbeiten (geschützt)
+  - Wildcard-Route für 404-Seite.
 - Navbar mit `routerLink` und `routerLinkActive`.
-- Kassenseite mit Kategorien, Produktauswahl, Optionen und Warenkorb.
-- Kassenseite mit Mengenauswahl 1 bis 9.
-- Checkout-Fenster mit Abholen/Liefern, Uhrzeit, Name, Handynummer und Lieferadresse.
-- Produktmodell in `src/app/model/product.ts`.
-- Bestellmodell in `src/app/model/order.ts`.
-- Bestellposition in `src/app/model/order-item.ts`.
-- Services in `src/app/shared/`:
-  - `ProductService`
-  - `OrderService`
-- Produktverwaltung im Admin-Bereich:
-  - Produkte anzeigen
-  - Produkte anlegen
-  - Produkte bearbeiten
-  - Produkte loeschen
-- Login-Schutz fuer Admin-Bereich mit `adminGuard`.
-- Reactive Forms bei:
-  - Produktformular
-  - Login
-  - Kontaktformular
-  - Bewerbungsformular
-- Kontaktformular mit Bewertung.
-- Bewerbungsformular mit Validierung.
-- Bewerbungsformular mit Bereichsauswahl und Verfuegbarkeitsdatum.
-- Buchreferenz im Projekt abgelegt: `docs/webfrontends-buch.pdf`.
-- Code-Anpassungen an Buchregeln:
-  - Constructor-Injection mit `public`
-  - Produktliste nutzt `ProductService`
-  - fehlender `RouterLink` in 404-Komponente ergaenzt
-  - Debug-Ausgabe aus Kontaktformular entfernt
-  - App-Test an aktuelle Navbar angepasst
+- Navbar ist sticky (`position: sticky; top: 0; z-index: 100`).
+- Schriftart: Nunito (Google Fonts), eingebunden in `index.html`.
+
+### Modelle
+
+- `src/app/model/product.ts` — Produktmodell
+- `src/app/model/order.ts` — Bestellmodell mit Kundendaten, Lieferart und Uhrzeit
+- `src/app/model/order-item.ts` — Bestellposition mit Produkt und Menge
+
+### Services (Kap. 8.5–8.6)
+
+- `ProductService` (`src/app/shared/product.ts`) — verwaltet alle Produkte, sendet Änderungen über `changed$` als RxJS-Subject.
+- `OrderService` (`src/app/shared/order.ts`) — verwaltet Warenkorb und abgeschlossene Bestellungen.
+
+### Kassenseite
+
+- Kategorien mit Bildern (Menüs, Happy Meal, Burger, Chicken, Beilagen, Getränke, McCafé, Desserts).
+- Mengenauswahl 1 bis 9 vor dem Hinzufügen.
+- Akkordeon-Dialog: Produkt wählen → Optionen beantworten (z. B. Soße, Getränk, Größe).
+- Warenkorb links: Artikel, Menge, Preis, Entfernen-Button.
+- Checkout-Formular als modales Fenster:
+  - Name, Handynummer
+  - Lieferart (Abholen / Liefern)
+  - Uhrzeit
+  - Lieferadresse (nur bei Liefern Pflicht)
+- Bon wird nach Bestellabschluss angezeigt.
+- Banner (`mcdenisa-banner-wide.png`) ist als `order-hero` innerhalb des rechten Content-Bereichs platziert — nicht über dem Warenkorb.
+
+### Admin-Bereich
+
+- Produkte anzeigen, anlegen, bearbeiten, löschen.
+- Produktformular mit Reactive Forms und Validierung.
+
+### Route Guard (Kap. 10.2)
+
+Datei: `src/app/shared/admin.guard.ts`
+
+```typescript
+export const adminGuard: CanActivateFn = () => {
+  const router = inject(Router);
+  if (sessionStorage.getItem('isAdmin') === 'true') {
+    return true;
+  }
+  return router.createUrlTree(['/login']);
+};
+```
+
+- `CanActivateFn` — funktionaler Guard (Angular 14+, Buchstil Kap. 10.2).
+- `inject()` für Router — kein Konstruktor nötig.
+- Schützt `/admin`, `/admin/product/new`, `/admin/product/:id`.
+- Bei fehlendem Login: Weiterleitung zu `/login` über `router.createUrlTree`.
+- Login-Status wird in `sessionStorage` gespeichert (bleibt beim Reload erhalten).
+
+### Login-Seite
+
+Datei: `src/app/login/login.ts`
+
+- Reactive Form mit einem `pin`-Feld.
+- PIN: `1234`.
+- Bei richtigem PIN: setzt `sessionStorage.setItem('isAdmin', 'true')` und navigiert zu `/admin`.
+- Bei falschem PIN: zeigt Fehlermeldung, setzt das Formular zurück.
+
+### Custom Validator (Kap. 11.4)
+
+Datei: `src/app/shared/validators.ts`
+
+```typescript
+export function phoneValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+  return /^[+\d\s\-()]+$/.test(control.value) ? null : { invalidPhone: true };
+}
+```
+
+- Einfache Validator-Funktion (kein Service nötig).
+- Wird im Bewerbungsformular auf das `phone`-Feld angewendet.
+- Erlaubt: Ziffern, `+`, Leerzeichen, `-`, Klammern.
+- Bei Verstoß: `{ invalidPhone: true }` — zeigt Fehlermeldung im Template.
+
+### Reactive Forms (Kap. 11)
+
+Eingesetzt bei:
+- Produktformular (Admin)
+- Login
+- Kontaktformular
+- Bewerbungsformular
+
+Bewerbungsformular (`career.ts`) hat folgende Felder:
+- `name` — Pflicht, min. 2 Zeichen
+- `email` — Pflicht, E-Mail-Format
+- `phone` — optional, Custom Validator `phoneValidator`
+- `area` — Pflicht, Dropdown: Küche / vorne / egal
+- `availableFrom` — Pflicht, Datum
+- `message` — optional
+
+### Banner
+
+- Bild: `public/assets/menu/mcdenisa-banner-wide.png` — zugeschnitten auf 2172×360 px (Verhältnis 6:1).
+- Auf der Kassenseite: Banner als `order-hero` in `pos-content` (rechts neben dem Warenkorb), Höhe 150 px, `border-radius: 14px`.
+- Auf allen anderen Seiten: Banner global in `app.html` mit `@if (showBanner)`, Höhe 150 px, volle Breite.
+- `showBanner`-Getter in `app.ts` gibt `false` zurück wenn die URL mit `/order` beginnt.
+
+### Design-Details
+
+- Schriftart: `Nunito` (Google Fonts), Fallback: `Segoe UI`.
+- Farbpalette:
+  - `--mc-maroon: #800000` (Navbar, Cart-Header, aktive Buttons)
+  - `--mc-brown: #8B4513`
+  - `--mc-white: #ffffff`
+  - Hintergrund: `#FAEBD7` (AntiqueWhite)
+- Warenkorb-Sidebar: `background: #fffaf2`, `border-right: 1px solid #ead8bd`.
+- Leerer Warenkorb: styled mit `.cart-empty-state` (cremefarbener Hintergrund, Icon, Text).
+- Mengen-Buttons: 42×42 px, `border-radius: 10px`, Hover- und `:active`-Effekte.
+- Kategorie-Karten: `height: 172px`, Hover (`translateY(-3px)`), Klick-Effekt (`scale(0.96)`).
+
+---
+
+## Probleme und Lösungen
+
+### Banner erschien dreifach
+
+**Problem:** Das Banner `mcdenisa-banner.png` war an drei Stellen gleichzeitig eingebunden:
+1. Als Bild in der Navbar-Brand.
+2. Global in `app.html` als `<div class="site-banner">`.
+3. Als `order-hero`-Div in `order.html`.
+
+Außerdem waren zwei davon sichtbar gleichzeitig auf der Kassenseite, was unruhig und unprofessionell wirkte.
+
+**Lösung:**
+- Navbar-Brand: zurück auf reinen Text `McDenisa`.
+- `order-hero` in `order.html` bleibt, aber innerhalb von `pos-content` (rechts neben dem Warenkorb — nicht darüber).
+- Globaler Banner in `app.html` wird nur angezeigt, wenn die Route **nicht** `/order` ist (`@if (showBanner)`).
+
+### Banner war zu hoch (falsche Proportionen)
+
+**Problem:** Das originale Banner-Bild (`mcdenisa-banner.png`) hatte das Format 2172×724 px (Verhältnis ~3:1). Für ein flaches Website-Banner braucht man ~6:1. Dadurch war das Bild bei niedriger Displayhöhe abgeschnitten, oder bei vollständiger Anzeige zu hoch.
+
+**Lösung:** Das Bild wurde per `sips` (macOS-Bordwerkzeug) zugeschnitten:
+
+```bash
+sips -c 360 2172 --cropOffset 90 0 mcdenisa-banner.png --out mcdenisa-banner-wide.png
+```
+
+- Neues Format: 2172×360 px (Verhältnis 6:1).
+- Startpunkt y=90 — überspringt den dekorativen Blob oben, behält Krone, Text und Essensbilder.
+- Gespeichert als separates Bild (`mcdenisa-banner-wide.png`), Original bleibt erhalten.
+
+### „McDenisa" Navbar-Text war schwarz
+
+**Problem:** Bootstrap setzt `.navbar-brand` standardmäßig auf `color: rgba(0,0,0,0.9)`. Unsere `.navbar-mc`-Klasse überschrieb das nicht.
+
+**Lösung:**
+
+```css
+.navbar-mc .navbar-brand {
+  color: #fff !important;
+}
+```
+
+### POS-Layout-Höhe nach Banner-Integration
+
+**Problem:** Nach Einfügen des globalen Banners wurde die POS-Höhe falsch berechnet — entweder zu klein oder das Layout ragte über den Viewport hinaus.
+
+**Lösung:** Da der globale Banner auf der Kassenseite ausgeblendet wird (`showBanner = false`), gilt auf `/order` weiterhin die einfache Berechnung:
+
+```css
+.pos-layout {
+  height: calc(100vh - 62px);
+}
+```
+
+---
+
+## Noch zu tun
+
+### 1. Firebase / Firestore (Kap. 12)
+
+Status: offen
+
+Ziel:
+- Produkte in Firestore speichern statt im lokalen `ProductService`.
+- CRUD-Operationen über Firestore.
+- Erfordert: Firebase-Projekt anlegen, `@angular/fire` installieren, Firestore konfigurieren.
+
+Voraussetzung: Firebase-Projekt muss vom Entwickler selbst angelegt werden (Console: console.firebase.google.com).
+
+### 2. AuthService (Kap. 10.3)
+
+Status: teilweise — Guard funktioniert, aber ohne eigene Service-Klasse.
+
+Ziel (laut Buch):
+- `AuthService` mit `isLoggedIn()`, `login()`, `logout()`.
+- Guard nutzt `inject(AuthService)` statt direkt `sessionStorage`.
+- Login-Komponente nutzt `AuthService.login()`.
+- Logout-Button in der Navbar sichtbar wenn angemeldet.
+
+### 3. Team-Karussell auf Über-uns-Seite
+
+Status: offen
+
+Ziel:
+- Auf `/about` ein Karussell mit Team-Karten.
+- Vorderseite: Avatar, Name, Rolle.
+- Rückseite: Lieblingsprodukt, Motto, wie lange dabei.
+- Flip-Animation beim Klick.
+
+### 4. Quiz-Seite
+
+Status: offen
+
+Ziel:
+- Neue Route `/quiz`.
+- Fragen zu Produkten, Menüs, Preisen.
+- Ergebnisseite mit Auswertung.
+- Name-Eingabe per Reactive Form vor dem Quiz.
+
+### 5. Zutaten-Editor
+
+Status: offen
+
+Ziel:
+- Beim Produktklick: Zutatenliste mit Häkchen (wie in Avalonia-Version).
+- Entfernte Zutaten werden in der Bestellung und im Bon angezeigt.
+
+### 6. Produktdaten erweitern
+
+Status: offen
+
+Ziel:
+- Pro Produkt: Allergene, Kalorien.
+- Anzeige in Produktdetails oder Admin-Bereich.
+
+---
 
 ## Diagramme
 
@@ -72,27 +278,30 @@ classDiagram
     +string createdAt
     +string checkoutType
     +string pickupTime
+    +string customerName
+    +string phone
+    +string address
   }
 
   class ProductService {
     -Product[] objects
-    +changedStream
-    +getAll()
-    +getById(id)
-    +add(product)
-    +update(product)
+    +changed$ Subject
+    +getAll() Product[]
+    +getById(id) Product
+    +add(product) void
+    +update(product) void
     +remove(product) void
   }
 
   class OrderService {
     -OrderItem[] currentItems
     -number orderCounter
-    +changedStream
+    +changed$ Subject
     +getItems() OrderItem[]
     +getTotal() number
     +addProduct(product, quantity) void
     +removeItem(item) void
-    +checkout(type, time) Order
+    +checkout(type, time, name, phone, address) Order
     +clearCart() void
   }
 
@@ -103,19 +312,20 @@ classDiagram
   OrderService --> OrderItem
 ```
 
-### Routing-Uebersicht
+### Routing-Übersicht
 
 ```mermaid
 flowchart LR
-  Start["/"] --> Order["/order<br>Kasse"]
+  Start["/"] --> Order["/order\nKasse"]
   Navbar["Navbar"] --> Order
-  Navbar --> About["/about<br>Ueber uns"]
-  Navbar --> Career["/career<br>Bewerbung"]
-  Navbar --> Contact["/contact<br>Feedback"]
-  Navbar --> Admin["/admin<br>Produktverwaltung"]
-  Admin --> Guard{"adminGuard"}
-  Guard -->|nicht angemeldet| Login["/login"]
-  Guard -->|angemeldet| AdminList["Admin-Liste"]
+  Navbar --> About["/about\nÜber uns"]
+  Navbar --> Career["/career\nBewerbung"]
+  Navbar --> Contact["/contact\nFeedback"]
+  Navbar --> Admin["/admin\nProduktverwaltung"]
+  Admin --> Guard{"adminGuard\ncanActivate"}
+  Guard -->|"nicht angemeldet\nsessionStorage leer"| Login["/login"]
+  Guard -->|"angemeldet\nsessionStorage: isAdmin=true"| AdminList["Admin-Liste"]
+  Login -->|"PIN 1234 korrekt"| AdminList
   AdminList --> NewProduct["/admin/product/new"]
   AdminList --> EditProduct["/admin/product/:id"]
   Unknown["unbekannte URL"] --> NotFound["404 PageNotFound"]
@@ -125,219 +335,50 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-  A["Kategorie waehlen"] --> B["Menge 1 bis 9 waehlen"]
-  B --> C["Produkt auswaehlen"]
+  A["Menge 1–9 wählen"] --> B["Kategorie wählen"]
+  B --> C["Produkt auswählen"]
   C --> D{"Hat Produkt Optionen?"}
-  D -->|ja| E["Optionen beantworten<br>z. B. Sosse, Beilage, Getraenk"]
+  D -->|ja| E["Optionen beantworten\nz. B. Soße, Beilage, Getränk"]
   D -->|nein| F["Produkt in Warenkorb"]
   E --> F
   F --> G{"Weitere Produkte?"}
   G -->|ja| A
-  G -->|nein| H["Bestellung abschliessen"]
-  H --> I["Checkout-Formular"]
-  I --> J{"Formular gueltig?"}
+  G -->|nein| H["Bestellung abschließen"]
+  H --> I["Checkout-Formular\nName, Handy, Lieferart, Uhrzeit"]
+  I --> J{"Formular gültig?"}
   J -->|nein| I
-  J -->|ja| K["OrderService.checkout"]
-  K --> L["Bon mit Gesamtpreis,<br>Lieferart und Uhrzeit"]
+  J -->|ja| K["OrderService.checkout()"]
+  K --> L["Bon anzeigen\nGesamtpreis, Lieferart, Uhrzeit"]
 ```
 
 ### Arbeitsreihenfolge
 
 ```mermaid
 flowchart TD
-  Done1["Bewerbungsformular erweitern<br>Status: erledigt"] --> Done2["Mengenauswahl<br>Status: erledigt"]
-  Done2 --> Done3["Checkout-Formular<br>Status: erledigt"]
-  Done3 --> Next["Produktdaten erweitern<br>Status: naechster Schritt"]
-  Next --> Open1["Zutaten bearbeiten<br>Status: offen"]
-  Open1 --> Open2["Quiz-Seite<br>Status: offen"]
-  Open2 --> Open3["Team-Karussell<br>Status: offen"]
+  D1["Custom Validator\nerledigt"] --> D2["Route Guard + Login\nerledigt"]
+  D2 --> D3["Banner-Integration\nerledigt"]
+  D3 --> D4["Design-Verbesserungen\nerledigt"]
+  D4 --> N1["AuthService\noffen"]
+  N1 --> N2["Firebase / Firestore\noffen"]
+  N2 --> N3["Zutaten-Editor\noffen"]
+  N3 --> N4["Produktdaten erweitern\noffen"]
+  N4 --> N5["Quiz-Seite\noffen"]
+  N5 --> N6["Team-Karussell\noffen"]
 ```
 
-## Noch zu tun
+---
 
-### 1. Kategorie "Ueber uns" - Team-Karussell
+## Technische Pflichtaufgaben laut Kursbuch
 
-Status: offen
-
-Ziel:
-- Auf der Seite `/about` soll ein Team-Karussell eingebaut werden.
-- Darstellung als Coverflow/3D-Karussell:
-  - mittlere Team-Karte im Fokus
-  - aeussere Karten leicht gekippt
-  - Karten koennen gedreht werden
-
-Karte Vorderseite:
-- Cartoon-Avatar
-- Alias-Name
-- Rolle im Store
-
-Karte Rueckseite:
-- Station, z. B. "Vom Crew-Member zur Chefin"
-- Lieblings-McMenue
-- Motto
-
-Daten sammeln:
-- Schichtfuehrer nach Fakten fragen:
-  - Lieblingsprodukt
-  - Superkraft im Store
-  - seit wann dabei
-- Kein Geburtsdatum sammeln.
-
-Alias-Namen:
-- echte Namen nicht direkt anzeigen
-- Beispiel:
-  - Anastasia Saitinidou -> Anamaria Satanitov
-
-Technischer naechster Schritt:
-- JSON-Array mit Teamdaten in der About-Component oder als eigene Datei anlegen.
-- HTML/CSS fuer Flip-Karten und Coverflow bauen.
-
-### 2. Neue Kategorie "Spiel"
-
-Status: offen
-
-Ziel:
-- Neue Route `/quiz`.
-- McDenisa Quiz mit Fragen zu:
-  - Produkten
-  - Menues
-  - Preisen
-  - Fun-Facts
-- Ergebnis-Seite mit Auswertung, z. B. "Burger-Profi".
-
-Geplante Struktur:
-- `/quiz`
-- `/quiz-result`
-- `question-card`
-- `answer-button`
-- `score-box`
-- `quiz.service.ts`
-
-Formular:
-- Vor dem Quiz Name eingeben.
-- Validator: Name darf nicht leer sein.
-
-Technischer naechster Schritt:
-- Routes ergaenzen.
-- QuizService mit Fragen-Array bauen.
-- Reactive Form fuer Namenseingabe erstellen.
-
-### 3. Produkte bearbeiten wie in Avalonia
-
-Status: offen
-
-Ziel:
-- Beim Klick auf ein Produkt, z. B. Big Mac, soll eine Zutatenliste erscheinen.
-- Jede Zutat hat ein Haekchen.
-- Haekchen entfernen bedeutet: Zutat wird aus der Bestellung entfernt.
-
-Beispiel:
-- Big Mac:
-  - Bun
-  - Fleisch
-  - Kaese
-  - Salat
-  - Sauce
-  - Gurken
-  - Zwiebeln
-
-Technischer naechster Schritt:
-- Produktdaten um `ingredients` erweitern.
-- Auswahl in `Order` speichern.
-- Anzeigename im Warenkorb mit entfernten Zutaten erweitern.
-
-### 4. Mengenauswahl
-
-Status: erledigt
-
-Ziel:
-- Oben in der Kasse Zahlen 2 bis 9 anzeigen.
-- Nutzer waehlt eine Zahl und fuegt ein Produkt direkt mehrfach hinzu.
-
-Umgesetzt:
-- `selectedQuantity` in `Order` angelegt.
-- Button-Leiste fuer Mengen 1 bis 9 eingebaut.
-- `OrderService.addProduct` nimmt jetzt eine Menge entgegen.
-- Nach dem Hinzufuegen wird die Menge wieder auf 1 gesetzt.
-
-### 5. Checkout-Formular
-
-Status: erledigt
-
-Ziel:
-- Nach Bestellabschluss soll ein eigenes Fenster erscheinen.
-- Auswahl:
-  - Liefern
-  - Abholen
-- Uhrzeit angeben.
-- Name, Handynummer und bei Lieferung Adresse eingeben.
-
-Umgesetzt:
-- Reactive Form fuer Checkout als modales Fenster gebaut.
-- Felder:
-  - `checkoutType`
-  - `pickupTime`
-- `customerName`
-- `phone`
-- `address`
-- Bestellmodell um Lieferart und Uhrzeit erweitert.
-- Bestellmodell um Kundendaten erweitert.
-- Bestellung wird erst abgeschlossen, wenn das Formular gueltig ist.
-
-### 6. Produktdaten erweitern
-
-Status: offen
-
-Ziel:
-- Pro Produkt sollen weitere Daten hinterlegt werden:
-  - Allergene
-  - Kalorien
-  - optional weitere Naehrwerte
-
-Technischer naechster Schritt:
-- `Product`-Klasse erweitern.
-- Produktdaten im `ProductService` ergaenzen.
-- Anzeige in Produktdetails oder Admin-Bereich planen.
-
-### 7. Bewerbungsformular erweitern
-
-Status: erledigt
-
-Ziel:
-- Bewerbungsformular soll zusaetzliche Angaben bekommen.
-
-Neue Felder:
-- Bereich:
-  - Kueche
-  - vorne
-  - egal
-- Ab wann verfuegbar.
-
-Umgesetzt:
-- `Career`-FormGroup wurde um `availableFrom` erweitert.
-- Bereichsauswahl wurde auf Kueche / vorne / egal angepasst.
-- Verfuegbarkeitsdatum ist ein Pflichtfeld.
-
-## Empfohlene Reihenfolge
-
-1. Produktdaten erweitern, weil Zutaten, Allergene und Kalorien darauf aufbauen.
-2. Zutaten bearbeiten.
-3. Quiz-Seite.
-4. Team-Karussell, weil Design und Datenaufbereitung am meisten Zeit brauchen.
-
-## Arbeitsreihenfolge mit Status
-
-1. Bewerbungsformular erweitern - erledigt.
-2. Mengenauswahl in der Kasse - erledigt.
-3. Checkout-Formular - erledigt.
-4. Produktdaten erweitern - naechster Schritt.
-5. Zutaten bearbeiten - offen.
-6. Quiz-Seite - offen.
-7. Team-Karussell - offen.
-
-## Pruefung
-
-Aktueller Stand der letzten Pruefung:
-- TypeScript-Check: bestanden.
-- Unit-Tests: bestanden.
-- `npm run build`: bricht aktuell mit Exit-Code 134 ohne Angular-Fehlermeldung ab.
+| Aufgabe | Kap. | Status |
+|---|---|---|
+| Components, Templates, @for, Pipes | 6–7 | erledigt |
+| Datenmodell (TypeScript-Klassen) | 8.3 | erledigt |
+| Services + Dependency Injection | 8.5–8.6 | erledigt |
+| Routing + RouterLink + RouterOutlet | 9 | erledigt |
+| Navbar mit routerLinkActive | 9.5 | erledigt |
+| Reactive Forms | 11 | erledigt |
+| Custom Validator | 11.4 | erledigt |
+| Route Guard (CanActivateFn) | 10.2 | erledigt |
+| AuthService-Muster | 10.3 | teilweise |
+| Firebase / Firestore | 12 | offen |
