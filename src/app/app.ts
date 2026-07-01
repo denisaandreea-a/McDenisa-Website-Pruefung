@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { Navbar } from './navbar/navbar';
 
 @Component({
@@ -8,10 +8,4 @@ import { Navbar } from './navbar/navbar';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
-  constructor(public router: Router) {}
-
-  get showBanner(): boolean {
-    return !this.router.url.startsWith('/order');
-  }
-}
+export class App {}
