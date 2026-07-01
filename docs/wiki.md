@@ -127,6 +127,19 @@ Bewerbungsformular (`career.ts`) hat folgende Felder:
 2. `mcdenisa-banner-wide.png` (erste Version) — per `sips` auf 2172×360 (6:1) aus dem Original zugeschnitten.
 3. `mcdenisa-banner-wide.png` (aktuelle Version) — neues, minimalistisches Design (erstellt mit KI-Bildgenerator), original 2172×724, Inhalt als schmaler Streifen vertikal zentriert. Per `sips` auf 2172×240 zugeschnitten (`--cropOffset 240 0`), sodass nur der Inhaltsstreifen ohne Whitespace sichtbar ist.
 
+### Footer
+
+Datei: `src/app/footer/`
+
+- Globale Fußzeile, eingebunden in `app.html` unter `<router-outlet>` — erscheint auf allen Seiten beim Scrollen.
+- Vier Spalten:
+  - **McDenisa** — Adresse (Oststraße 12, 59227 Ahlen), Telefon, E-Mail
+  - **Öffnungszeiten** — Mo–Fr, Sa–So, Feiertage
+  - **Navigation** — Links zu Bestellen, Über uns, Karriere, Kontakt
+  - **Rechtliches** — Impressum, Datenschutz, AGB + Schulprojekt-Hinweis
+- Untere Zeile: Copyright `© {{ year }} McDenisa Ahlen` (Jahr dynamisch per `new Date().getFullYear()`) + Markenhinweis.
+- Design: dunkler Hintergrund (`#2a0a0a`), cremefarbener Text, Gold-Hover auf Links.
+
 ### Design-Details
 
 - Schriftart: `Nunito` (Google Fonts), Fallback: `Segoe UI`.
