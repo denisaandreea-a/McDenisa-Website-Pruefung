@@ -4,6 +4,7 @@
   --mc-maroon:    #800000;
   --mc-brown:     #8B4513;
   --mc-white:     #ffffff;
+  --banner-h:     220px;
 
   /* Kategorie-Farben wie im Avalonia-Projekt */
   --cat-menus:    #DAA520; /* Goldenrod      */
@@ -24,20 +25,23 @@ body {
 
 .site-banner {
   width: 100%;
-  display: block;
+  height: var(--banner-h);
+  overflow: hidden;
   line-height: 0;
 }
 
 .site-banner img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
+  object-position: center 40%;
 }
 
 .pos-layout {
   display: flex;
-  height: calc(100vh - 62px - 33.33vw);
-  min-height: 320px;
+  height: calc(100vh - 62px - var(--banner-h));
+  min-height: 300px;
 }
 
 /* Linke Spalte: Warenkorb */
