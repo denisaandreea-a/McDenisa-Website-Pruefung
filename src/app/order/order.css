@@ -9,7 +9,7 @@
 .order-hero img {
   display: block;
   width: 100%;
-  height: 180px;
+  height: 150px;
   object-fit: cover;
   object-position: center 40%;
   border-radius: 14px;
@@ -20,11 +20,12 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-top: 4px;
+  margin-bottom: 18px;
 }
 
 .quantity-label {
-  font-weight: 700;
+  font-weight: 800;
   color: #4a1b1b;
 }
 
@@ -35,18 +36,29 @@
 }
 
 .quantity-btn {
-  width: 38px;
-  height: 38px;
-  border: 1px solid #d8b6b6;
-  border-radius: 6px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e3b8aa;
+  border-radius: 10px;
   background: #fff;
-  color: #4a1b1b;
-  font-weight: 700;
+  color: #5a1a1a;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, transform 0.1s;
+}
+
+.quantity-btn:hover {
+  background: #fdeee8;
+}
+
+.quantity-btn:active {
+  transform: scale(0.93);
 }
 
 .quantity-btn--active {
-  background: #7a1212;
-  border-color: #7a1212;
+  background: var(--mc-maroon);
+  border-color: var(--mc-maroon);
   color: #fff;
 }
 
