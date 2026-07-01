@@ -44,7 +44,7 @@ export class Order implements OnInit {
   });
 
   readonly categoryDefs = [
-    { name: 'Menüs',             image: '/assets/menu/category-burger.png',     css: 'cat-menus'    },
+    { name: 'Menüs',             image: '/assets/menu/category-menus.png',      css: 'cat-menus'    },
     { name: 'Happy Meal',        image: '/assets/menu/category-happy-meal.png', css: 'cat-happy'    },
     { name: 'Burger',            image: '/assets/menu/category-burger.png',     css: 'cat-burger'   },
     { name: 'Chicken & Nuggets', image: '/assets/menu/category-chicken.png',    css: 'cat-chicken'  },
