@@ -4,7 +4,7 @@
   --mc-maroon:    #800000;
   --mc-brown:     #8B4513;
   --mc-white:     #ffffff;
-  --banner-h:     220px;
+  --banner-h:     180px;
 
   /* Kategorie-Farben wie im Avalonia-Projekt */
   --cat-menus:    #DAA520; /* Goldenrod      */
@@ -40,8 +40,7 @@ body {
 
 .pos-layout {
   display: flex;
-  height: calc(100vh - 62px - var(--banner-h));
-  min-height: 300px;
+  height: calc(100vh - 62px);
 }
 
 /* Linke Spalte: Warenkorb */
