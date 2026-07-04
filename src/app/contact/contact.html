@@ -5,7 +5,7 @@
   <div class="col-lg-8">
     <div class="page-card">
       <h4>Dein Feedback</h4>
-      <p class="text-muted small mb-4">Erzähl uns wie dein Besuch war – wir freuen uns über jedes Feedback.</p>
+      <p class="text-muted small mb-4">Erzähl uns wie deine Bestellung war – wir freuen uns über jedes Feedback.</p>
 
       @if (submitted) {
         <div class="alert alert-success">
@@ -16,7 +16,7 @@
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
 
           <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label fw-semibold">Name *</label>
               <input type="text" class="form-control" formControlName="name"
                      placeholder="Dein Name" title="Dein Name"
@@ -26,10 +26,20 @@
               }
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Uhrzeit des Besuchs *</label>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Datum der Bestellung *</label>
+              <input type="date" class="form-control" formControlName="besuchsdatum"
+                     title="Datum deiner Bestellung"
+                     [class.is-invalid]="form.controls.besuchsdatum.touched && form.controls.besuchsdatum.invalid">
+              @if (form.controls.besuchsdatum.touched && form.controls.besuchsdatum.invalid) {
+                <div class="invalid-feedback">Bitte gib das Datum an.</div>
+              }
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Uhrzeit der Bestellung *</label>
               <input type="time" class="form-control" formControlName="besuchszeit"
-                     title="Uhrzeit deines Besuchs"
+                     title="Uhrzeit deiner Bestellung"
                      [class.is-invalid]="form.controls.besuchszeit.touched && form.controls.besuchszeit.invalid">
               @if (form.controls.besuchszeit.touched && form.controls.besuchszeit.invalid) {
                 <div class="invalid-feedback">Bitte gib die Uhrzeit an.</div>
@@ -44,26 +54,9 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-semibold">Warst du drinnen oder draußen? *</label>
-            <div class="d-flex gap-3 mt-1">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" formControlName="ort" id="drinnen" value="drinnen">
-                <label class="form-check-label" for="drinnen">Drinnen</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" formControlName="ort" id="draussen" value="draußen">
-                <label class="form-check-label" for="draussen">Draußen</label>
-              </div>
-            </div>
-            @if (form.controls.ort.touched && form.controls.ort.invalid) {
-              <div class="text-danger small mt-1">Bitte wähle eine Option.</div>
-            }
-          </div>
-
-          <div class="mb-3">
             <label class="form-label fw-semibold">Deine Bewertung *</label>
             <div>
-              @for (n of [1, 2, 3, 4, 5]; track n) {
+              @for (n of sterne; track n) {
                 <button type="button" class="star-btn" [class.active]="n <= bewertung" (click)="setSterne(n)">★</button>
               }
             </div>
@@ -105,11 +98,38 @@
 
       <hr class="my-3">
 
-      <div class="side-info-header">Dein Feedback zählt</div>
-      <p class="small mb-0">
-        Wir lesen jede Bewertung und geben das Feedback direkt ans Team weiter.
-        Deine Meinung hilft uns, besser zu werden.
-      </p>
+      <div class="side-info-header">Öffentliche Feedbacks</div>
+      @if (feedbacks.length === 0) {
+        <p class="feedback-empty small mb-0">Noch keine Bewertungen vorhanden.</p>
+      } @else {
+        <div class="feedback-list">
+          @for (feedback of feedbacks; track feedback.erstelltAm + feedback.name) {
+            <div class="feedback-card">
+              <div class="feedback-card-head">
+                <strong>{{ feedback.name }}</strong>
+                <span>
+                  @if (feedback.besuchsdatum) {
+                    {{ formatDate(feedback.besuchsdatum) }},
+                  }
+                  {{ feedback.besuchszeit }} Uhr
+                </span>
+              </div>
+              <div class="feedback-stars">
+                @for (n of sterne; track n) {
+                  <span [class.feedback-star-muted]="n > feedback.bewertung">★</span>
+                }
+              </div>
+              @if (feedback.bestellung) {
+                <div class="feedback-meta">Bestellt: {{ feedback.bestellung }}</div>
+              }
+              @if (feedback.kommentar) {
+                <p class="feedback-comment">{{ feedback.kommentar }}</p>
+              }
+              <div class="feedback-date">{{ feedback.erstelltAm }}</div>
+            </div>
+          }
+        </div>
+      }
     </div>
   </div>
 

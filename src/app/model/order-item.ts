@@ -4,8 +4,12 @@ import { Product } from './product';
 // Ein OrderItem ist eine einzelne Zeile im Warenkorb.
 // Zum Beispiel: 2x Big Mac – das Produkt ist "Big Mac" und die Menge ist 2.
 export class OrderItem {
+  removedIngredients: string[] = [];
+  extraIngredients: Record<string, number> = {};
+  milkOption: string | null = null;
+
   constructor(
-    public product: Product,  // Das Produkt, das bestellt wurde (z.B. Big Mac)
-    public quantity: number   // Wie viele davon bestellt wurden (z.B. 2)
+    public product: Product,
+    public quantity: number
   ) {}
 }

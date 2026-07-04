@@ -1,7 +1,10 @@
 <div class="container mt-4">
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h4>Produktverwaltung</h4>
-  <a routerLink="/admin/product/new" class="btn btn-success">+ Neues Produkt</a>
+  <div class="d-flex gap-2">
+    <a routerLink="/admin/product/new" class="btn btn-success">+ Neues Produkt</a>
+    <button type="button" class="btn btn-outline-danger" (click)="logout()">Abmelden</button>
+  </div>
 </div>
 
 <table class="table table-bordered table-hover">

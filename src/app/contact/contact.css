@@ -1,3 +1,65 @@
 .contact-title {
   color: #800000;
 }
+
+.side-info-card,
+.side-info-card p,
+.side-info-card td {
+  color: #fff;
+}
+
+.feedback-empty {
+  color: #fff;
+}
+
+.feedback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.feedback-card {
+  border: 1px solid #ead6cb;
+  border-radius: 8px;
+  background: #fffaf4;
+  padding: 10px;
+}
+
+.feedback-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #4a1b1b;
+  font-size: 0.9rem;
+}
+
+.feedback-card-head span,
+.feedback-date {
+  color: #80675d;
+  font-size: 0.74rem;
+}
+
+.feedback-stars {
+  color: #ffc107;
+  line-height: 1.1;
+  margin-top: 3px;
+}
+
+.feedback-star-muted {
+  color: #decfc8;
+}
+
+.feedback-meta {
+  color: #6b4c43;
+  font-size: 0.78rem;
+  margin-top: 4px;
+}
+
+.feedback-comment {
+  color: #2f1717;
+  font-size: 0.82rem;
+  margin: 6px 0 4px;
+}

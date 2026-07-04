@@ -27,12 +27,13 @@ Dieses Dokument sammelt, was im Angular/WebFrontends-Projekt umgesetzt wurde, we
 
 - `src/app/model/product.ts` — Produktmodell
 - `src/app/model/order.ts` — Bestellmodell mit Kundendaten, Lieferart und Uhrzeit
-- `src/app/model/order-item.ts` — Bestellposition mit Produkt und Menge
+- `src/app/model/order-item.ts` — Bestellposition mit Produkt, Menge, entfernten Zutaten, McCafé-Extras und Milchoption
 
 ### Services (Kap. 8.5–8.6)
 
 - `ProductService` (`src/app/shared/product.ts`) — verwaltet alle Produkte, sendet Änderungen über `changed$` als RxJS-Subject.
 - `OrderService` (`src/app/shared/order.ts`) — verwaltet Warenkorb und abgeschlossene Bestellungen.
+- `AuthService` (`src/app/shared/auth.service.ts`) — kapselt Login-Status (`isLoggedIn()`, `login()`, `logout()`) über `sessionStorage`.
 
 ### Kassenseite
 
@@ -40,18 +41,38 @@ Dieses Dokument sammelt, was im Angular/WebFrontends-Projekt umgesetzt wurde, we
 - Mengenauswahl 1 bis 9 vor dem Hinzufügen.
 - Akkordeon-Dialog: Produkt wählen → Optionen beantworten (z. B. Soße, Getränk, Größe).
 - Warenkorb links: Artikel, Menge, Preis, Entfernen-Button.
+- Zutaten-Editor im Warenkorb:
+  - Burger/Menü-Produkte können Zutaten entfernen (`Ohne: ...`).
+  - McCafé-Produkte haben zählbare Extras (`Zucker`, `Kaffeesahne`, `Süßstoff`) mit Plus/Minus.
+  - McCafé-Milchoptionen (`Hafermilch`, `Laktosefreie Milch`) sind entweder/oder und nur einmal auswählbar.
 - Checkout-Formular als modales Fenster:
   - Name, Handynummer
   - Lieferart (Abholen / Liefern)
   - Uhrzeit
   - Lieferadresse (nur bei Liefern Pflicht)
+  - Lieferung kostet `+2,00 €`; die Gebühr steht im Dropdown und in der Zusammenfassung.
+- Checkout-Modal hat eine feste Höhe; Adresse und Button-Bereich verändern die Position von „Bestellung bestätigen" nicht.
 - Bon wird nach Bestellabschluss angezeigt.
-- Banner (`mcdenisa-banner-wide.png`) ist als `order-hero` innerhalb des rechten Content-Bereichs platziert — nicht über dem Warenkorb.
+- Banner (`mcdenisa-banner-wide.png`) ist als `order-hero` oberhalb des POS-Layouts platziert.
+
+### Kontakt / Feedback
+
+- Feedbackformular bewertet eine Bestellung:
+  - Name
+  - Datum der Bestellung
+  - Uhrzeit der Bestellung
+  - Bestellung (optional)
+  - Sternebewertung
+  - Kommentar (optional)
+- Abgeschickte Feedbacks werden rechts unter „Öffentliche Feedbacks" angezeigt.
+- Feedbacks werden im Browser über `localStorage` gespeichert (`mcdenisaFeedbacks`) und bleiben nach Reload sichtbar.
+- Die frühere Frage „Warst du drinnen oder draußen?" wurde entfernt.
 
 ### Admin-Bereich
 
 - Produkte anzeigen, anlegen, bearbeiten, löschen.
 - Produktformular mit Reactive Forms und Validierung.
+- Logout-Button im Admin-Bereich meldet über `AuthService.logout()` ab und navigiert zurück zu `/login`.
 
 ### Route Guard (Kap. 10.2)
 
@@ -59,16 +80,14 @@ Datei: `src/app/shared/admin.guard.ts`
 
 ```typescript
 export const adminGuard: CanActivateFn = () => {
+  const auth   = inject(AuthService);
   const router = inject(Router);
-  if (sessionStorage.getItem('isAdmin') === 'true') {
-    return true;
-  }
-  return router.createUrlTree(['/login']);
+  return auth.isLoggedIn() ? true : router.createUrlTree(['/login']);
 };
 ```
 
 - `CanActivateFn` — funktionaler Guard (Angular 14+, Buchstil Kap. 10.2).
-- `inject()` für Router — kein Konstruktor nötig.
+- `inject()` für Router und `AuthService` — kein Konstruktor nötig.
 - Schützt `/admin`, `/admin/product/new`, `/admin/product/:id`.
 - Bei fehlendem Login: Weiterleitung zu `/login` über `router.createUrlTree`.
 - Login-Status wird in `sessionStorage` gespeichert (bleibt beim Reload erhalten).
@@ -79,7 +98,7 @@ Datei: `src/app/login/login.ts`
 
 - Reactive Form mit einem `pin`-Feld.
 - PIN: `1234`.
-- Bei richtigem PIN: setzt `sessionStorage.setItem('isAdmin', 'true')` und navigiert zu `/admin`.
+- Bei richtigem PIN: nutzt `AuthService.login()` und navigiert zu `/admin`.
 - Bei falschem PIN: zeigt Fehlermeldung, setzt das Formular zurück.
 
 ### Custom Validator (Kap. 11.4)
@@ -118,7 +137,7 @@ Bewerbungsformular (`career.ts`) hat folgende Felder:
 
 - Bild: `public/assets/menu/mcdenisa-banner-wide.png` — 2172×240 px (Verhältnis ~9:1), minimalistisches Design.
 - Inhalt: „McDenisa | Lecker. Schnell. Einfach." links, Essens-Icons rechts (Burger, Pommes, Cola, Kaffee, Eis), cremefarbener Hintergrund.
-- Auf der Kassenseite: Banner als `order-hero` in `pos-content` (rechts neben dem Warenkorb), Höhe 150 px, `border-radius: 14px`.
+- Auf der Kassenseite: Banner als `order-hero` oberhalb des POS-Layouts, Höhe 150 px, volle Breite.
 - Auf allen anderen Seiten: Banner global in `app.html` mit `@if (showBanner)`, Höhe 150 px, volle Breite.
 - `showBanner`-Getter in `app.ts` gibt `false` zurück wenn die URL mit `/order` beginnt.
 
@@ -174,7 +193,7 @@ Außerdem waren zwei davon sichtbar gleichzeitig auf der Kassenseite, was unruhi
 
 **Lösung:**
 - Navbar-Brand: zurück auf reinen Text `McDenisa`.
-- `order-hero` in `order.html` bleibt, aber innerhalb von `pos-content` (rechts neben dem Warenkorb — nicht darüber).
+- `order-hero` in `order.html` bleibt als einzelner Banner oberhalb des POS-Layouts.
 - Globaler Banner in `app.html` wird nur angezeigt, wenn die Route **nicht** `/order` ist (`@if (showBanner)`).
 
 ### Banner war zu hoch (falsche Proportionen)
@@ -207,11 +226,11 @@ sips -c 360 2172 --cropOffset 90 0 mcdenisa-banner.png --out mcdenisa-banner-wid
 
 **Problem:** Nach Einfügen des globalen Banners wurde die POS-Höhe falsch berechnet — entweder zu klein oder das Layout ragte über den Viewport hinaus.
 
-**Lösung:** Da der globale Banner auf der Kassenseite ausgeblendet wird (`showBanner = false`), gilt auf `/order` weiterhin die einfache Berechnung:
+**Lösung:** Da der globale Banner auf der Kassenseite ausgeblendet wird (`showBanner = false`) und der `order-hero` dort 150 px hoch ist, wird die POS-Höhe um Navbar und Banner reduziert:
 
 ```css
 .pos-layout {
-  height: calc(100vh - 62px);
+  height: calc(100vh - 62px - 150px);
 }
 ```
 
@@ -230,17 +249,7 @@ Ziel:
 
 Voraussetzung: Firebase-Projekt muss vom Entwickler selbst angelegt werden (Console: console.firebase.google.com).
 
-### 2. AuthService (Kap. 10.3)
-
-Status: teilweise — Guard funktioniert, aber ohne eigene Service-Klasse.
-
-Ziel (laut Buch):
-- `AuthService` mit `isLoggedIn()`, `login()`, `logout()`.
-- Guard nutzt `inject(AuthService)` statt direkt `sessionStorage`.
-- Login-Komponente nutzt `AuthService.login()`.
-- Logout-Button in der Navbar sichtbar wenn angemeldet.
-
-### 3. Team-Karussell auf Über-uns-Seite
+### 2. Team-Karussell auf Über-uns-Seite
 
 Status: offen
 
@@ -250,7 +259,7 @@ Ziel:
 - Rückseite: Lieblingsprodukt, Motto, wie lange dabei.
 - Flip-Animation beim Klick.
 
-### 4. Quiz-Seite
+### 3. Quiz-Seite
 
 Status: offen
 
@@ -260,15 +269,7 @@ Ziel:
 - Ergebnisseite mit Auswertung.
 - Name-Eingabe per Reactive Form vor dem Quiz.
 
-### 5. Zutaten-Editor
-
-Status: offen
-
-Ziel:
-- Beim Produktklick: Zutatenliste mit Häkchen (wie in Avalonia-Version).
-- Entfernte Zutaten werden in der Bestellung und im Bon angezeigt.
-
-### 6. Produktdaten erweitern
+### 4. Produktdaten erweitern
 
 Status: offen
 
@@ -294,6 +295,9 @@ classDiagram
   class OrderItem {
     +Product product
     +number quantity
+    +string[] removedIngredients
+    +Record extraIngredients
+    +string milkOption
   }
 
   class Order {
@@ -319,11 +323,13 @@ classDiagram
   }
 
   class OrderService {
+    +number deliveryFee
     -OrderItem[] currentItems
     -number orderCounter
     +changed$ Subject
     +getItems() OrderItem[]
     +getTotal() number
+    +getCheckoutTotal(checkoutType) number
     +addProduct(product, quantity) void
     +removeItem(item) void
     +checkout(type, time, name, phone, address) Order
@@ -348,8 +354,8 @@ flowchart LR
   Navbar --> Contact["/contact\nFeedback"]
   Navbar --> Admin["/admin\nProduktverwaltung"]
   Admin --> Guard{"adminGuard\ncanActivate"}
-  Guard -->|"nicht angemeldet\nsessionStorage leer"| Login["/login"]
-  Guard -->|"angemeldet\nsessionStorage: isAdmin=true"| AdminList["Admin-Liste"]
+  Guard -->|"nicht angemeldet\nAuthService false"| Login["/login"]
+  Guard -->|"angemeldet\nAuthService true"| AdminList["Admin-Liste"]
   Login -->|"PIN 1234 korrekt"| AdminList
   AdminList --> NewProduct["/admin/product/new"]
   AdminList --> EditProduct["/admin/product/:id"]
@@ -372,7 +378,9 @@ flowchart TD
   H --> I["Checkout-Formular\nName, Handy, Lieferart, Uhrzeit"]
   I --> J{"Formular gültig?"}
   J -->|nein| I
-  J -->|ja| K["OrderService.checkout()"]
+  J -->|Liefern| M["Adresse Pflicht\n+2,00 € Liefergebühr"]
+  M --> K["OrderService.checkout()"]
+  J -->|Abholen| K
   K --> L["Bon anzeigen\nGesamtpreis, Lieferart, Uhrzeit"]
 ```
 
@@ -383,12 +391,13 @@ flowchart TD
   D1["Custom Validator\nerledigt"] --> D2["Route Guard + Login\nerledigt"]
   D2 --> D3["Banner-Integration\nerledigt"]
   D3 --> D4["Design-Verbesserungen\nerledigt"]
-  D4 --> N1["AuthService\noffen"]
-  N1 --> N2["Firebase / Firestore\noffen"]
-  N2 --> N3["Zutaten-Editor\noffen"]
-  N3 --> N4["Produktdaten erweitern\noffen"]
-  N4 --> N5["Quiz-Seite\noffen"]
-  N5 --> N6["Team-Karussell\noffen"]
+  D4 --> D5["AuthService\nerledigt"]
+  D5 --> D6["Zutaten-Editor\nerledigt"]
+  D6 --> D7["Feedback-Liste\nerledigt"]
+  D7 --> N1["Firebase / Firestore\noffen"]
+  N1 --> N2["Produktdaten erweitern\noffen"]
+  N2 --> N3["Quiz-Seite\noffen"]
+  N3 --> N4["Team-Karussell\noffen"]
 ```
 
 ---
@@ -405,5 +414,5 @@ flowchart TD
 | Reactive Forms | 11 | erledigt |
 | Custom Validator | 11.4 | erledigt |
 | Route Guard (CanActivateFn) | 10.2 | erledigt |
-| AuthService-Muster | 10.3 | teilweise |
+| AuthService-Muster | 10.3 | erledigt |
 | Firebase / Firestore | 12 | offen |

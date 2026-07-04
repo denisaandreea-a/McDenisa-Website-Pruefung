@@ -17,6 +17,26 @@ interface AccStep {
 const SOSSEN = ['Ketchup', 'Mayonnaise', 'BBQ-Sauce', 'Süß-Sauer-Sauce', 'Senf', 'Honig-Senf'];
 const HM_DRINKS = ['Cola', 'Fanta', 'Sprite', 'Wasser', 'Apfelsaft'];
 const HM_DESSERT = ['Apfeltüte', 'Fruchtquatsch', 'McFreezy Eis'];
+const MCCAFE_COUNTED_EXTRAS = ['Zucker', 'Kaffeesahne', 'Süßstoff'];
+const MCCAFE_MILK_OPTIONS = ['Hafermilch', 'Laktosefreie Milch'];
+
+const INGREDIENT_MAP: Record<string, string[]> = {
+  'm1': ['Salat', 'Zwiebeln', 'Gurken', 'Käse', 'Big-Mac-Sauce'],
+  'm2': ['Salat', 'Tomaten', 'Zwiebeln', 'Gurken', 'Käse', 'Senf', 'Mayo'],
+  'm3': ['Salat', 'Mayo'],
+  'm4': ['Zwiebeln', 'Gurken', 'BBQ-Sauce'],
+  'h1': ['Salat', 'Tomaten', 'Zwiebeln', 'Gurken', 'Käse', 'Ketchup', 'Senf'],
+  'h2': ['Salat', 'Tomaten', 'Zwiebeln', 'Gurken', 'Ketchup', 'Senf'],
+  'b1': ['Salat', 'Zwiebeln', 'Gurken', 'Käse', 'Big-Mac-Sauce'],
+  'b2': ['Salat', 'Tomaten', 'Zwiebeln', 'Gurken', 'Käse', 'Senf', 'Mayo'],
+  'b3': ['Salat', 'Tomaten', 'Zwiebeln', 'Gurken', 'Käse', 'Senf', 'Mayo'],
+  'b4': ['Salat', 'Mayo'],
+  'b5': ['Zwiebeln', 'Gurken', 'BBQ-Sauce'],
+  'b6': ['Salat', 'Tomaten', 'Zwiebeln', 'Gurken', 'Käse', 'Ketchup', 'Senf'],
+  'b7': ['Salat', 'Tomaten', 'Zwiebeln', 'Gurken', 'Käse', 'Ketchup', 'Senf'],
+  'b8': ['Salat', 'Tomaten', 'Zwiebeln', 'Gurken', 'Ketchup', 'Senf'],
+  'b9': ['Käse', 'Tatar-Sauce'],
+};
 
 @Component({
   selector: 'app-order',
@@ -33,6 +53,7 @@ export class Order implements OnInit {
   selectedCategory: string | null = null;
   selectedQuantity: number = 1;
   checkoutVisible: boolean = false;
+  editingItem: OrderItem | null = null;
   readonly quantities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   checkoutForm = new FormGroup({
@@ -239,6 +260,72 @@ export class Order implements OnInit {
     }
     if (product.name === 'Milkshake' && sel.includes('Groß')) return 1.00;
     return 0;
+  }
+
+  getIngredients(item: OrderItem): string[] {
+    const baseId = item.product.id.split('_')[0];
+    return INGREDIENT_MAP[baseId] ?? [];
+  }
+
+  getMcCafeExtras(item: OrderItem): string[] {
+    return item.product.category === 'McCafé' ? MCCAFE_COUNTED_EXTRAS : [];
+  }
+
+  getMcCafeMilkOptions(item: OrderItem): string[] {
+    return item.product.category === 'McCafé' ? MCCAFE_MILK_OPTIONS : [];
+  }
+
+  canEditItem(item: OrderItem): boolean {
+    return this.getIngredients(item).length > 0
+      || this.getMcCafeExtras(item).length > 0
+      || this.getMcCafeMilkOptions(item).length > 0;
+  }
+
+  toggleEditor(item: OrderItem): void {
+    this.editingItem = this.editingItem === item ? null : item;
+  }
+
+  toggleIngredient(item: OrderItem, ingredient: string): void {
+    if (item.removedIngredients.includes(ingredient)) {
+      item.removedIngredients = item.removedIngredients.filter(i => i !== ingredient);
+    } else {
+      item.removedIngredients = [...item.removedIngredients, ingredient];
+    }
+  }
+
+  getExtraCount(item: OrderItem, extra: string): number {
+    return item.extraIngredients[extra] ?? 0;
+  }
+
+  changeExtra(item: OrderItem, extra: string, delta: number): void {
+    const nextCount = Math.max(0, this.getExtraCount(item, extra) + delta);
+    if (nextCount === 0) {
+      delete item.extraIngredients[extra];
+    } else {
+      item.extraIngredients[extra] = nextCount;
+    }
+  }
+
+  selectMilkOption(item: OrderItem, option: string): void {
+    item.milkOption = item.milkOption === option ? null : option;
+  }
+
+  getExtraSummary(item: OrderItem): string[] {
+    const countedExtras = Object.entries(item.extraIngredients)
+      .filter(([, count]) => count > 0)
+      .map(([extra, count]) => `${count} mal ${extra}`);
+
+    return item.milkOption
+      ? [...countedExtras, item.milkOption]
+      : countedExtras;
+  }
+
+  get deliveryFee(): number {
+    return this.orderService.deliveryFee;
+  }
+
+  get checkoutTotal(): number {
+    return this.orderService.getCheckoutTotal(this.checkoutForm.controls.checkoutType.value);
   }
 
   removeItem(item: OrderItem): void  { this.orderService.removeItem(item); }

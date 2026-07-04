@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Product } from '../model/product';
 import { ProductService } from '../shared/product';
+import { AuthService } from '../shared/auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -14,7 +15,16 @@ export class Admin implements OnInit {
 
   products: Product[] = [];
 
-  constructor(public productService: ProductService) {}
+  constructor(
+    public productService: ProductService,
+    private auth: AuthService,
+    private router: Router
+  ) {}
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
 
   ngOnInit(): void {
     this.loadProducts();

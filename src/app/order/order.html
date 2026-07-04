@@ -1,3 +1,7 @@
+<div class="order-hero">
+  <img src="assets/menu/mcdenisa-banner-wide.png" alt="McDenisa Kasse" title="McDenisa Kasse" />
+</div>
+
 <div class="pos-layout">
 
   <div class="pos-cart">
@@ -15,16 +19,72 @@
         </div>
       }
       @for (item of items; track item.product.id) {
-        <div class="d-flex justify-content-between align-items-start px-3 py-2 border-bottom">
-          <div class="cart-item-name">
-            <div class="fw-semibold small">{{ item.product.name }}</div>
-            <div class="text-muted cart-item-qty">x{{ item.quantity }}</div>
+        <div class="border-bottom">
+          <div class="d-flex justify-content-between align-items-start px-3 py-2">
+            <div class="cart-item-name">
+              <div class="fw-semibold small">{{ item.product.name }}</div>
+              <div class="text-muted cart-item-qty">x{{ item.quantity }}</div>
+              @if (item.removedIngredients.length > 0) {
+                <div class="cart-item-removed">Ohne: {{ item.removedIngredients.join(', ') }}</div>
+              }
+              @if (getExtraSummary(item).length > 0) {
+                <div class="cart-item-extra">{{ getExtraSummary(item).join(', ') }}</div>
+              }
+            </div>
+            <div class="d-flex align-items-center gap-1">
+              <span class="small fw-bold">{{ item.product.price * item.quantity | currency:'EUR' }}</span>
+              @if (canEditItem(item)) {
+                <button type="button" class="btn-ingredient"
+                        [class.btn-ingredient--active]="editingItem === item"
+                        (click)="toggleEditor(item)"
+                        title="Zutaten anpassen"
+                        aria-label="Zutaten anpassen">✏️</button>
+              }
+              <button type="button" class="btn btn-sm btn-danger btn-remove"
+                      (click)="removeItem(item)">✕</button>
+            </div>
           </div>
-          <div class="d-flex align-items-center gap-1">
-            <span class="small fw-bold">{{ item.product.price * item.quantity | currency:'EUR' }}</span>
-            <button type="button" class="btn btn-sm btn-danger btn-remove"
-                    (click)="removeItem(item)">✕</button>
-          </div>
+          @if (editingItem === item) {
+            <div class="ingredient-editor px-3 pb-2">
+              @for (ing of getIngredients(item); track ing) {
+                <label class="ingredient-check">
+                  <input type="checkbox"
+                         [checked]="!item.removedIngredients.includes(ing)"
+                         (change)="toggleIngredient(item, ing)">
+                  {{ ing }}
+                </label>
+              }
+              @for (extra of getMcCafeExtras(item); track extra) {
+                <div class="extra-counter">
+                  <span class="extra-counter-name">{{ extra }}</span>
+                  <div class="extra-counter-controls">
+                    <button type="button"
+                            class="extra-counter-btn"
+                            [disabled]="getExtraCount(item, extra) === 0"
+                            (click)="changeExtra(item, extra, -1)"
+                            [attr.aria-label]="extra + ' entfernen'">−</button>
+                    <span class="extra-counter-value">{{ getExtraCount(item, extra) }}</span>
+                    <button type="button"
+                            class="extra-counter-btn"
+                            (click)="changeExtra(item, extra, 1)"
+                            [attr.aria-label]="extra + ' hinzufügen'">+</button>
+                  </div>
+                </div>
+              }
+              @if (getMcCafeMilkOptions(item).length > 0) {
+                <div class="milk-options">
+                  @for (milk of getMcCafeMilkOptions(item); track milk) {
+                    <button type="button"
+                            class="milk-option-btn"
+                            [class.milk-option-btn--active]="item.milkOption === milk"
+                            (click)="selectMilkOption(item, milk)">
+                      {{ milk }}
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
         </div>
       }
     </div>
@@ -43,10 +103,6 @@
   </div>
 
   <div class="pos-content">
-
-    <div class="order-hero">
-      <img src="assets/menu/mcdenisa-banner-wide.png" alt="McDenisa Kasse" title="McDenisa Kasse" />
-    </div>
 
     <div class="quantity-bar">
       <span class="quantity-label">Menge</span>
@@ -129,7 +185,7 @@
       <div class="checkout-modal-header">
         <div>
           <div class="checkout-title">Bestellung fertigstellen</div>
-          <div class="checkout-subtitle">{{ total | currency:'EUR' }}</div>
+          <div class="checkout-subtitle">{{ checkoutTotal | currency:'EUR' }}</div>
         </div>
         <button type="button" class="checkout-close" aria-label="Checkout schließen" (click)="cancelCheckout()">×</button>
       </div>
@@ -162,7 +218,7 @@
                   [class.is-invalid]="checkoutForm.controls.checkoutType.touched && checkoutForm.controls.checkoutType.invalid">
             <option value="">Bitte wählen...</option>
             <option value="Abholen">Abholen</option>
-            <option value="Liefern">Liefern</option>
+            <option value="Liefern">Liefern (+{{ deliveryFee | currency:'EUR' }})</option>
           </select>
           @if (checkoutForm.controls.checkoutType.touched && checkoutForm.controls.checkoutType.invalid) {
             <div class="invalid-feedback">Bitte Abholen oder Liefern auswählen.</div>
@@ -179,25 +235,30 @@
           }
         </div>
 
-        <div class="col-12">
-          <label class="form-label fw-semibold">
-            Adresse @if (checkoutForm.controls.checkoutType.value === 'Liefern') { <span>*</span> }
-          </label>
-          <textarea class="form-control" formControlName="address" rows="2"
-                    placeholder="Straße, Hausnummer, PLZ, Ort"
-                    [class.is-invalid]="checkoutForm.controls.address.touched && checkoutForm.controls.address.invalid"></textarea>
-          @if (checkoutForm.controls.address.touched && checkoutForm.controls.address.invalid) {
-            <div class="invalid-feedback">Bitte gib die Lieferadresse ein.</div>
+        <div class="col-12 checkout-address-slot">
+          @if (checkoutForm.controls.checkoutType.value === 'Liefern') {
+            <label class="form-label fw-semibold">Adresse *</label>
+            <textarea class="form-control" formControlName="address" rows="2"
+                      placeholder="Straße, Hausnummer, PLZ, Ort"
+                      [class.is-invalid]="checkoutForm.controls.address.touched && checkoutForm.controls.address.invalid"></textarea>
+            @if (checkoutForm.controls.address.touched && checkoutForm.controls.address.invalid) {
+              <div class="invalid-feedback">Bitte gib die Lieferadresse ein.</div>
+            }
           }
         </div>
       </div>
 
       <div class="checkout-summary">
-        <span>{{ items.length }} Position(en)</span>
-        <strong>{{ total | currency:'EUR' }}</strong>
+        <div>
+          <span>{{ items.length }} Position(en)</span>
+          @if (checkoutForm.controls.checkoutType.value === 'Liefern') {
+            <div class="checkout-fee-line">Lieferung (+{{ deliveryFee | currency:'EUR' }})</div>
+          }
+        </div>
+        <strong>{{ checkoutTotal | currency:'EUR' }}</strong>
       </div>
 
-      <div class="d-flex gap-2 mt-3">
+      <div class="checkout-actions d-flex gap-2">
         <button type="submit" class="btn btn-success flex-fill" [disabled]="checkoutForm.invalid">
           Bestellung bestätigen
         </button>

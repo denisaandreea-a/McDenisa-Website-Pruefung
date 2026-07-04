@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../shared/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,11 +16,11 @@ export class Login {
     pin: new FormControl('', [Validators.required])
   });
 
-  constructor(public router: Router) {}
+  constructor(private auth: AuthService, public router: Router) {}
 
   onSubmit(): void {
     if (this.form.value.pin === '1234') {
-      sessionStorage.setItem('isAdmin', 'true');
+      this.auth.login();
       this.router.navigate(['/admin']);
     } else {
       this.wrong = true;

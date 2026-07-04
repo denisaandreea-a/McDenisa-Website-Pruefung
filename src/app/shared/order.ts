@@ -6,6 +6,7 @@ import { Product } from '../model/product';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
+  readonly deliveryFee = 2;
 
   private changed = new Subject<void>();
   public changed$ = this.changed.asObservable();
@@ -21,6 +22,10 @@ export class OrderService {
     return this.currentItems.reduce(
       (sum, item) => sum + item.product.price * item.quantity, 0
     );
+  }
+
+  getCheckoutTotal(checkoutType: string | null | undefined): number {
+    return this.getTotal() + (checkoutType === 'Liefern' ? this.deliveryFee : 0);
   }
 
   addProduct(product: Product, quantity: number = 1): void {
@@ -51,7 +56,7 @@ export class OrderService {
     const order = new Order(
       String(this.orderCounter++),
       this.currentItems.slice(),
-      this.getTotal(),
+      this.getCheckoutTotal(checkoutType),
       new Date().toLocaleString('de-DE'),
       checkoutType,
       pickupTime,
