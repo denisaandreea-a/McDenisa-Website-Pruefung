@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div class="container mt-4 about-page">
 <h4>Über uns</h4>
 
 <!-- Bootstrap-Grid: auf großen Bildschirmen zwei Spalten, auf Handy untereinander -->
@@ -52,4 +52,109 @@
     </iframe>
   </div>
 </div>
+
+<section class="team-section mt-5" aria-labelledby="team-title">
+  <div class="team-section__header">
+    <div>
+      <p class="team-section__eyebrow">Crew Cards</p>
+      <h4 id="team-title">Unser Team</h4>
+    </div>
+
+    <div class="team-carousel__controls" aria-label="Team-Karussell">
+      <button
+        type="button"
+        class="team-carousel__button"
+        (click)="showPreviousTeamMember()"
+        aria-label="Vorherige Teamkarte">
+        ‹
+      </button>
+      <button
+        type="button"
+        class="team-carousel__button"
+        (click)="showNextTeamMember()"
+        aria-label="Nächste Teamkarte">
+        ›
+      </button>
+    </div>
+  </div>
+
+  <div class="team-carousel">
+    <div class="team-carousel__track" [style.transform]="'translateX(-' + activeTeamIndex * 100 + '%)'">
+      @for (member of teamMembers; track member.name) {
+        <article class="team-carousel__slide">
+          <div
+            class="team-card"
+            [class.team-card--flipped]="member.flipped"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="member.name + ' Teamkarte umdrehen'"
+            [attr.aria-pressed]="member.flipped"
+            (click)="toggleTeamCard(member)"
+            (keydown)="onTeamCardKeydown($event, member)">
+            <div class="team-card__inner">
+              <div class="team-card__face team-card__face--front">
+                <img [src]="member.image" [alt]="member.name + ' als Cartoon'" class="team-card__image">
+              </div>
+
+              <div class="team-card__face team-card__face--back">
+                <div class="team-card__topline">
+                  <span class="team-card__pill">⭐ {{ member.alias }}</span>
+                  <span class="team-card__pill">🚗 {{ member.station }}</span>
+                </div>
+
+                <h5>{{ member.name }}</h5>
+
+                <div class="team-card__content">
+                  <section>
+                    <h6>👋 Über mich</h6>
+                    <p>{{ member.about }}</p>
+                  </section>
+
+                  <section class="team-card__split">
+                    <div>
+                      <h6>🍔 Signature Order</h6>
+                      <p>{{ member.order }}</p>
+                    </div>
+                    <div>
+                      <h6>⚡ Superkraft</h6>
+                      <p>{{ member.superpower }}</p>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h6>✨ Was mich ausmacht</h6>
+                    <div class="team-card__badges">
+                      @for (trait of member.traits; track trait) {
+                        <span>{{ trait }}</span>
+                      }
+                    </div>
+                  </section>
+
+                  <section>
+                    <h6>🎯 Ziel</h6>
+                    <p>{{ member.goal }}</p>
+                  </section>
+
+                  <blockquote>💬 „{{ member.motto }}“</blockquote>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+
+  <div class="team-carousel__dots" aria-label="Teamkarte auswählen">
+    @for (member of teamMembers; track member.name; let index = $index) {
+      <button
+        type="button"
+        class="team-carousel__dot"
+        [class.team-carousel__dot--active]="index === activeTeamIndex"
+        (click)="setActiveTeamMember(index)"
+        [attr.aria-label]="member.name + ' anzeigen'">
+      </button>
+    }
+  </div>
+</section>
 </div>
