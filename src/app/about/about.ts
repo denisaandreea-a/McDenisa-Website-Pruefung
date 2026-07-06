@@ -29,7 +29,7 @@ export class About {
     {
       name: 'Othmane',
       alias: 'Drive Star',
-      role: 'Crew · McDrive',
+      role: 'Schichtführer · McDrive',
       image: '/assets/team/othmane.jpeg',
       station: 'McDrive',
       favoriteFood: 'McCrispy Chicken & Chicken McNuggets',
@@ -64,7 +64,7 @@ export class About {
     {
       name: 'Apitz',
       alias: 'Süss und Sauer',
-      role: 'Schichtführer · Gäste · Team',
+      role: 'Schichtführer · Gäste · Team Support',
       image: '/assets/team/apitz.jpeg',
       station: 'Schichtführung',
       favoriteFood: 'Big Rösti',

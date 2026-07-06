@@ -268,6 +268,7 @@ Status: erledigt
 Erstes Team-Mitglied:
 - Name: Othmane
 - Alias: Drive Star
+- Rolle: Schichtführer · McDrive
 - Lieblingsstation: McDrive
 - Signature Order: McCrispy Chicken & Chicken McNuggets
 - Eigenschaften: Locker, Positiv, Extrovertiert, Witzig, Ehrgeizig, Modebewusst
@@ -285,7 +286,7 @@ Zweites Team-Mitglied:
 Drittes Team-Mitglied:
 - Name: Apitz
 - Alias: Süss und Sauer
-- Rolle: Schichtführer · Gäste · Team
+- Rolle: Schichtführer · Gäste · Team Support
 - Lieblingsprodukt: Big Rösti
 - Stärke: Zuhören, Situationen verstehen und faire Lösungen finden
 - Eigenschaften: Professionell, Freundlich, Humorvoll, Direkt, Kommunikationsstark, Lösungsorientiert

@@ -125,9 +125,8 @@
   text-align: center;
 }
 
-.team-card__front-label span,
 .team-card__face--back h5 span {
-  color: #ffd700;
+  color: #8b4513;
   font-size: 0.82rem;
   font-weight: 900;
 }
