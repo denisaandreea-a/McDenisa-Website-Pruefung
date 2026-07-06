@@ -4,6 +4,34 @@ Dieses Dokument sammelt, was im Angular/WebFrontends-Projekt umgesetzt wurde, we
 
 ---
 
+## Aktueller Prüfungsstand
+
+Stand: 07.07.2026
+
+- Aktuelles Prüfungs-Repository: `https://github.com/denisaandreea-a/McDenisa-Website-Pruefung`
+- Das alte Repository `McDenisa-Website` wurde auf privat gestellt.
+- Das neue Prüfungs-Repository wurde aus dem bereinigten aktuellen Stand erstellt.
+- GitHub zeigt im neuen Prüfungs-Repository nur noch **1 Contributor**: `denisaandreea-a`.
+- Alte Claude/Co-Author-Einträge sind im aktuellen Branch nicht mehr enthalten.
+- Letzter sauberer Stand: `affcc01 Add team flip card section`.
+- Lokaler zusätzlicher Remote:
+  - `origin` — altes privates Repository
+  - `clean` — neues Prüfungs-Repository
+
+### Git-Bereinigung
+
+Problem:
+- Im alten Repository wurde in der GitHub-Seitenleiste noch `claude` als Contributor angezeigt.
+- Ursache waren frühere `Co-Authored-By`-Einträge in alten Commits bzw. GitHub-interne Contributor-Daten.
+
+Lösung:
+- Aktueller `main` wurde geprüft: keine Treffer für `Claude`, `Anthropic` oder `Co-Authored-By`.
+- Lokale Backup-Refs unter `refs/original/...` wurden entfernt.
+- Da GitHub die alte Contributor-Seitenleiste trotzdem noch gecacht hatte, wurde ein neues sauberes Prüfungs-Repository angelegt.
+- Ergebnis im neuen Repository: Contributors-Anzeige steht auf `1` und enthält nur `denisaandreea-a`.
+
+---
+
 ## Schon gemacht
 
 ### Grundstruktur
@@ -159,6 +187,46 @@ Datei: `src/app/footer/`
 - Untere Zeile: Copyright `© {{ year }} McDenisa Ahlen` (Jahr dynamisch per `new Date().getFullYear()`) + Markenhinweis.
 - Design: dunkler Hintergrund (`#2a0a0a`), cremefarbener Text, Gold-Hover auf Links.
 
+### Team-Flip-Card-Section
+
+Dateien:
+- `src/app/about/about.ts`
+- `src/app/about/about.html`
+- `src/app/about/about.css`
+- `public/assets/team/othmane.jpeg`
+
+Status: erledigt
+
+- Auf der Seite `/about` wurde eine moderne Team-Section ergänzt.
+- Die Team-Mitglieder werden in `about.ts` als Array `teamMembers` gepflegt. Dadurch können später weitere Schichtführer einfach ergänzt werden.
+- Die Section ist als Karussell aufgebaut:
+  - aktive Karte über `activeTeamIndex`
+  - Weiter-/Zurück-Buttons
+  - Punkt-Navigation
+  - horizontale Slider-Animation über CSS-Transform
+- Jede Teamkarte ist eine klickbare 3D-Flip-Card:
+  - Vorderseite: nur das Cartoon-Bild der Person
+  - Rückseite: moderner Steckbrief mit Name, Alias, Lieblingsstation, Signature Order, Eigenschaften, Superkraft, Ziel und Motto
+  - Umdrehen per Klick, nicht nur per Hover
+  - zusätzlich per Tastatur nutzbar (`Enter` oder Leertaste)
+- Mobile Optimierung:
+  - größere Kartenhöhe auf kleinen Bildschirmen
+  - Rückseite wird einspaltig, damit Text und Badges nicht gequetscht werden
+  - Klick-Bedienung funktioniert auch auf Handy
+- Design:
+  - dunkelblau/lila Hintergrund
+  - gelbe McDonald's-inspirierte Akzente
+  - abgerundete Ecken
+  - Schatten, Badges und glossy Kartenoptik
+
+Erstes Team-Mitglied:
+- Name: Othmane
+- Alias: Drive-Speed-Profi
+- Lieblingsstation: McDrive
+- Signature Order: McCrispy Chicken & Chicken McNuggets
+- Eigenschaften: Locker, Positiv, Extrovertiert, Witzig, Ehrgeizig, Modebewusst
+- Motto: „Gute Laune, Tempo und Teamwork - so läuft der Drive.“
+
 ### Design-Details
 
 - Schriftart: `Nunito` (Google Fonts), Fallback: `Segoe UI`.
@@ -234,6 +302,19 @@ sips -c 360 2172 --cropOffset 90 0 mcdenisa-banner.png --out mcdenisa-banner-wid
 }
 ```
 
+### GitHub zeigte alten Contributor an
+
+**Problem:** Obwohl der aktuelle `main` keine `Co-Authored-By`-Zeilen mehr enthielt, zeigte die GitHub-Seitenleiste im alten Repository weiterhin `claude` als zweiten Contributor.
+
+**Prüfung:**
+- `git log --all` lokal: keine Treffer für `Claude`, `Anthropic` oder `Co-Authored-By`.
+- `origin/main`: sauber.
+- Remote-Branches/Tags: nur `main`, keine alten Tags oder Nebenbranches.
+- GitHub Contributors API: nur `denisaandreea-a`.
+- GitHub-Seitenleisten-Fragment im alten Repository: zeigte trotzdem noch `Contributors 2`.
+
+**Lösung:** Neues Prüfungs-Repository `McDenisa-Website-Pruefung` erstellt und den sauberen Stand dorthin gepusht. Im neuen Repository zeigt GitHub `Contributors 1` und nur `denisaandreea-a`.
+
 ---
 
 ## Noch zu tun
@@ -249,15 +330,15 @@ Ziel:
 
 Voraussetzung: Firebase-Projekt muss vom Entwickler selbst angelegt werden (Console: console.firebase.google.com).
 
-### 2. Team-Karussell auf Über-uns-Seite
+### 2. Weitere Team-Mitglieder ergänzen
 
-Status: offen
+Status: optional / offen
 
 Ziel:
-- Auf `/about` ein Karussell mit Team-Karten.
-- Vorderseite: Avatar, Name, Rolle.
-- Rückseite: Lieblingsprodukt, Motto, wie lange dabei.
-- Flip-Animation beim Klick.
+- Die 5 weiteren Schichtführer in das `teamMembers`-Array eintragen.
+- Pro Person ein Cartoon-Bild unter `public/assets/team/` speichern.
+- Steckbrieftexte ergänzen.
+- Das bestehende Karussell ist dafür bereits vorbereitet.
 
 ### 3. Quiz-Seite
 
@@ -394,10 +475,12 @@ flowchart TD
   D4 --> D5["AuthService\nerledigt"]
   D5 --> D6["Zutaten-Editor\nerledigt"]
   D6 --> D7["Feedback-Liste\nerledigt"]
-  D7 --> N1["Firebase / Firestore\noffen"]
+  D7 --> D8["Team-Flip-Cards\nerledigt"]
+  D8 --> D9["GitHub-Prüfungsrepo sauber\nerledigt"]
+  D9 --> N1["Firebase / Firestore\noffen"]
   N1 --> N2["Produktdaten erweitern\noffen"]
   N2 --> N3["Quiz-Seite\noffen"]
-  N3 --> N4["Team-Karussell\noffen"]
+  N3 --> N4["Weitere Team-Mitglieder\noffen"]
 ```
 
 ---
@@ -416,3 +499,5 @@ flowchart TD
 | Route Guard (CanActivateFn) | 10.2 | erledigt |
 | AuthService-Muster | 10.3 | erledigt |
 | Firebase / Firestore | 12 | offen |
+| Team-Karussell mit klickbarer 3D-Flip-Card | Zusatzfeature | erledigt |
+| Sauberes Prüfungs-Repository ohne alten Claude-Contributor | Projektabgabe | erledigt |
