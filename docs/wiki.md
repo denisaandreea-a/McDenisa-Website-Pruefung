@@ -282,6 +282,16 @@ Zweites Team-Mitglied:
 - Eigenschaften: Empathisch, Herzlich, Hilfsbereit, Küchenstark, Geduldig, Verantwortungsbewusst
 - Motto: „Gemeinsam sind wir stark.“
 
+Drittes Team-Mitglied:
+- Name: Apitz
+- Alias: Lösungsfinder
+- Rolle: Schichtführer · Gäste · Team
+- Lieblingsprodukt: Big Rösti
+- Stärke: Zuhören, Situationen verstehen und faire Lösungen finden
+- Eigenschaften: Professionell, Freundlich, Humorvoll, Direkt, Kommunikationsstark, Lösungsorientiert
+- Fun Fact: Ameisen als Haustiere
+- Motto: „Klar in der Arbeit, offen im Gespräch.“
+
 ### Design-Details
 
 - Schriftart: `Nunito` (Google Fonts), Fallback: `Segoe UI`.

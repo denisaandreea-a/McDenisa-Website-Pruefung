@@ -11,6 +11,7 @@ type TeamMember = {
   focusText: string;
   traits: string[];
   superpower: string;
+  funFact?: string;
   goal: string;
   motto: string;
   about: string;
@@ -58,6 +59,25 @@ export class About {
       motto: 'Gemeinsam sind wir stark.',
       about:
         'Hi, ich bin Maria. Seit vielen Jahren bin ich Teil des McDonald’s-Teams und habe besonders lange in der Küche gearbeitet. Dort fühle ich mich sehr wohl, denn ich kenne die Abläufe, bleibe auch in stressigen Momenten ruhig und unterstütze mein Team, wo ich kann. Heute arbeite ich als Schichtleiterin und übernehme meine Aufgaben mit viel Herz und Verantwortung.',
+      flipped: false,
+    },
+    {
+      name: 'Apitz',
+      alias: 'Lösungsfinder',
+      role: 'Schichtführer · Gäste · Team',
+      image: '/assets/team/apitz.jpeg',
+      station: 'Schichtführung',
+      favoriteFood: 'Big Rösti',
+      focusTitle: '💬 Meine Stärke',
+      focusText:
+        'Ich komme sehr gut mit Gästen und Mitarbeitern klar. Wenn jemand ein Problem hat, höre ich zu, versuche die Situation zu verstehen und gemeinsam eine faire Lösung zu finden. Egal ob es um Arbeit oder auch mal um private Themen geht: Ich versuche immer, fair zu bleiben und einen guten Kompromiss zu finden.',
+      traits: ['Professionell', 'Freundlich', 'Humorvoll', 'Direkt', 'Kommunikationsstark', 'Lösungsorientiert'],
+      superpower: 'Zuhören, verstehen und aus schwierigen Situationen eine faire Lösung machen.',
+      funFact: 'Ich habe Ameisen als Haustiere.',
+      goal: 'Eine klare, faire und professionelle Schicht führen, in der Gäste und Team gut miteinander klarkommen.',
+      motto: 'Klar in der Arbeit, offen im Gespräch.',
+      about:
+        'Hi, ich bin Apitz. Nach meiner Zeit bei der Bundeswehr habe ich meinen Weg bei McDonald’s gefunden. Zuerst war ich als Mitarbeiter tätig, und seit 2004 arbeite ich als Schichtführer. Bei der Arbeit bin ich klar, zuverlässig und professionell - aber wer mich kennt, weiß, dass ich auch freundlich, humorvoll und immer für ein gutes Gespräch offen bin.',
       flipped: false,
     },
   ];
