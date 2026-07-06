@@ -24,7 +24,7 @@ export class About {
   teamMembers: TeamMember[] = [
     {
       name: 'Othmane',
-      alias: 'Drive-Speed-Profi',
+      alias: 'Drive Star',
       image: '/assets/team/othmane.jpeg',
       station: 'McDrive',
       order: 'McCrispy Chicken & Chicken McNuggets',

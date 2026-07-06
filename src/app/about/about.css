@@ -41,7 +41,6 @@
   color: #8b4513;
   font-size: 0.8rem;
   font-weight: 900;
-  text-transform: uppercase;
 }
 
 .team-carousel {
@@ -93,7 +92,6 @@
   overflow: hidden;
   border-radius: 16px;
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
 .team-card__face--front {
@@ -109,6 +107,28 @@
   object-position: center;
   border: 3px solid rgba(255, 250, 242, 0.85);
   border-radius: 12px;
+}
+
+.team-card__front-label {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 12px;
+  background: rgba(128, 0, 0, 0.9);
+  color: #fffaf2;
+}
+
+.team-card__front-label span,
+.team-card__face--back h5 span {
+  color: #ffd700;
+  font-size: 0.82rem;
+  font-weight: 900;
 }
 
 .team-card__face--back {
@@ -190,7 +210,6 @@
   border: 1px solid #ead8bd;
   background: #ffffff;
   color: var(--mc-maroon);
-  transition: transform 0.18s ease, background 0.18s ease;
 }
 
 .team-carousel__button {
