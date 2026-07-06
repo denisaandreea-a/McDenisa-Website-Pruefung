@@ -278,6 +278,7 @@ Zweites Team-Mitglied:
 - Alias: Küchenherz
 - Rolle: Schichtleiterin · Küche · Team Support
 - Stärkste Station: Küche
+- Lieblingsessen: Greek Style Wrap
 - Eigenschaften: Empathisch, Herzlich, Hilfsbereit, Küchenstark, Geduldig, Verantwortungsbewusst
 - Motto: „Gemeinsam sind wir stark.“
 

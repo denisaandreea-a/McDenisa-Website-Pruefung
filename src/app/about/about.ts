@@ -6,6 +6,7 @@ type TeamMember = {
   role: string;
   image: string;
   station: string;
+  favoriteFood: string;
   focusTitle: string;
   focusText: string;
   traits: string[];
@@ -30,6 +31,7 @@ export class About {
       role: 'Crew · McDrive',
       image: '/assets/team/othmane.jpeg',
       station: 'McDrive',
+      favoriteFood: 'McCrispy Chicken & Chicken McNuggets',
       focusTitle: '🍔 Signature Order',
       focusText: 'McCrispy Chicken & Chicken McNuggets',
       traits: ['Locker', 'Positiv', 'Extrovertiert', 'Witzig', 'Ehrgeizig', 'Modebewusst'],
@@ -46,6 +48,7 @@ export class About {
       role: 'Schichtleiterin · Küche · Team Support',
       image: '/assets/team/maria.jpeg',
       station: 'Küche',
+      favoriteFood: 'Greek Style Wrap',
       focusTitle: '🍟 Meine Stärke',
       focusText:
         'Küche ist meine stärkste Station. Dort arbeite ich sicher, schnell und mit Erfahrung. Ich weiß, worauf es ankommt, und versuche, auch anderen Sicherheit zu geben.',

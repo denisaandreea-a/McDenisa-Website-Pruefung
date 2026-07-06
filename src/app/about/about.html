@@ -117,12 +117,23 @@
 
                   <section class="team-card__split">
                     <div>
+                      <h6>🍔 Lieblingsessen</h6>
+                      <p>{{ member.favoriteFood }}</p>
+                    </div>
+                    <div>
                       <h6>{{ member.focusTitle }}</h6>
                       <p>{{ member.focusText }}</p>
                     </div>
+                  </section>
+
+                  <section class="team-card__split">
                     <div>
                       <h6>⚡ Superkraft</h6>
                       <p>{{ member.superpower }}</p>
+                    </div>
+                    <div>
+                      <h6>🎯 Ziel</h6>
+                      <p>{{ member.goal }}</p>
                     </div>
                   </section>
 
@@ -133,11 +144,6 @@
                         <span>{{ trait }}</span>
                       }
                     </div>
-                  </section>
-
-                  <section>
-                    <h6>🎯 Ziel</h6>
-                    <p>{{ member.goal }}</p>
                   </section>
 
                   <blockquote>💬 „{{ member.motto }}“</blockquote>
