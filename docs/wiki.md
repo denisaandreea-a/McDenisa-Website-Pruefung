@@ -267,11 +267,19 @@ Status: erledigt
 
 Erstes Team-Mitglied:
 - Name: Othmane
-- Alias: Drive-Speed-Profi
+- Alias: Drive Star
 - Lieblingsstation: McDrive
 - Signature Order: McCrispy Chicken & Chicken McNuggets
 - Eigenschaften: Locker, Positiv, Extrovertiert, Witzig, Ehrgeizig, Modebewusst
 - Motto: „Gute Laune, Tempo und Teamwork - so läuft der Drive.“
+
+Zweites Team-Mitglied:
+- Name: Maria
+- Alias: Küchenherz
+- Rolle: Schichtleiterin · Küche · Team Support
+- Stärkste Station: Küche
+- Eigenschaften: Empathisch, Herzlich, Hilfsbereit, Küchenstark, Geduldig, Verantwortungsbewusst
+- Motto: „Gemeinsam sind wir stark.“
 
 ### Design-Details
 
