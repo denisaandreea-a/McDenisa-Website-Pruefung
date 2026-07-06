@@ -288,6 +288,339 @@ Erstes Team-Mitglied:
 
 ---
 
+## Prüfungserklärungen
+
+Dieser Abschnitt ist als Lernhilfe für die mündliche Prüfung gedacht. Die Formulierungen erklären die wichtigsten Begriffe so, dass man sie direkt mündlich verwenden kann.
+
+### Firebase und Firestore
+
+**Was ist Firebase?**
+
+Firebase ist ein Online-Backend von Google. Eine Angular-App ist normalerweise nur das Frontend im Browser. Firebase kann den Backend-Teil übernehmen, also zum Beispiel Daten speichern, laden oder Benutzer verwalten.
+
+**Was ist Firestore?**
+
+Firestore ist die Datenbank von Firebase. Sie speichert Daten online in Collections und Dokumenten. Im Projekt wäre die Collection `products` für die Produktdaten zuständig.
+
+Beispiel:
+
+```text
+products
+  b1
+    name: "Big Mac"
+    price: 5.49
+    category: "Burger"
+```
+
+**Was war vorher?**
+
+Vorher lagen die Produkte direkt im TypeScript-Code in `ProductService`, zum Beispiel:
+
+```typescript
+new Product('b1', 'Big Mac', 5.49, 'Burger')
+```
+
+Das funktioniert lokal, ist aber keine echte Online-Datenbank. Änderungen im Admin-Bereich wären ohne Firebase nicht dauerhaft online für andere Geräte gespeichert.
+
+**Was ist jetzt vorbereitet?**
+
+Das Projekt hat jetzt das Firebase SDK installiert. Der `ProductService` kann Produkte grundsätzlich aus Firestore laden, speichern, bearbeiten und löschen. Firebase ist aber noch nicht aktiv, weil in `src/environments/environment.ts` noch echte Firebase-Projektdaten eingetragen werden müssen.
+
+Aktuell steht dort:
+
+```typescript
+enabled: false
+```
+
+Deshalb nutzt die App weiter die lokalen Startdaten. Sobald `enabled` auf `true` gesetzt wird und die Firebase-Konfiguration stimmt, arbeitet der `ProductService` mit Firestore.
+
+**Was ist der Vorteil?**
+
+- Produkte können dauerhaft online gespeichert werden.
+- Änderungen im Admin-Bereich können später in Firestore landen.
+- Mehrere Geräte können dieselben Produktdaten sehen.
+- Die Components bleiben sauber, weil sie nicht direkt mit Firebase sprechen.
+- Der Datenbankzugriff ist in einem Service gekapselt, passend zu Services und Dependency Injection aus dem Buch.
+
+**Prüfungssatz:**
+
+> Firebase ist das Backend von Google. In meinem Projekt ist Firestore als Produktdatenbank vorbereitet. Der `ProductService` kapselt den Zugriff auf Firestore, sodass die Components nur Methoden wie `getAll()`, `add()`, `update()` und `remove()` aufrufen müssen.
+
+### Angular-Components
+
+Components sind die Bausteine der Oberfläche. Jede Seite oder jeder UI-Teil besteht aus einer Component mit TypeScript, HTML und CSS.
+
+Beispiele:
+- `Order` — Kassenseite
+- `Admin` — Produktverwaltung
+- `ProductForm` — Produkt anlegen/bearbeiten
+- `About` — Über-uns-Seite mit Team-Flip-Cards
+- `Contact` — Feedbackformular
+
+Eine Component enthält:
+- Daten und Methoden in der `.ts`-Datei
+- Anzeige in der `.html`-Datei
+- Styling in der `.css`-Datei
+
+**Prüfungssatz:**
+
+> Eine Component verbindet Logik, Template und Styling. In meinem Projekt sind die Seiten als Standalone-Components umgesetzt, also ohne NgModules.
+
+### Models / Datenklassen
+
+Models beschreiben, welche Datenform ein Objekt hat. Im Projekt gibt es zum Beispiel:
+- `Product` — ein Produkt mit `id`, `name`, `price`, `category`
+- `OrderItem` — eine Position im Warenkorb
+- `Order` — eine abgeschlossene Bestellung
+
+Der Vorteil ist, dass die Daten im Code klar strukturiert sind.
+
+**Prüfungssatz:**
+
+> Models geben meinen Daten eine feste Struktur. Dadurch weiß TypeScript, welche Eigenschaften ein Produkt oder eine Bestellung haben muss.
+
+### Services und Dependency Injection
+
+Services enthalten Logik, die von mehreren Components genutzt werden kann. Dadurch steht die Logik nicht doppelt in mehreren Components.
+
+Beispiele:
+- `ProductService` verwaltet Produkte und später Firestore.
+- `OrderService` verwaltet Warenkorb und Bestellungen.
+- `AuthService` verwaltet den Login-Status.
+
+Dependency Injection bedeutet, dass Angular den Service automatisch in die Component einfügt.
+
+Beispiel:
+
+```typescript
+constructor(public productService: ProductService) {}
+```
+
+**Prüfungssatz:**
+
+> Services trennen Geschäftslogik von der Oberfläche. Angular gibt mir die Services über Dependency Injection, dadurch können mehrere Components denselben Service verwenden.
+
+### ProductService
+
+Der `ProductService` ist die zentrale Stelle für Produktdaten.
+
+Wichtige Methoden:
+- `getAll()` — gibt alle Produkte zurück
+- `getById(id)` — sucht ein Produkt nach ID
+- `add(product)` — fügt ein Produkt hinzu
+- `update(product)` — bearbeitet ein Produkt
+- `remove(product)` — löscht ein Produkt
+
+Mit Firebase:
+- Wenn Firebase deaktiviert ist, nimmt der Service lokale Startdaten.
+- Wenn Firebase aktiviert ist, arbeitet der Service mit Firestore.
+- `seedDefaultProducts()` schreibt die Startprodukte einmalig in Firestore, wenn die Collection leer ist.
+
+**Prüfungssatz:**
+
+> Der `ProductService` ist eine Abstraktion zwischen UI und Datenquelle. Die Components wissen nicht, ob die Produkte lokal oder aus Firebase kommen.
+
+### OrderService
+
+Der `OrderService` verwaltet den Warenkorb.
+
+Wichtige Aufgaben:
+- Produkt in den Warenkorb legen
+- Menge speichern
+- Gesamtpreis berechnen
+- Liefergebühr berücksichtigen
+- Bestellung abschließen
+- Warenkorb leeren
+
+**Prüfungssatz:**
+
+> Der `OrderService` kapselt die Warenkorb-Logik. Die Kassenseite zeigt nur die Daten an und ruft Methoden wie `addProduct()` oder `checkout()` auf.
+
+### RxJS Subject und `changed$`
+
+Ein `Subject` ist wie ein Signal. Ein Service kann damit melden: „Es hat sich etwas geändert.“
+
+Im Projekt gibt es zum Beispiel:
+
+```typescript
+private changed = new Subject<void>();
+public changed$ = this.changed.asObservable();
+```
+
+Wenn ein Produkt hinzugefügt, bearbeitet oder gelöscht wird, ruft der Service auf:
+
+```typescript
+this.changed.next();
+```
+
+Die Component hört darauf:
+
+```typescript
+this.productService.changed$.subscribe(() => this.loadProducts());
+```
+
+**Prüfungssatz:**
+
+> Mit `Subject` informiert der Service die Components über Änderungen. Dadurch lädt die Admin-Tabelle automatisch neu, wenn Produkte geändert wurden.
+
+### Routing
+
+Routing bedeutet, dass Angular je nach URL eine andere Component anzeigt.
+
+Beispiele:
+- `/order` zeigt die Kassenseite
+- `/about` zeigt Über uns
+- `/admin` zeigt die Produktverwaltung
+- `/login` zeigt die Login-Seite
+
+Interne Links werden mit `routerLink` gebaut, nicht mit normalem `href`.
+
+**Prüfungssatz:**
+
+> Das Routing verbindet URLs mit Components. Dadurch wirkt die App wie eine mehrseitige Webseite, obwohl Angular im Browser läuft.
+
+### Route Guard
+
+Ein Guard schützt bestimmte Routen. Im Projekt schützt `adminGuard` den Admin-Bereich.
+
+Wenn man nicht eingeloggt ist:
+- `/admin` wird nicht geöffnet
+- Angular leitet zu `/login` weiter
+
+Wenn man eingeloggt ist:
+- Admin-Seite wird angezeigt
+
+**Prüfungssatz:**
+
+> Der Guard entscheidet vor dem Öffnen einer Route, ob der Benutzer Zugriff hat. Mein Admin-Bereich ist dadurch nur nach Login erreichbar.
+
+### AuthService und `sessionStorage`
+
+Der `AuthService` speichert, ob der Admin eingeloggt ist.
+
+`sessionStorage` speichert Daten nur für die aktuelle Browser-Sitzung. Wenn der Browser geschlossen wird, ist der Login wieder weg.
+
+Wichtige Methoden:
+- `login()` — setzt den Login-Status
+- `logout()` — entfernt den Login-Status
+- `isLoggedIn()` — prüft, ob man eingeloggt ist
+
+**Prüfungssatz:**
+
+> Der `AuthService` kapselt den Login-Zustand. `sessionStorage` ist passend, weil der Admin-Login nicht dauerhaft gespeichert werden soll.
+
+### Reactive Forms
+
+Reactive Forms sind Formulare, die in TypeScript definiert werden. Dadurch kann man Validierung und Formularzustand sauber kontrollieren.
+
+Beispiele im Projekt:
+- Login-Formular
+- Produktformular
+- Kontaktformular
+- Bewerbungsformular
+- Checkout-Formular
+
+Beispiel:
+
+```typescript
+new FormControl('', [Validators.required])
+```
+
+**Prüfungssatz:**
+
+> Reactive Forms definieren Formularfelder und Validierung in TypeScript. Dadurch ist die Formularlogik klar testbar und gut wartbar.
+
+### Custom Validator
+
+Ein Custom Validator ist eine eigene Validierungsfunktion. Im Projekt prüft `phoneValidator`, ob eine Telefonnummer nur erlaubte Zeichen enthält.
+
+Erlaubt sind:
+- Zahlen
+- `+`
+- Leerzeichen
+- `-`
+- Klammern
+
+Wenn die Eingabe falsch ist, gibt der Validator ein Fehlerobjekt zurück:
+
+```typescript
+{ invalidPhone: true }
+```
+
+**Prüfungssatz:**
+
+> Ein Custom Validator erweitert die Standardvalidierung von Angular. Ich nutze ihn für Telefonnummern, weil Angular dafür keinen fertigen Validator hat.
+
+### `localStorage`
+
+`localStorage` speichert Daten dauerhaft im Browser. Im Projekt werden Feedbacks dort gespeichert.
+
+Vorteil:
+- Feedbacks bleiben nach Reload sichtbar.
+
+Nachteil:
+- Die Daten sind nur im jeweiligen Browser gespeichert, nicht online für alle Benutzer.
+
+**Prüfungssatz:**
+
+> `localStorage` ist eine einfache Browser-Speicherung. Für Feedback reicht das im Projekt, aber für echte gemeinsame Daten wäre Firebase besser.
+
+### Admin-Bereich
+
+Der Admin-Bereich ist die Produktverwaltung.
+
+Funktionen:
+- Produkte anzeigen
+- Neues Produkt anlegen
+- Produkt bearbeiten
+- Produkt löschen
+- Logout
+
+Der Admin-Bereich nutzt:
+- `adminGuard`
+- `AuthService`
+- `ProductService`
+- Reactive Forms im Produktformular
+
+**Prüfungssatz:**
+
+> Der Admin-Bereich zeigt, wie CRUD in Angular funktioniert: Create, Read, Update und Delete von Produkten über den `ProductService`.
+
+### Team-Flip-Card
+
+Die Team-Section auf `/about` nutzt ein Array in `about.ts`. Dadurch können weitere Schichtführer einfach ergänzt werden.
+
+Prinzip:
+- Vorderseite zeigt nur das Cartoon-Bild.
+- Beim Klick wird die Karte per CSS-3D-Transform gedreht.
+- Rückseite zeigt den Steckbrief.
+- Das funktioniert auch auf Handy, weil es nicht nur Hover verwendet.
+
+**Prüfungssatz:**
+
+> Die Teamkarten sind datengetrieben. Das bedeutet, ich muss für neue Personen nur einen neuen Eintrag im Array hinzufügen, und das Template erzeugt die Karte automatisch.
+
+### Warum Lazy Import bei Firebase?
+
+Firebase ist relativ groß. Wenn man Firebase direkt oben importiert, landet es im Start-Bundle der App. Dadurch kann der Angular-Build wegen der Bundle-Budgets fehlschlagen.
+
+Deshalb wird Firebase im `ProductService` dynamisch geladen:
+
+```typescript
+await import('firebase/firestore')
+```
+
+Vorteil:
+- Firebase wird nur geladen, wenn es wirklich gebraucht wird.
+- Der erste App-Start bleibt kleiner.
+- Der Production-Build bleibt erfolgreich.
+
+**Prüfungssatz:**
+
+> Ich lade Firebase lazy, damit die Datenbankbibliothek nicht den initialen Bundle unnötig vergrößert.
+
+---
+
 ## Probleme und Lösungen
 
 ### Banner-Format falsch (3:1 statt 6:1 oder schmaler)
