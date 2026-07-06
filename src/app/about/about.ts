@@ -63,7 +63,7 @@ export class About {
     },
     {
       name: 'Apitz',
-      alias: 'Lösungsfinder',
+      alias: 'Süss und Sauer',
       role: 'Schichtführer · Gäste · Team',
       image: '/assets/team/apitz.jpeg',
       station: 'Schichtführung',

@@ -284,7 +284,7 @@ Zweites Team-Mitglied:
 
 Drittes Team-Mitglied:
 - Name: Apitz
-- Alias: Lösungsfinder
+- Alias: Süss und Sauer
 - Rolle: Schichtführer · Gäste · Team
 - Lieblingsprodukt: Big Rösti
 - Stärke: Zuhören, Situationen verstehen und faire Lösungen finden
