@@ -13,7 +13,7 @@ Stand: 07.07.2026
 - Das neue Prüfungs-Repository wurde aus dem bereinigten aktuellen Stand erstellt.
 - GitHub zeigt im neuen Prüfungs-Repository nur noch **1 Contributor**: `denisaandreea-a`.
 - Alte Claude/Co-Author-Einträge sind im aktuellen Branch nicht mehr enthalten.
-- Letzter sauberer Stand: `affcc01 Add team flip card section`.
+- Letzter sauberer Stand vor Firebase: `ad5cb1c Update wiki for exam repository status`.
 - Lokaler zusätzlicher Remote:
   - `origin` — altes privates Repository
   - `clean` — neues Prüfungs-Repository
@@ -62,6 +62,52 @@ Lösung:
 - `ProductService` (`src/app/shared/product.ts`) — verwaltet alle Produkte, sendet Änderungen über `changed$` als RxJS-Subject.
 - `OrderService` (`src/app/shared/order.ts`) — verwaltet Warenkorb und abgeschlossene Bestellungen.
 - `AuthService` (`src/app/shared/auth.service.ts`) — kapselt Login-Status (`isLoggedIn()`, `login()`, `logout()`) über `sessionStorage`.
+
+### Firebase / Firestore (Kap. 12)
+
+Dateien:
+- `package.json`
+- `package-lock.json`
+- `src/environments/environment.ts`
+- `src/app/shared/product.ts`
+- `src/app/admin/admin.ts`
+
+Status: technisch vorbereitet, Aktivierung mit eigenem Firebase-Projekt noch offen.
+
+Umsetzung:
+- Das offizielle Firebase SDK (`firebase`) wurde installiert.
+- `@angular/fire` wurde nicht installiert, weil die aktuelle Version Peer Dependencies für Angular 20 erwartet, das Projekt aber Angular 22 nutzt. Damit kein instabiler `--force`-Install entsteht, wird Firestore direkt über das Firebase SDK im Angular-Service verwendet.
+- Firebase wird im `ProductService` per dynamischem `import()` geladen. Dadurch landet Firestore in einem Lazy Chunk und bläht den initialen Angular-Bundle nicht unnötig auf.
+- Die Firebase-Konfiguration liegt in `src/environments/environment.ts`.
+- `environment.firebase.enabled` ist aktuell `false`. Dadurch läuft das Projekt weiterhin mit den lokalen Startdaten und bleibt ohne Firebase-Projekt buildbar.
+- Wenn `enabled` auf `true` gesetzt wird, verwendet `ProductService` Firestore.
+- Collection-Name: `products`.
+- CRUD-Methoden im `ProductService`:
+  - `getAll()` — liest alle Produkte aus Firestore und sortiert sie nach Kategorie/Name
+  - `getById(id)` — liest ein Produkt per Dokument-ID
+  - `add(product)` — speichert ein neues Produkt mit `setDoc`
+  - `update(product)` — überschreibt ein bestehendes Produkt mit `setDoc`
+  - `remove(product)` — löscht ein Produkt mit `deleteDoc`
+- Wenn Firestore aktiviert ist und die Collection leer ist, schreibt `seedDefaultProducts()` die vorhandenen McDenisa-Startprodukte einmalig in Firestore.
+- Components bleiben bewusst schlank: Admin, Produktformular und Bestellseite rufen weiterhin nur den `ProductService` auf. Der Datenbankzugriff ist im Service gekapselt, wie im Buch bei Services/Dependency Injection vorgesehen.
+
+Aktivierungsschritte:
+1. Firebase-Projekt in der Firebase Console erstellen.
+2. Web-App im Firebase-Projekt registrieren.
+3. Firestore Database anlegen.
+4. Web-App-Konfiguration in `src/environments/environment.ts` eintragen.
+5. `enabled: true` setzen.
+6. App starten und im Admin-Bereich prüfen, ob Produkte aus Firestore geladen werden.
+
+Beispielstruktur in Firestore:
+
+```text
+products
+  b1
+    name: "Big Mac"
+    price: 5.49
+    category: "Burger"
+```
 
 ### Kassenseite
 
@@ -319,14 +365,15 @@ sips -c 360 2172 --cropOffset 90 0 mcdenisa-banner.png --out mcdenisa-banner-wid
 
 ## Noch zu tun
 
-### 1. Firebase / Firestore (Kap. 12)
+### 1. Firebase-Projekt aktivieren (Kap. 12)
 
 Status: offen
 
 Ziel:
-- Produkte in Firestore speichern statt im lokalen `ProductService`.
-- CRUD-Operationen über Firestore.
-- Erfordert: Firebase-Projekt anlegen, `@angular/fire` installieren, Firestore konfigurieren.
+- Firebase-Projekt in der Console anlegen.
+- Firebase-Web-App-Konfiguration in `src/environments/environment.ts` eintragen.
+- `environment.firebase.enabled` auf `true` setzen.
+- Firestore-Regeln für die Prüfung passend konfigurieren.
 
 Voraussetzung: Firebase-Projekt muss vom Entwickler selbst angelegt werden (Console: console.firebase.google.com).
 
@@ -477,7 +524,8 @@ flowchart TD
   D6 --> D7["Feedback-Liste\nerledigt"]
   D7 --> D8["Team-Flip-Cards\nerledigt"]
   D8 --> D9["GitHub-Prüfungsrepo sauber\nerledigt"]
-  D9 --> N1["Firebase / Firestore\noffen"]
+  D9 --> D10["Firebase SDK + ProductService CRUD\nvorbereitet"]
+  D10 --> N1["Firebase-Projekt aktivieren\noffen"]
   N1 --> N2["Produktdaten erweitern\noffen"]
   N2 --> N3["Quiz-Seite\noffen"]
   N3 --> N4["Weitere Team-Mitglieder\noffen"]
@@ -498,6 +546,6 @@ flowchart TD
 | Custom Validator | 11.4 | erledigt |
 | Route Guard (CanActivateFn) | 10.2 | erledigt |
 | AuthService-Muster | 10.3 | erledigt |
-| Firebase / Firestore | 12 | offen |
+| Firebase / Firestore | 12 | technisch vorbereitet, Aktivierung offen |
 | Team-Karussell mit klickbarer 3D-Flip-Card | Zusatzfeature | erledigt |
 | Sauberes Prüfungs-Repository ohne alten Claude-Contributor | Projektabgabe | erledigt |

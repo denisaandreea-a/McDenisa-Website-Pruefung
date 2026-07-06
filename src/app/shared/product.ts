@@ -1,6 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import type { Firestore } from 'firebase/firestore';
 import { Product } from '../model/product';
+import { environment } from '../../environments/environment';
+
+type ProductData = {
+  name: string;
+  price: number;
+  category: string;
+};
+
+type FirestoreApi = typeof import('firebase/firestore');
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -8,7 +18,12 @@ export class ProductService {
   private changed = new Subject<void>();
   public changed$ = this.changed.asObservable();
 
-  private objects: Product[] = [
+  private db: Firestore | null;
+  private firestoreApi: FirestoreApi | null = null;
+  private readonly firestoreReady: Promise<void> | null;
+  private readonly collectionName = environment.firebase.collectionName;
+
+  private readonly objects: Product[] = [
 
     new Product('m1', 'Big Mac Menü',           8.99, 'Menüs'),
     new Product('m2', 'McRoyal Menü',           9.49, 'Menüs'),
@@ -55,21 +70,144 @@ export class ProductService {
     new Product('d5', 'Softeis',               1.00, 'Desserts'),
   ];
 
-  async getAll(): Promise<Product[]> { return this.objects.slice(); }
-  async getById(id: string): Promise<Product | undefined> { return this.objects.find(x => x.id === id); }
+  constructor() {
+    if (environment.firebase.enabled) {
+      this.db = null;
+      this.firestoreReady = this.initFirestore();
+    } else {
+      this.db = null;
+      this.firestoreReady = null;
+    }
+  }
+
+  async getAll(): Promise<Product[]> {
+    const firestore = await this.getFirestore();
+    if (!firestore) {
+      return this.sortedProducts(this.objects);
+    }
+
+    const { api, db } = firestore;
+    const snapshot = await api.getDocs(api.collection(db, this.collectionName));
+    const products = snapshot.docs.map(productDoc => this.fromFirestore(productDoc.id, productDoc.data() as ProductData));
+
+    if (products.length === 0) {
+      await this.seedDefaultProducts();
+      return this.sortedProducts(this.objects);
+    }
+
+    return this.sortedProducts(products);
+  }
+
+  async getById(id: string): Promise<Product | undefined> {
+    const firestore = await this.getFirestore();
+    if (!firestore) {
+      return this.objects.find(x => x.id === id);
+    }
+
+    const { api, db } = firestore;
+    const productDoc = await api.getDoc(api.doc(db, this.collectionName, id));
+    if (!productDoc.exists()) {
+      return undefined;
+    }
+
+    return this.fromFirestore(productDoc.id, productDoc.data() as ProductData);
+  }
 
   async add(obj: Product): Promise<void> {
-    this.objects.push(obj);
+    const firestore = await this.getFirestore();
+    if (firestore) {
+      const { api, db } = firestore;
+      await api.setDoc(api.doc(db, this.collectionName, obj.id), this.toFirestore(obj));
+    } else {
+      this.objects.push(obj);
+    }
     this.changed.next();
   }
 
   async update(obj: Product): Promise<void> {
-    const i = this.objects.findIndex(x => x.id === obj.id);
-    if (i !== -1) { this.objects[i] = obj; this.changed.next(); }
+    const firestore = await this.getFirestore();
+    if (firestore) {
+      const { api, db } = firestore;
+      await api.setDoc(api.doc(db, this.collectionName, obj.id), this.toFirestore(obj));
+      this.changed.next();
+      return;
+    }
+
+    const index = this.objects.findIndex(x => x.id === obj.id);
+    if (index !== -1) {
+      this.objects[index] = obj;
+      this.changed.next();
+    }
   }
 
-  remove(obj: Product): void {
-    const i = this.objects.findIndex(x => x.id === obj.id);
-    if (i !== -1) { this.objects.splice(i, 1); this.changed.next(); }
+  async remove(obj: Product): Promise<void> {
+    const firestore = await this.getFirestore();
+    if (firestore) {
+      const { api, db } = firestore;
+      await api.deleteDoc(api.doc(db, this.collectionName, obj.id));
+      this.changed.next();
+      return;
+    }
+
+    const index = this.objects.findIndex(x => x.id === obj.id);
+    if (index !== -1) {
+      this.objects.splice(index, 1);
+      this.changed.next();
+    }
+  }
+
+  private async seedDefaultProducts(): Promise<void> {
+    const firestore = await this.getFirestore();
+    if (!firestore) {
+      return;
+    }
+
+    const { api, db } = firestore;
+    const batch = api.writeBatch(db);
+    for (const product of this.objects) {
+      batch.set(api.doc(db, this.collectionName, product.id), this.toFirestore(product));
+    }
+    await batch.commit();
+  }
+
+  private async initFirestore(): Promise<void> {
+    const firebaseApp = await import('firebase/app');
+    const firestore = await import('firebase/firestore');
+    const app = firebaseApp.initializeApp(environment.firebase.config);
+
+    this.firestoreApi = firestore;
+    this.db = firestore.getFirestore(app);
+  }
+
+  private async getFirestore(): Promise<{ api: FirestoreApi; db: Firestore } | null> {
+    if (!environment.firebase.enabled || !this.firestoreReady) {
+      return null;
+    }
+
+    await this.firestoreReady;
+    if (!this.firestoreApi || !this.db) {
+      throw new Error('Firestore konnte nicht initialisiert werden.');
+    }
+
+    return { api: this.firestoreApi, db: this.db };
+  }
+
+  private toFirestore(product: Product): ProductData {
+    return {
+      name: product.name,
+      price: product.price,
+      category: product.category,
+    };
+  }
+
+  private fromFirestore(id: string, data: ProductData): Product {
+    return new Product(id, data.name, data.price, data.category);
+  }
+
+  private sortedProducts(products: Product[]): Product[] {
+    return products.slice().sort((a, b) => {
+      const categoryCompare = a.category.localeCompare(b.category);
+      return categoryCompare !== 0 ? categoryCompare : a.name.localeCompare(b.name);
+    });
   }
 }

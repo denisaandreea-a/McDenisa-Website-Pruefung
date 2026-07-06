@@ -41,4 +41,4 @@ Dieses Projekt folgt den Mustern aus dem Kursbuch "Web-Frontends" von Prof. Alex
 - Kap. 10.3: AuthService-Muster — noch offen
 - Kap. 11: Reactive Forms
 - Kap. 11.4: Custom Validator — umgesetzt in `validators.ts`
-- Kap. 12: Firebase/Firestore — noch offen
+- Kap. 12: Firebase/Firestore — technisch vorbereitet; Firebase-Projekt und Konfigurationsdaten müssen noch eingetragen werden

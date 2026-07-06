@@ -35,9 +35,9 @@ export class Admin implements OnInit {
     this.products = await this.productService.getAll();
   }
 
-  deleteProduct(product: Product): void {
+  async deleteProduct(product: Product): Promise<void> {
     if (confirm(`"${product.name}" wirklich löschen?`)) {
-      this.productService.remove(product);
+      await this.productService.remove(product);
     }
   }
 }
