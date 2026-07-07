@@ -59,38 +59,20 @@
       <p class="team-section__eyebrow">Crew Cards</p>
       <h4 id="team-title">Unser Team</h4>
     </div>
-
-    <div class="team-carousel__controls" aria-label="Team-Karussell">
-      <button
-        type="button"
-        class="team-carousel__button"
-        (click)="showPreviousTeamMember()"
-        aria-label="Vorherige Teamkarte">
-        ‹
-      </button>
-      <button
-        type="button"
-        class="team-carousel__button"
-        (click)="showNextTeamMember()"
-        aria-label="Nächste Teamkarte">
-        ›
-      </button>
-    </div>
   </div>
 
-  <div class="team-carousel">
-    <div class="team-carousel__track" [style.transform]="'translateX(-' + activeTeamIndex * 100 + '%)'">
-      @for (member of teamMembers; track member.name) {
-        <article class="team-carousel__slide">
-          <div
-            class="team-card"
-            [class.team-card--flipped]="member.flipped"
-            role="button"
-            tabindex="0"
-            [attr.aria-label]="member.name + ' Teamkarte umdrehen'"
-            [attr.aria-pressed]="member.flipped"
-            (click)="toggleTeamCard(member)"
-            (keydown)="onTeamCardKeydown($event, member)">
+  <div class="team-grid">
+    @for (member of teamMembers; track member.name) {
+      <article class="team-grid__item">
+        <div
+          class="team-card"
+          [class.team-card--flipped]="member.flipped"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="member.name + ' Teamkarte umdrehen'"
+          [attr.aria-pressed]="member.flipped"
+          (click)="toggleTeamCard(member)"
+          (keydown)="onTeamCardKeydown($event, member)">
             <div class="team-card__inner">
               <div class="team-card__face team-card__face--front">
                 <img [src]="member.image" [alt]="member.name + ' als Cartoon'" class="team-card__image">
@@ -102,7 +84,6 @@
               <div class="team-card__face team-card__face--back">
                 <div class="team-card__topline">
                   <span class="team-card__pill">⭐ {{ member.alias }}</span>
-                  <span class="team-card__pill">🚗 {{ member.station }}</span>
                   <span class="team-card__pill">👥 {{ member.role }}</span>
                 </div>
 
@@ -164,19 +145,6 @@
           </div>
         </article>
       }
-    </div>
-  </div>
-
-  <div class="team-carousel__dots" aria-label="Teamkarte auswählen">
-    @for (member of teamMembers; track member.name; let index = $index) {
-      <button
-        type="button"
-        class="team-carousel__dot"
-        [class.team-carousel__dot--active]="index === activeTeamIndex"
-        (click)="setActiveTeamMember(index)"
-        [attr.aria-label]="member.name + ' anzeigen'">
-      </button>
-    }
   </div>
 </section>
 </div>

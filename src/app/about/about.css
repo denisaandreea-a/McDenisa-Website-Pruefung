@@ -14,9 +14,7 @@
 
 .team-section__header,
 .team-card__topline,
-.team-card__badges,
-.team-carousel__controls,
-.team-carousel__dots {
+.team-card__badges {
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -43,18 +41,13 @@
   font-weight: 900;
 }
 
-.team-carousel {
-  overflow: hidden;
-  border-radius: 16px;
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.1rem;
 }
 
-.team-carousel__track {
-  display: flex;
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.team-carousel__slide {
-  flex: 0 0 100%;
+.team-grid__item {
   display: grid;
   place-items: center;
   padding: 0.35rem;
@@ -203,44 +196,6 @@
   background: #fff4e2;
   color: #2a0a0a;
   font-weight: 900;
-}
-
-.team-carousel__button,
-.team-carousel__dot {
-  border: 1px solid #ead8bd;
-  background: #ffffff;
-  color: var(--mc-maroon);
-}
-
-.team-carousel__button {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  font-size: 1.7rem;
-  line-height: 1;
-}
-
-.team-carousel__button:hover,
-.team-carousel__dot:hover {
-  transform: translateY(-2px);
-  background: #fff4e2;
-}
-
-.team-carousel__dots {
-  justify-content: center;
-  margin-top: 1rem;
-}
-
-.team-carousel__dot {
-  width: 11px;
-  height: 11px;
-  border-radius: 999px;
-  padding: 0;
-}
-
-.team-carousel__dot--active {
-  width: 30px;
-  background: var(--mc-maroon);
 }
 
 @media (max-width: 576px) {
