@@ -93,6 +93,58 @@ export class About {
         'Hi, ich bin Frau Grabaz. Seit der Neueröffnung des McDonald’s in Ahlen im Dezember 1997 bin ich Teil des Teams. Angefangen habe ich damals als Minijobberin, heute arbeite ich seit vielen Jahren als Schichtleiterin. In dieser Zeit habe ich viele Veränderungen, Herausforderungen und besondere Momente erlebt – aber meine Energie und Motivation sind bis heute geblieben.',
       flipped: false,
     },
+    {
+      name: 'Dino',
+      alias: 'Mr. Chill',
+      role: 'Schichtleiter',
+      image: '/assets/team/dino.jpeg',
+      favoriteFood: 'Chicken Wings',
+      focusTitle: '😌 Meine Stärke',
+      focusText:
+        'Ich bleibe ruhig und gelassen, egal was passiert. Mich aus der Ruhe zu bringen ist schon eine echte Herausforderung.',
+      traits: ['Locker', 'Freundlich', 'Gelassen', 'Lustig', 'Hilfsbereit', 'Geduldig'],
+      superpower: 'Auch in stressigen Situationen ruhig bleiben und für gute Stimmung sorgen.',
+      funFact: 'Ich sehe manchmal streng aus, bin aber der Lockerste im Team.',
+      goal: 'Dafür sorgen, dass die Gäste zufrieden sind und die Schicht entspannt und ohne Stress läuft.',
+      motto: 'Arbeit macht Spaß, wenn man sie ohne Stress angeht.',
+      about:
+        'Hi, ich bin Dino. Seit rund vier Jahren bin ich Teil des McDonald’s-Teams. Auch wenn ich auf den ersten Blick streng oder ernst wirke, bin ich eigentlich sehr locker und leicht zum Lachen zu bringen - mich aus der Ruhe zu bringen ist dagegen schon eine Kunst. Stress und Streit sind nicht mein Ding, ich bleibe lieber freundlich und entspannt. Am wichtigsten ist mir, dass unsere Gäste zufrieden sind.',
+      flipped: false,
+    },
+    {
+      name: 'Frau Saitinidou',
+      alias: 'Mama',
+      role: 'Restaurantleiterin',
+      image: '/assets/team/saitinidou.jpeg',
+      favoriteFood: 'Big Mac',
+      focusTitle: '🎯 Meine Stärke',
+      focusText:
+        'Ich bleibe fokussiert, halte mich an Regeln und sorge dafür, dass der Betrieb reibungslos läuft.',
+      traits: ['Professionell', 'Diszipliniert', 'Direkt', 'Fokussiert', 'Konsequent', 'Respektiert'],
+      superpower: 'Mit einem Wort dafür sorgen, dass alle sofort wissen, was zu tun ist.',
+      goal: 'Einen disziplinierten, gut organisierten Betrieb führen, in dem sich alle an die Regeln halten und aufeinander verlassen können.',
+      motto: 'Regeln sind da, damit alles reibungslos läuft.',
+      about:
+        'Hi, ich bin Frau Saitinidou. Als Restaurantleiterin sorge ich dafür, dass bei uns alles nach Plan läuft. Ich bin professionell, direkt und lege Wert auf klare Regeln und Disziplin. Im Team werde ich liebevoll „Mama“ genannt - auch wenn viele zunächst etwas Respekt vor mir haben, weiß jeder, dass ich es nur gut mit dem Team meine.',
+      flipped: false,
+    },
+    {
+      name: 'Alina',
+      alias: 'Ordnungsqueen',
+      role: 'Schichtleiterin',
+      image: '/assets/team/alina.jpeg',
+      favoriteFood: 'Royal TS',
+      focusTitle: '🧹 Meine Stärke',
+      focusText:
+        'Ordnung und Sauberkeit sind mir extrem wichtig. Ich sorge dafür, dass die Lobby immer top aussieht und alles seinen Platz hat.',
+      traits: ['Ordentlich', 'Diszipliniert', 'Planvoll', 'Direkt', 'Lustig', 'Ehrgeizig'],
+      superpower: 'Ordnung, Planung und Sauberkeit auch in stressigen Momenten nicht aus den Augen verlieren.',
+      goal: 'Mich beruflich weiterentwickeln - deshalb mache ich gerade meine Ausbildung in der Gastronomie neben meiner Arbeit als Schichtleiterin.',
+      motto: 'Ordnung ist das halbe Leben - Spaß die andere Hälfte.',
+      about:
+        'Hi, ich bin Alina. Seit 10 Jahren bin ich Teil des Teams und arbeite mittlerweile als Schichtleiterin. Planung, Sauberkeit und klare Regeln sind mir sehr wichtig - wer meine Anweisungen nicht befolgt, merkt schnell, dass ich es auch streng kann. Aktuell mache ich zusätzlich meine Ausbildung in der Gastronomie, weil mir Weiterentwicklung wichtig ist. Außerhalb der Arbeit bin ich aber ein richtiger Partymensch und liebe es, Spaß zu haben.',
+      flipped: false,
+    },
   ];
 
   toggleTeamCard(member: TeamMember): void {

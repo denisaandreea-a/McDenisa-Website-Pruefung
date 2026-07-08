@@ -239,22 +239,20 @@ Dateien:
 - `src/app/about/about.ts`
 - `src/app/about/about.html`
 - `src/app/about/about.css`
-- `public/assets/team/othmane.jpeg`
+- `public/assets/team/othmane.jpeg`, `maria.jpeg`, `apitz.jpeg`, `grabaz.jpeg`, `dino.jpeg`, `saitinidou.jpeg`, `alina.jpeg`
 
 Status: erledigt
 
 - Auf der Seite `/about` wurde eine moderne Team-Section ergänzt.
-- Die Team-Mitglieder werden in `about.ts` als Array `teamMembers` gepflegt. Dadurch können später weitere Schichtführer einfach ergänzt werden.
-- Die Section ist als Karussell aufgebaut:
-  - aktive Karte über `activeTeamIndex`
-  - Weiter-/Zurück-Buttons
-  - Punkt-Navigation
-  - horizontale Slider-Animation über CSS-Transform
+- Die Team-Mitglieder werden in `about.ts` als Array `teamMembers` gepflegt. Dadurch können später weitere Personen einfach ergänzt werden.
+- Die Section zeigt alle Teamkarten gleichzeitig als Grid (`.team-grid`, `repeat(auto-fit, minmax(280px, 1fr))`) – kein Karussell mehr, keine Pfeile/Punkte-Navigation nötig.
 - Jede Teamkarte ist eine klickbare 3D-Flip-Card:
   - Vorderseite: nur das Cartoon-Bild der Person
-  - Rückseite: moderner Steckbrief mit Name, Alias, Lieblingsstation, Signature Order, Eigenschaften, Superkraft, Ziel und Motto
+  - Rückseite: moderner Steckbrief mit Name, Alias, Rolle, Lieblingsessen, individueller Stärke, Superkraft, (optional Fun Fact), Ziel, Eigenschaften und Motto
   - Umdrehen per Klick, nicht nur per Hover
   - zusätzlich per Tastatur nutzbar (`Enter` oder Leertaste)
+  - jede Karte klappt unabhängig von den anderen um
+- Die Rollen-Pille zeigt nur noch den reinen Titel (`Schichtleiter`/`Schichtleiterin`/`Restaurantleiterin`), ohne Stations-Zusatz – als Schichtleiter arbeitet man ohnehin überall. Ein Stations-Feld (`station`) gibt es entsprechend nicht mehr.
 - Mobile Optimierung:
   - größere Kartenhöhe auf kleinen Bildschirmen
   - Rückseite wird einspaltig, damit Text und Badges nicht gequetscht werden
@@ -265,33 +263,15 @@ Status: erledigt
   - abgerundete Ecken
   - Schatten, Badges und glossy Kartenoptik
 
-Erstes Team-Mitglied:
-- Name: Othmane
-- Alias: Drive Star
-- Rolle: Schichtführer · McDrive
-- Lieblingsstation: McDrive
-- Signature Order: McCrispy Chicken & Chicken McNuggets
-- Eigenschaften: Locker, Positiv, Extrovertiert, Witzig, Ehrgeizig, Modebewusst
-- Motto: „Gute Laune, Tempo und Teamwork - so läuft der Drive.“
+Team-Mitglieder:
 
-Zweites Team-Mitglied:
-- Name: Maria
-- Alias: Küchenherz
-- Rolle: Schichtleiterin · Küche · Team Support
-- Stärkste Station: Küche
-- Lieblingsessen: Greek Style Wrap
-- Eigenschaften: Empathisch, Herzlich, Hilfsbereit, Küchenstark, Geduldig, Verantwortungsbewusst
-- Motto: „Gemeinsam sind wir stark.“
-
-Drittes Team-Mitglied:
-- Name: Apitz
-- Alias: Süss und Sauer
-- Rolle: Schichtführer · Gäste · Team Support
-- Lieblingsprodukt: Big Rösti
-- Stärke: Zuhören, Situationen verstehen und faire Lösungen finden
-- Eigenschaften: Professionell, Freundlich, Humorvoll, Direkt, Kommunikationsstark, Lösungsorientiert
-- Fun Fact: Ameisen als Haustiere
-- Motto: „Klar in der Arbeit, offen im Gespräch.“
+1. **Othmane** – Alias „Drive Star“, Schichtleiter, Lieblingsessen McCrispy Chicken & Chicken McNuggets, Eigenschaften Locker/Positiv/Extrovertiert/Witzig/Ehrgeizig/Modebewusst, Motto „Gute Laune, Tempo und Teamwork - so läuft die Schicht.“
+2. **Maria** – Alias „Küchenherz“, Schichtleiterin, Lieblingsessen Greek Style Wrap, Eigenschaften Empathisch/Herzlich/Hilfsbereit/Belastbar/Geduldig/Verantwortungsbewusst, Motto „Gemeinsam sind wir stark.“
+3. **Apitz** – Alias „Süss und Sauer“, Schichtleiter, Lieblingsprodukt Big Rösti, Stärke Zuhören/Situationen verstehen/faire Lösungen finden, Fun Fact Ameisen als Haustiere, Motto „Klar in der Arbeit, offen im Gespräch.“
+4. **Frau Grabaz** – Alias „Vollgas seit 1997“, Schichtleiterin, seit Dezember 1997 im Team, Lieblingsessen Kaffee/RedBull Blueberry, Eigenschaften Modern/Dynamisch/Schnell/Aktiv/Abenteuerlustig/Erfahrungsvoll, Motto „Energie kennt kein Alter.“
+5. **Dino** – Alias „Mr. Chill“, Schichtleiter, Lieblingsessen Chicken Wings, sehr locker und schwer aus der Ruhe zu bringen, Fun Fact „Ich sehe manchmal streng aus, bin aber der Lockerste im Team.“, Motto „Arbeit macht Spaß, wenn man sie ohne Stress angeht.“
+6. **Frau Saitinidou** – Alias „Mama“, Restaurantleiterin, professionell/diszipliniert/direkt, Lieblingsessen Big Mac, Motto „Regeln sind da, damit alles reibungslos läuft.“
+7. **Alina** – Alias „Ordnungsqueen“, Schichtleiterin, seit 10 Jahren im Team, macht aktuell zusätzlich eine Ausbildung in der Gastronomie, Lieblingsessen Royal TS, Motto „Ordnung ist das halbe Leben - Spaß die andere Hälfte.“
 
 ### Design-Details
 
@@ -608,11 +588,12 @@ Der Admin-Bereich nutzt:
 
 ### Team-Flip-Card
 
-Die Team-Section auf `/about` nutzt ein Array in `about.ts`. Dadurch können weitere Schichtführer einfach ergänzt werden.
+Die Team-Section auf `/about` nutzt ein Array in `about.ts`. Dadurch können weitere Teammitglieder einfach ergänzt werden.
 
 Prinzip:
+- Alle Karten werden gleichzeitig in einem Grid angezeigt (kein Karussell mehr).
 - Vorderseite zeigt nur das Cartoon-Bild.
-- Beim Klick wird die Karte per CSS-3D-Transform gedreht.
+- Beim Klick wird die jeweilige Karte per CSS-3D-Transform gedreht – unabhängig von den anderen Karten.
 - Rückseite zeigt den Steckbrief.
 - Das funktioniert auch auf Handy, weil es nicht nur Hover verwendet.
 
@@ -732,13 +713,13 @@ Voraussetzung: Firebase-Projekt muss vom Entwickler selbst angelegt werden (Cons
 
 ### 2. Weitere Team-Mitglieder ergänzen
 
-Status: optional / offen
+Status: erledigt (4 von ursprünglich geplanten 5 ergänzt)
 
-Ziel:
-- Die 5 weiteren Schichtführer in das `teamMembers`-Array eintragen.
-- Pro Person ein Cartoon-Bild unter `public/assets/team/` speichern.
-- Steckbrieftexte ergänzen.
-- Das bestehende Karussell ist dafür bereits vorbereitet.
+- Frau Grabaz, Dino, Frau Saitinidou und Alina wurden in das `teamMembers`-Array eingetragen.
+- Cartoon-Bilder liegen unter `public/assets/team/` (`grabaz.jpeg`, `dino.jpeg`, `saitinidou.jpeg`, `alina.jpeg`).
+- Steckbrieftexte (Lieblingsessen, Stärke, Eigenschaften, Ziel, Motto) sind ergänzt.
+- Das Karussell wurde dabei durch ein Grid ersetzt, damit alle Karten gleichzeitig sichtbar sind.
+- Falls noch eine weitere Person dazukommt: gleiches Schema wie bei den bestehenden Einträgen in `about.ts` verwenden.
 
 ### 3. Quiz-Seite
 
