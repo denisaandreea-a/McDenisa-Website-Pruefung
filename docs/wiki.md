@@ -245,7 +245,7 @@ Status: erledigt
 
 - Auf der Seite `/about` wurde eine moderne Team-Section ergänzt.
 - Die Team-Mitglieder werden in `about.ts` als Array `teamMembers` gepflegt. Dadurch können später weitere Personen einfach ergänzt werden.
-- Die Section zeigt alle Teamkarten gleichzeitig als Grid (`.team-grid`, `repeat(auto-fit, minmax(280px, 1fr))`) – kein Karussell mehr, keine Pfeile/Punkte-Navigation nötig.
+- Die Section ist ein Karussell, das jeweils 3 Karten gleichzeitig zeigt (`.team-carousel`, Seiten à 3 Mitglieder via `teamPages`-Getter). Pfeile (`showPreviousTeamPage()`/`showNextTeamPage()`) und Punkte-Navigation blättern seitenweise durch die Gruppen.
 - Jede Teamkarte ist eine klickbare 3D-Flip-Card:
   - Vorderseite: nur das Cartoon-Bild der Person
   - Rückseite: moderner Steckbrief mit Name, Alias, Rolle, Lieblingsessen, individueller Stärke, Superkraft, (optional Fun Fact), Ziel, Eigenschaften und Motto
@@ -591,7 +591,7 @@ Der Admin-Bereich nutzt:
 Die Team-Section auf `/about` nutzt ein Array in `about.ts`. Dadurch können weitere Teammitglieder einfach ergänzt werden.
 
 Prinzip:
-- Alle Karten werden gleichzeitig in einem Grid angezeigt (kein Karussell mehr).
+- Karussell zeigt jeweils 3 Karten pro Seite, Pfeile und Punkte blättern seitenweise.
 - Vorderseite zeigt nur das Cartoon-Bild.
 - Beim Klick wird die jeweilige Karte per CSS-3D-Transform gedreht – unabhängig von den anderen Karten.
 - Rückseite zeigt den Steckbrief.
@@ -718,7 +718,7 @@ Status: erledigt (4 von ursprünglich geplanten 5 ergänzt)
 - Frau Grabaz, Dino, Frau Saitinidou und Alina wurden in das `teamMembers`-Array eingetragen.
 - Cartoon-Bilder liegen unter `public/assets/team/` (`grabaz.jpeg`, `dino.jpeg`, `saitinidou.jpeg`, `alina.jpeg`).
 - Steckbrieftexte (Lieblingsessen, Stärke, Eigenschaften, Ziel, Motto) sind ergänzt.
-- Das Karussell wurde dabei durch ein Grid ersetzt, damit alle Karten gleichzeitig sichtbar sind.
+- Die Karten werden weiterhin über ein Karussell (3 pro Seite) präsentiert.
 - Falls noch eine weitere Person dazukommt: gleiches Schema wie bei den bestehenden Einträgen in `about.ts` verwenden.
 
 ### 3. Quiz-Seite
