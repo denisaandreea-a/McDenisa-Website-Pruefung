@@ -59,92 +59,127 @@
       <p class="team-section__eyebrow">Crew Cards</p>
       <h4 id="team-title">Unser Team</h4>
     </div>
+
+    <div class="team-carousel__controls" aria-label="Team-Karussell">
+      <button
+        type="button"
+        class="team-carousel__button"
+        (click)="showPreviousTeamPage()"
+        aria-label="Vorherige Teamkarten">
+        ‹
+      </button>
+      <button
+        type="button"
+        class="team-carousel__button"
+        (click)="showNextTeamPage()"
+        aria-label="Nächste Teamkarten">
+        ›
+      </button>
+    </div>
   </div>
 
-  <div class="team-grid">
-    @for (member of teamMembers; track member.name) {
-      <article class="team-grid__item">
-        <div
-          class="team-card"
-          [class.team-card--flipped]="member.flipped"
-          role="button"
-          tabindex="0"
-          [attr.aria-label]="member.name + ' Teamkarte umdrehen'"
-          [attr.aria-pressed]="member.flipped"
-          (click)="toggleTeamCard(member)"
-          (keydown)="onTeamCardKeydown($event, member)">
-            <div class="team-card__inner">
-              <div class="team-card__face team-card__face--front">
-                <img [src]="member.image" [alt]="member.name + ' als Cartoon'" class="team-card__image">
-                <div class="team-card__front-label">
-                  <strong>{{ member.name }} „{{ member.alias }}“</strong>
+  <div class="team-carousel">
+    <div class="team-carousel__track" [style.transform]="'translateX(-' + activeTeamPage * 100 + '%)'">
+      @for (page of teamPages; track $index) {
+        <div class="team-carousel__page">
+          @for (member of page; track member.name) {
+            <article class="team-carousel__item">
+              <div
+                class="team-card"
+                [class.team-card--flipped]="member.flipped"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="member.name + ' Teamkarte umdrehen'"
+                [attr.aria-pressed]="member.flipped"
+                (click)="toggleTeamCard(member)"
+                (keydown)="onTeamCardKeydown($event, member)">
+                  <div class="team-card__inner">
+                    <div class="team-card__face team-card__face--front">
+                      <img [src]="member.image" [alt]="member.name + ' als Cartoon'" class="team-card__image">
+                      <div class="team-card__front-label">
+                        <strong>{{ member.name }} „{{ member.alias }}“</strong>
+                      </div>
+                    </div>
+
+                    <div class="team-card__face team-card__face--back">
+                      <div class="team-card__topline">
+                        <span class="team-card__pill">⭐ {{ member.alias }}</span>
+                        <span class="team-card__pill">👥 {{ member.role }}</span>
+                      </div>
+
+                      <h5>{{ member.name }} <span>„{{ member.alias }}“</span></h5>
+
+                      <div class="team-card__content">
+                        <section>
+                          <h6>👋 Über mich</h6>
+                          <p>{{ member.about }}</p>
+                        </section>
+
+                        <section class="team-card__split">
+                          <div>
+                            <h6>🍔 Lieblingsessen</h6>
+                            <p>{{ member.favoriteFood }}</p>
+                          </div>
+                          <div>
+                            <h6>{{ member.focusTitle }}</h6>
+                            <p>{{ member.focusText }}</p>
+                          </div>
+                        </section>
+
+                        <section class="team-card__split">
+                          <div>
+                            <h6>⚡ Superkraft</h6>
+                            <p>{{ member.superpower }}</p>
+                          </div>
+                          <div>
+                            @if (member.funFact) {
+                              <h6>🐜 Fun Fact</h6>
+                              <p>{{ member.funFact }}</p>
+                            } @else {
+                              <h6>🎯 Ziel</h6>
+                              <p>{{ member.goal }}</p>
+                            }
+                          </div>
+                        </section>
+
+                        <section>
+                          <h6>✨ Was mich ausmacht</h6>
+                          <div class="team-card__badges">
+                            @for (trait of member.traits; track trait) {
+                              <span>{{ trait }}</span>
+                            }
+                          </div>
+                        </section>
+
+                        @if (member.funFact) {
+                          <section>
+                            <h6>🎯 Ziel</h6>
+                            <p>{{ member.goal }}</p>
+                          </section>
+                        }
+
+                        <blockquote>💬 „{{ member.motto }}“</blockquote>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              <div class="team-card__face team-card__face--back">
-                <div class="team-card__topline">
-                  <span class="team-card__pill">⭐ {{ member.alias }}</span>
-                  <span class="team-card__pill">👥 {{ member.role }}</span>
-                </div>
-
-                <h5>{{ member.name }} <span>„{{ member.alias }}“</span></h5>
-
-                <div class="team-card__content">
-                  <section>
-                    <h6>👋 Über mich</h6>
-                    <p>{{ member.about }}</p>
-                  </section>
-
-                  <section class="team-card__split">
-                    <div>
-                      <h6>🍔 Lieblingsessen</h6>
-                      <p>{{ member.favoriteFood }}</p>
-                    </div>
-                    <div>
-                      <h6>{{ member.focusTitle }}</h6>
-                      <p>{{ member.focusText }}</p>
-                    </div>
-                  </section>
-
-                  <section class="team-card__split">
-                    <div>
-                      <h6>⚡ Superkraft</h6>
-                      <p>{{ member.superpower }}</p>
-                    </div>
-                    <div>
-                      @if (member.funFact) {
-                        <h6>🐜 Fun Fact</h6>
-                        <p>{{ member.funFact }}</p>
-                      } @else {
-                        <h6>🎯 Ziel</h6>
-                        <p>{{ member.goal }}</p>
-                      }
-                    </div>
-                  </section>
-
-                  <section>
-                    <h6>✨ Was mich ausmacht</h6>
-                    <div class="team-card__badges">
-                      @for (trait of member.traits; track trait) {
-                        <span>{{ trait }}</span>
-                      }
-                    </div>
-                  </section>
-
-                  @if (member.funFact) {
-                    <section>
-                      <h6>🎯 Ziel</h6>
-                      <p>{{ member.goal }}</p>
-                    </section>
-                  }
-
-                  <blockquote>💬 „{{ member.motto }}“</blockquote>
-                </div>
-              </div>
-            </div>
-          </div>
-        </article>
+            </article>
+          }
+        </div>
       }
+    </div>
+  </div>
+
+  <div class="team-carousel__dots" aria-label="Teamkarten-Seite auswählen">
+    @for (page of teamPages; track $index; let index = $index) {
+      <button
+        type="button"
+        class="team-carousel__dot"
+        [class.team-carousel__dot--active]="index === activeTeamPage"
+        (click)="setActiveTeamPage(index)"
+        [attr.aria-label]="'Teamkarten Seite ' + (index + 1)">
+      </button>
+    }
   </div>
 </section>
 </div>

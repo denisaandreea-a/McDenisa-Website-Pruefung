@@ -147,6 +147,41 @@ export class About {
     },
   ];
 
+  private readonly teamPageSize = 3;
+  activeTeamPage = 0;
+
+  get teamPages(): TeamMember[][] {
+    const pages: TeamMember[][] = [];
+    for (let i = 0; i < this.teamMembers.length; i += this.teamPageSize) {
+      pages.push(this.teamMembers.slice(i, i + this.teamPageSize));
+    }
+    return pages;
+  }
+
+  showPreviousTeamPage(): void {
+    this.setActiveTeamPage(this.activeTeamPage - 1);
+  }
+
+  showNextTeamPage(): void {
+    this.setActiveTeamPage(this.activeTeamPage + 1);
+  }
+
+  setActiveTeamPage(index: number): void {
+    const lastIndex = this.teamPages.length - 1;
+
+    if (index < 0) {
+      this.activeTeamPage = lastIndex;
+      return;
+    }
+
+    if (index > lastIndex) {
+      this.activeTeamPage = 0;
+      return;
+    }
+
+    this.activeTeamPage = index;
+  }
+
   toggleTeamCard(member: TeamMember): void {
     member.flipped = !member.flipped;
   }
