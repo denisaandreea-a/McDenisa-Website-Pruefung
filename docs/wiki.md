@@ -6,7 +6,9 @@ Dieses Dokument sammelt, was im Angular/WebFrontends-Projekt umgesetzt wurde, we
 
 ## Aktueller Prüfungsstand
 
-Stand: 07.07.2026
+Stand: 08.07.2026
+
+- Firebase ist jetzt aktiv (nicht mehr nur vorbereitet). Details siehe Abschnitt „Firebase / Firestore (Kap. 12)" weiter unten.
 
 - Aktuelles Prüfungs-Repository: `https://github.com/denisaandreea-a/McDenisa-Website-Pruefung`
 - Das alte Repository `McDenisa-Website` wurde auf privat gestellt.
@@ -70,17 +72,23 @@ Dateien:
 - `package-lock.json`
 - `src/environments/environment.ts`
 - `src/app/shared/product.ts`
+- `src/app/shared/firebase.config.ts`
+- `src/app/shared/product.spec.ts`
 - `src/app/admin/admin.ts`
+- `src/app/product-form/product-form.ts`
+- `docs/firebase-pruefung.md`
+- `firebase.json`, `.firebaserc`, `firestore.rules`
 
-Status: technisch vorbereitet, Aktivierung mit eigenem Firebase-Projekt noch offen.
+Status: **aktiv**. Die Produktverwaltung läuft live gegen ein echtes Firebase-Projekt (`mcdenisa-f479f`).
 
 Umsetzung:
 - Das offizielle Firebase SDK (`firebase`) wurde installiert.
 - `@angular/fire` wurde nicht installiert, weil die aktuelle Version Peer Dependencies für Angular 20 erwartet, das Projekt aber Angular 22 nutzt. Damit kein instabiler `--force`-Install entsteht, wird Firestore direkt über das Firebase SDK im Angular-Service verwendet.
 - Firebase wird im `ProductService` per dynamischem `import()` geladen. Dadurch landet Firestore in einem Lazy Chunk und bläht den initialen Angular-Bundle nicht unnötig auf.
-- Die Firebase-Konfiguration liegt in `src/environments/environment.ts`.
-- `environment.firebase.enabled` ist aktuell `false`. Dadurch läuft das Projekt weiterhin mit den lokalen Startdaten und bleibt ohne Firebase-Projekt buildbar.
-- Wenn `enabled` auf `true` gesetzt wird, verwendet `ProductService` Firestore.
+- Die Firebase-Konfiguration liegt in `src/environments/environment.ts` und wird über einen `InjectionToken` (`FIREBASE_CONFIG` in `src/app/shared/firebase.config.ts`) per Dependency Injection an den `ProductService` gegeben, statt `environment` direkt zu importieren.
+- `environment.firebase.enabled` steht jetzt auf `true` mit echten Projektwerten (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId).
+- Der Admin-Bereich zeigt sichtbar an, ob lokale Startdaten oder Firestore verwendet werden (Badge „Firestore aktiv").
+- Firebase-Konfigurationsfehler werden im Admin-Bereich und im Produktformular als Fehlermeldung angezeigt.
 - Collection-Name: `products`.
 - CRUD-Methoden im `ProductService`:
   - `getAll()` — liest alle Produkte aus Firestore und sortiert sie nach Kategorie/Name
@@ -88,16 +96,25 @@ Umsetzung:
   - `add(product)` — speichert ein neues Produkt mit `setDoc`
   - `update(product)` — überschreibt ein bestehendes Produkt mit `setDoc`
   - `remove(product)` — löscht ein Produkt mit `deleteDoc`
-- Wenn Firestore aktiviert ist und die Collection leer ist, schreibt `seedDefaultProducts()` die vorhandenen McDenisa-Startprodukte einmalig in Firestore.
+- Beim ersten Start mit leerer Collection hat `seedDefaultProducts()` die vorhandenen McDenisa-Startprodukte einmalig in Firestore geschrieben.
 - Components bleiben bewusst schlank: Admin, Produktformular und Bestellseite rufen weiterhin nur den `ProductService` auf. Der Datenbankzugriff ist im Service gekapselt, wie im Buch bei Services/Dependency Injection vorgesehen.
 
-Aktivierungsschritte:
-1. Firebase-Projekt in der Firebase Console erstellen.
-2. Web-App im Firebase-Projekt registrieren.
-3. Firestore Database anlegen.
-4. Web-App-Konfiguration in `src/environments/environment.ts` eintragen.
-5. `enabled: true` setzen.
-6. App starten und im Admin-Bereich prüfen, ob Produkte aus Firestore geladen werden.
+Warum ein `InjectionToken` für die Firebase-Config?
+
+- Vorher hat `ProductService` `environment.firebase` direkt importiert. Das ist ein globaler, fest verdrahteter Wert.
+- Der bestehende Unit-Test (`product.spec.ts`) ging von `enabled: false` aus. Sobald `enabled: true` echte Werte hatte, hätte der Test entweder falsch geschlagen oder unbeabsichtigt gegen die echte Firestore-Datenbank gearbeitet.
+- Mit `FIREBASE_CONFIG` als `InjectionToken` kann der Test über `TestBed.configureTestingModule({ providers: [{ provide: FIREBASE_CONFIG, useValue: { enabled: false, ... } }] })` eine eigene, isolierte Config einsetzen — ohne Netzwerkzugriff, deterministisch, schnell.
+- Das ist genau der Dependency-Injection-Gedanke aus dem Buch: Der Service bekommt seine Abhängigkeit von außen, statt sie sich selbst zu holen.
+
+Wie das echte Firebase-Projekt aktiviert wurde (CLI statt nur Console-Klicks):
+1. `npx firebase-tools login` — Login mit Google-Konto (braucht ein echtes interaktives Terminal mit Browser, nicht headless).
+2. `npx firebase-tools projects:list` — bestehendes Projekt `mcdenisa-f479f` gefunden.
+3. `npx firebase-tools apps:list --project mcdenisa-f479f` — bestehende Web-App gefunden.
+4. Firestore-API einmalig in der Google-Cloud-Console für das Projekt aktiviert (einmaliger Klick, kein CLI-Befehl ohne `gcloud`).
+5. `npx firebase-tools firestore:databases:create "(default)" --project mcdenisa-f479f --location eur3` — Firestore-Datenbank angelegt.
+6. `npx firebase-tools apps:sdkconfig WEB <appId> --project mcdenisa-f479f` — echte Web-App-Konfiguration (apiKey, authDomain, …) abgerufen und in `environment.ts` eingetragen, `enabled: true` gesetzt.
+7. `firestore.rules` + `firebase.json` + `.firebaserc` angelegt und mit `npx firebase-tools deploy --only firestore:rules --project mcdenisa-f479f` deployed.
+8. Mit `ng build` und einem headless-Browser-Test (Playwright) geprüft, dass `/order` Produkte aus Firestore lädt und `/admin` „Firestore aktiv" anzeigt.
 
 Beispielstruktur in Firestore:
 
@@ -322,29 +339,29 @@ new Product('b1', 'Big Mac', 5.49, 'Burger')
 
 Das funktioniert lokal, ist aber keine echte Online-Datenbank. Änderungen im Admin-Bereich wären ohne Firebase nicht dauerhaft online für andere Geräte gespeichert.
 
-**Was ist jetzt vorbereitet?**
+**Was ist jetzt aktiv?**
 
-Das Projekt hat jetzt das Firebase SDK installiert. Der `ProductService` kann Produkte grundsätzlich aus Firestore laden, speichern, bearbeiten und löschen. Firebase ist aber noch nicht aktiv, weil in `src/environments/environment.ts` noch echte Firebase-Projektdaten eingetragen werden müssen.
+Das Projekt hat das Firebase SDK installiert und mit einem echten Firebase-Projekt (`mcdenisa-f479f`) verbunden. Der `ProductService` lädt, speichert, bearbeitet und löscht Produkte live in Firestore.
 
-Aktuell steht dort:
+In `src/environments/environment.ts` steht jetzt:
 
 ```typescript
-enabled: false
+enabled: true
 ```
 
-Deshalb nutzt die App weiter die lokalen Startdaten. Sobald `enabled` auf `true` gesetzt wird und die Firebase-Konfiguration stimmt, arbeitet der `ProductService` mit Firestore.
+zusammen mit der echten Web-App-Konfiguration (apiKey, authDomain, projectId, …). Die Config kommt nicht mehr per direktem Import, sondern über einen `InjectionToken` (`FIREBASE_CONFIG`) per Dependency Injection in den `ProductService` — dadurch bleibt der Service testbar, ohne bei jedem Testlauf echte Netzwerkaufrufe zu machen.
 
 **Was ist der Vorteil?**
 
-- Produkte können dauerhaft online gespeichert werden.
-- Änderungen im Admin-Bereich können später in Firestore landen.
-- Mehrere Geräte können dieselben Produktdaten sehen.
+- Produkte werden dauerhaft online gespeichert.
+- Änderungen im Admin-Bereich landen direkt in Firestore.
+- Mehrere Geräte sehen dieselben Produktdaten.
 - Die Components bleiben sauber, weil sie nicht direkt mit Firebase sprechen.
 - Der Datenbankzugriff ist in einem Service gekapselt, passend zu Services und Dependency Injection aus dem Buch.
 
 **Prüfungssatz:**
 
-> Firebase ist das Backend von Google. In meinem Projekt ist Firestore als Produktdatenbank vorbereitet. Der `ProductService` kapselt den Zugriff auf Firestore, sodass die Components nur Methoden wie `getAll()`, `add()`, `update()` und `remove()` aufrufen müssen.
+> Firebase ist das Backend von Google. In meinem Projekt ist Firestore als Produktdatenbank aktiv. Der `ProductService` kapselt den Zugriff auf Firestore, sodass die Components nur Methoden wie `getAll()`, `add()`, `update()` und `remove()` aufrufen müssen. Die Firebase-Konfiguration selbst bekommt der Service über Dependency Injection (`InjectionToken`), nicht über einen festen Import.
 
 ### Angular-Components
 
@@ -682,6 +699,27 @@ sips -c 360 2172 --cropOffset 90 0 mcdenisa-banner.png --out mcdenisa-banner-wid
 }
 ```
 
+### Unit-Test schlug nach Firebase-Aktivierung fehl
+
+**Problem:** `product.spec.ts` ging fest davon aus, dass `environment.firebase.enabled === false` ist (`ProductService` importierte `environment` direkt). Nach der Aktivierung (`enabled: true`) schlug die Assertion fehl — und ohne Anpassung hätte der Test sogar gegen die echte Firestore-Datenbank gearbeitet (langsam, netzwerkabhängig, verändert echte Daten).
+
+**Lösung:** Die Firebase-Config wird jetzt über einen `InjectionToken` (`FIREBASE_CONFIG`) per Dependency Injection an `ProductService` gegeben, statt `environment` direkt zu importieren. Im Test wird über `TestBed` eine isolierte Config mit `enabled: false` eingesetzt:
+
+```typescript
+TestBed.configureTestingModule({
+  providers: [{ provide: FIREBASE_CONFIG, useValue: { enabled: false, collectionName: 'products', config: {} } }],
+});
+const service = TestBed.inject(ProductService);
+```
+
+Dadurch bleibt der Test schnell, deterministisch und unabhängig vom echten Firebase-Projekt.
+
+### Erster Firestore-Ladevorgang braucht ein paar Sekunden
+
+**Problem:** Beim allerersten Verbindungsaufbau zu Firestore (dynamischer `import('firebase/firestore')`, Aufbau des Long-Polling-Kanals) dauert es einige Sekunden, bis `getAll()` antwortet. Bei einem automatisierten Browser-Test direkt nach dem Laden der Seite waren die Produktlisten deshalb kurzzeitig leer.
+
+**Lösung:** Kein Code-Problem, sondern normales Verhalten der ersten Firestore-Verbindung. Für Tests/Demos reicht es, ein paar Sekunden zu warten, bis die Verbindung steht. Für echte Nutzer ist das unauffällig, weil Kategorie- und Seitenaufbau sofort da sind und nur die Produktliste minimal nachlädt.
+
 ### GitHub zeigte alten Contributor an
 
 **Problem:** Obwohl der aktuelle `main` keine `Co-Authored-By`-Zeilen mehr enthielt, zeigte die GitHub-Seitenleiste im alten Repository weiterhin `claude` als zweiten Contributor.
@@ -699,19 +737,7 @@ sips -c 360 2172 --cropOffset 90 0 mcdenisa-banner.png --out mcdenisa-banner-wid
 
 ## Noch zu tun
 
-### 1. Firebase-Projekt aktivieren (Kap. 12)
-
-Status: offen
-
-Ziel:
-- Firebase-Projekt in der Console anlegen.
-- Firebase-Web-App-Konfiguration in `src/environments/environment.ts` eintragen.
-- `environment.firebase.enabled` auf `true` setzen.
-- Firestore-Regeln für die Prüfung passend konfigurieren.
-
-Voraussetzung: Firebase-Projekt muss vom Entwickler selbst angelegt werden (Console: console.firebase.google.com).
-
-### 2. Weitere Team-Mitglieder ergänzen
+### 1. Weitere Team-Mitglieder ergänzen
 
 Status: erledigt (4 von ursprünglich geplanten 5 ergänzt)
 
@@ -721,7 +747,7 @@ Status: erledigt (4 von ursprünglich geplanten 5 ergänzt)
 - Die Karten werden weiterhin über ein Karussell (3 pro Seite) präsentiert.
 - Falls noch eine weitere Person dazukommt: gleiches Schema wie bei den bestehenden Einträgen in `about.ts` verwenden.
 
-### 3. Quiz-Seite
+### 2. Quiz-Seite
 
 Status: offen
 
@@ -731,7 +757,7 @@ Ziel:
 - Ergebnisseite mit Auswertung.
 - Name-Eingabe per Reactive Form vor dem Quiz.
 
-### 4. Produktdaten erweitern
+### 3. Produktdaten erweitern
 
 Status: offen
 
@@ -858,11 +884,11 @@ flowchart TD
   D6 --> D7["Feedback-Liste\nerledigt"]
   D7 --> D8["Team-Flip-Cards\nerledigt"]
   D8 --> D9["GitHub-Prüfungsrepo sauber\nerledigt"]
-  D9 --> D10["Firebase SDK + ProductService CRUD\nvorbereitet"]
-  D10 --> N1["Firebase-Projekt aktivieren\noffen"]
-  N1 --> N2["Produktdaten erweitern\noffen"]
-  N2 --> N3["Quiz-Seite\noffen"]
-  N3 --> N4["Weitere Team-Mitglieder\noffen"]
+  D9 --> D10["Firebase SDK + ProductService CRUD\nerledigt"]
+  D10 --> D11["Firebase-Projekt aktivieren\nerledigt"]
+  D11 --> N1["Produktdaten erweitern\noffen"]
+  N1 --> N2["Quiz-Seite\noffen"]
+  N2 --> N3["Weitere Team-Mitglieder\noffen"]
 ```
 
 ---
@@ -880,6 +906,6 @@ flowchart TD
 | Custom Validator | 11.4 | erledigt |
 | Route Guard (CanActivateFn) | 10.2 | erledigt |
 | AuthService-Muster | 10.3 | erledigt |
-| Firebase / Firestore | 12 | technisch vorbereitet, Aktivierung offen |
+| Firebase / Firestore | 12 | erledigt |
 | Team-Karussell mit klickbarer 3D-Flip-Card | Zusatzfeature | erledigt |
 | Sauberes Prüfungs-Repository ohne alten Claude-Contributor | Projektabgabe | erledigt |
