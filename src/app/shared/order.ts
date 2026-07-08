@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { Order } from '../model/order';
 import { OrderItem } from '../model/order-item';
 import { Product } from '../model/product';
+import { CustomerAuthService } from './customer-auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
@@ -13,6 +14,8 @@ export class OrderService {
 
   private currentItems: OrderItem[] = [];
   private orderCounter = 1;
+
+  constructor(public customerAuth: CustomerAuthService) {}
 
   getItems(): OrderItem[] {
     return this.currentItems.slice();
@@ -25,7 +28,13 @@ export class OrderService {
   }
 
   getCheckoutTotal(checkoutType: string | null | undefined): number {
-    return this.getTotal() + (checkoutType === 'Liefern' ? this.deliveryFee : 0);
+    return this.getTotal() - this.getDiscount() + (checkoutType === 'Liefern' ? this.deliveryFee : 0);
+  }
+
+  getDiscount(): number {
+    return this.customerAuth.isLoggedIn()
+      ? Number((this.getTotal() * 0.1).toFixed(2))
+      : 0;
   }
 
   addProduct(product: Product, quantity: number = 1): void {
@@ -53,6 +62,8 @@ export class OrderService {
     phone: string,
     address: string
   ): Order {
+    const subtotal = this.getTotal();
+    const discount = this.getDiscount();
     const order = new Order(
       String(this.orderCounter++),
       this.currentItems.slice(),
@@ -62,7 +73,9 @@ export class OrderService {
       pickupTime,
       customerName,
       phone,
-      address
+      address,
+      subtotal,
+      discount,
     );
     this.currentItems = [];
     this.changed.next();

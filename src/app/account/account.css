@@ -1,0 +1,68 @@
+.account-page {
+  display: grid;
+  place-items: center;
+  min-height: 65vh;
+  padding-block: 2.5rem;
+}
+
+.account-card {
+  width: min(100%, 520px);
+  padding: 2rem;
+  border: 1px solid #ead8bd;
+  border-radius: 20px;
+  background: #fffaf2;
+  box-shadow: 0 14px 38px rgba(128, 0, 0, 0.14);
+}
+
+.account-card h2 {
+  color: var(--mc-maroon);
+  font-weight: 900;
+}
+
+.account-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  background: #f2e4d5;
+  padding: 4px;
+}
+
+.account-tabs button {
+  border: 0;
+  border-radius: 9px;
+  padding: 0.65rem;
+  background: transparent;
+  color: #5d3333;
+  font-weight: 800;
+}
+
+.account-tabs button.active,
+.account-primary {
+  background: var(--mc-maroon);
+  color: #ffffff;
+}
+
+.account-primary:hover {
+  background: #a00000;
+  color: #ffffff;
+}
+
+.account-success-icon {
+  font-size: 3rem;
+}
+
+.account-benefit {
+  margin-block: 1.25rem;
+  padding: 0.9rem;
+  border-radius: 12px;
+  background: #fff0bd;
+  color: #5c3a00;
+  font-weight: 800;
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}

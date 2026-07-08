@@ -8,6 +8,9 @@ import { Admin } from './admin/admin';
 import { ProductForm } from './product-form/product-form';
 import { Login } from './login/login';
 import { adminGuard } from './shared/admin.guard';
+import { Account } from './account/account';
+import { MyOrders } from './my-orders/my-orders';
+import { customerGuard } from './shared/customer.guard';
 
 export const routes: Routes = [
   { path: 'order',               component: Order },
@@ -15,6 +18,8 @@ export const routes: Routes = [
   { path: 'career',              component: Career },
   { path: 'contact',             component: Contact },
   { path: 'login',               component: Login },
+  { path: 'konto',               component: Account },
+  { path: 'meine-bestellungen',  component: MyOrders, canActivate: [customerGuard] },
   { path: 'admin',               component: Admin,        canActivate: [adminGuard] },
   { path: 'admin/product/new',   component: ProductForm,  canActivate: [adminGuard] },
   { path: 'admin/product/:id',   component: ProductForm,  canActivate: [adminGuard] },

@@ -7,6 +7,9 @@ import { Order as OrderModel } from '../model/order';
 import { ProductService } from '../shared/product';
 import { OrderService } from '../shared/order';
 import { phoneValidator } from '../shared/validators';
+import { CustomerAuthService } from '../shared/customer-auth.service';
+import { CustomerOrderService } from '../shared/customer-order.service';
+import { RouterLink } from '@angular/router';
 
 interface AccStep {
   title:    string;
@@ -40,7 +43,7 @@ const INGREDIENT_MAP: Record<string, string[]> = {
 
 @Component({
   selector: 'app-order',
-  imports: [CommonModule, CurrencyPipe, ReactiveFormsModule],
+  imports: [CommonModule, CurrencyPipe, ReactiveFormsModule, RouterLink],
   templateUrl: './order.html',
   styleUrl: './order.css',
 })
@@ -53,6 +56,7 @@ export class Order implements OnInit {
   selectedCategory: string | null = null;
   selectedQuantity: number = 1;
   checkoutVisible: boolean = false;
+  thankYouVisible: boolean = false;
   editingItem: OrderItem | null = null;
   readonly quantities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -80,7 +84,9 @@ export class Order implements OnInit {
 
   constructor(
     public productService: ProductService,
-    public orderService: OrderService
+    public orderService: OrderService,
+    public customerAuth: CustomerAuthService,
+    public customerOrders: CustomerOrderService,
   ) {}
 
   ngOnInit(): void {
@@ -247,6 +253,7 @@ export class Order implements OnInit {
     ), this.selectedQuantity);
     this.selectedQuantity = 1;
     this.lastOrder = null;
+    this.thankYouVisible = false;
   }
 
   private getPriceDelta(product: Product, sel: string[]): number {
@@ -328,6 +335,14 @@ export class Order implements OnInit {
     return this.orderService.getCheckoutTotal(this.checkoutForm.controls.checkoutType.value);
   }
 
+  get customerDiscount(): number {
+    return this.orderService.getDiscount();
+  }
+
+  get cartTotal(): number {
+    return this.total - this.customerDiscount;
+  }
+
   removeItem(item: OrderItem): void  { this.orderService.removeItem(item); }
 
   clearCart(): void {
@@ -340,14 +355,20 @@ export class Order implements OnInit {
 
   openCheckout(): void {
     this.checkoutVisible = true;
+    this.thankYouVisible = false;
     this.updateAddressValidators();
     this.lastOrder = null;
   }
 
   cancelCheckout(): void {
     this.checkoutVisible = false;
+    this.thankYouVisible = true;
     this.checkoutForm.reset();
     this.updateAddressValidators();
+  }
+
+  closeThankYou(): void {
+    this.thankYouVisible = false;
   }
 
   checkout(): void {
@@ -364,6 +385,9 @@ export class Order implements OnInit {
       phone!,
       address ?? ''
     ) as OrderModel;
+    void this.customerOrders.save(this.lastOrder).catch(() => {
+      // Die Bestellung bleibt erfolgreich; nur die Online-Historie war nicht erreichbar.
+    });
     this.checkoutVisible = false;
     this.checkoutForm.reset();
     this.updateAddressValidators();

@@ -6,7 +6,13 @@ Dieses Dokument sammelt, was im Angular/WebFrontends-Projekt umgesetzt wurde, we
 
 ## Aktueller Prüfungsstand
 
-Stand: 08.07.2026
+Stand: 09.07.2026
+
+- Kunden können sich per Firebase Authentication registrieren und einloggen.
+- Eingeloggte Kunden erhalten 10 % Rabatt und sehen ihre früheren Bestellungen unter `/meine-bestellungen`.
+- Bestellhistorien werden geschützt unter `users/{uid}/orders` in Firestore gespeichert.
+- Die neuen Firestore-Regeln wurden am 09.07.2026 deployed.
+- Einmalig offen: In der Firebase Console muss „Authentication → Email/Password“ aktiviert werden.
 
 - Firebase ist jetzt aktiv (nicht mehr nur vorbereitet). Details siehe Abschnitt „Firebase / Firestore (Kap. 12)" weiter unten.
 
@@ -97,6 +103,7 @@ Umsetzung:
   - `update(product)` — überschreibt ein bestehendes Produkt mit `setDoc`
   - `remove(product)` — löscht ein Produkt mit `deleteDoc`
 - Beim ersten Start mit leerer Collection hat `seedDefaultProducts()` die vorhandenen McDenisa-Startprodukte einmalig in Firestore geschrieben.
+- Wenn Firestore nicht erreichbar ist oder länger als fünf Sekunden nicht antwortet, verwendet die Kassenseite automatisch die lokalen Startprodukte. Dadurch bleibt Bestellen möglich.
 - Components bleiben bewusst schlank: Admin, Produktformular und Bestellseite rufen weiterhin nur den `ProductService` auf. Der Datenbankzugriff ist im Service gekapselt, wie im Buch bei Services/Dependency Injection vorgesehen.
 
 Warum ein `InjectionToken` für die Firebase-Config?
@@ -157,6 +164,7 @@ products
   - Kommentar (optional)
 - Abgeschickte Feedbacks werden rechts unter „Öffentliche Feedbacks" angezeigt.
 - Feedbacks werden im Browser über `localStorage` gespeichert (`mcdenisaFeedbacks`) und bleiben nach Reload sichtbar.
+- Kommentare sind auf den hellen Feedback-Karten dunkel und gut lesbar; Zeilenumbrüche bleiben erhalten.
 - Die frühere Frage „Warst du drinnen oder draußen?" wurde entfernt.
 
 ### Admin-Bereich
@@ -191,6 +199,27 @@ Datei: `src/app/login/login.ts`
 - PIN: `1234`.
 - Bei richtigem PIN: nutzt `AuthService.login()` und navigiert zu `/admin`.
 - Bei falschem PIN: zeigt Fehlermeldung, setzt das Formular zurück.
+
+### Kundenkonto, Rabatt und Bestellhistorie
+
+Dateien:
+- `src/app/account/` — Registrierung und Kunden-Login
+- `src/app/my-orders/` — persönliche Bestellhistorie
+- `src/app/shared/customer-auth.service.ts` — Firebase Authentication
+- `src/app/shared/customer-order.service.ts` — Bestellungen in Firestore speichern/laden
+- `src/app/shared/customer.guard.ts` — schützt `/meine-bestellungen`
+
+Umsetzung:
+- Registrierung und Login erfolgen mit E-Mail und Passwort über Firebase Authentication.
+- Der bestehende Admin-PIN bleibt vollständig getrennt vom Kundenkonto.
+- Der Auth-Status wird als Angular-Signal bereitgestellt, damit Navbar und Kasse sofort reagieren.
+- Eingeloggte Kunden erhalten im `OrderService` 10 % Rabatt auf den Warenwert.
+- Lieferkosten werden erst nach Abzug des Rabatts addiert.
+- Nach erfolgreichem Checkout wird die Bestellung unter `users/{uid}/orders` gespeichert.
+- Firestore-Regeln erlauben Kunden nur Zugriff auf ihre eigene Bestellhistorie.
+- Die Route `/meine-bestellungen` wird durch `customerGuard` geschützt.
+- Gäste können weiterhin ohne Konto bestellen, erhalten aber keinen Rabatt und keine Online-Historie.
+- Nach dem Bestätigen erscheint ein Danke-Fenster mit Bestellnummer und Liefer-/Abholhinweis.
 
 ### Custom Validator (Kap. 11.4)
 
@@ -257,6 +286,12 @@ Dateien:
 - `src/app/about/about.html`
 - `src/app/about/about.css`
 - `public/assets/team/othmane.jpeg`, `maria.jpeg`, `apitz.jpeg`, `grabaz.jpeg`, `dino.jpeg`, `saitinidou.jpeg`, `alina.jpeg`
+
+- Das Karussell zeigt eine Spielkarte pro Seite und wird mit Pfeilen bedient.
+- Reihenfolge: Frau Saitinidou, Apitz, Frau Grabaz, Maria, Alina, Dino, Othmane.
+- Die Karten stehen im Hochformat und wechseln per 3D-Flip zwischen Vorder- und Rückseite.
+- Die Rückseiten haben dieselbe Struktur und individuelle Emojis vor dem Motto.
+- Die Rückseite ist nicht scrollbar; der vollständige Inhalt bleibt sichtbar.
 
 Status: erledigt
 
@@ -737,17 +772,25 @@ Dadurch bleibt der Test schnell, deterministisch und unabhängig vom echten Fire
 
 ## Noch zu tun
 
-### 1. Weitere Team-Mitglieder ergänzen
+### 1. Firebase Authentication aktivieren
+
+Status: einmaliger Console-Schritt offen
+
+- Firebase Console öffnen.
+- `Authentication` → `Sign-in method` → `Email/Password` aktivieren.
+- Registrierung, Login, Rabatt und Bestellhistorie sind im Anwendungscode bereits umgesetzt.
+
+### 2. Weitere Team-Mitglieder ergänzen
 
 Status: erledigt (4 von ursprünglich geplanten 5 ergänzt)
 
 - Frau Grabaz, Dino, Frau Saitinidou und Alina wurden in das `teamMembers`-Array eingetragen.
 - Cartoon-Bilder liegen unter `public/assets/team/` (`grabaz.jpeg`, `dino.jpeg`, `saitinidou.jpeg`, `alina.jpeg`).
 - Steckbrieftexte (Lieblingsessen, Stärke, Eigenschaften, Ziel, Motto) sind ergänzt.
-- Die Karten werden weiterhin über ein Karussell (3 pro Seite) präsentiert.
+- Die Karten werden über ein Karussell mit einer Spielkarte pro Seite präsentiert.
 - Falls noch eine weitere Person dazukommt: gleiches Schema wie bei den bestehenden Einträgen in `about.ts` verwenden.
 
-### 2. Quiz-Seite
+### 3. Quiz-Seite
 
 Status: offen
 
@@ -757,7 +800,7 @@ Ziel:
 - Ergebnisseite mit Auswertung.
 - Name-Eingabe per Reactive Form vor dem Quiz.
 
-### 3. Produktdaten erweitern
+### 4. Produktdaten erweitern
 
 Status: offen
 

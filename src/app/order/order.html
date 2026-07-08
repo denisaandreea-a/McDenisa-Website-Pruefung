@@ -90,9 +90,17 @@
     </div>
 
     <div class="cart-footer">
+      @if (customerAuth.customer() && customerDiscount > 0) {
+        <div class="customer-discount-line">
+          <span>10 % Kundenrabatt</span>
+          <span>−{{ customerDiscount | currency:'EUR' }}</span>
+        </div>
+      } @else if (!customerAuth.customer()) {
+        <a class="customer-discount-login" routerLink="/konto">Einloggen und 10 % sparen</a>
+      }
       <div class="d-flex justify-content-between fw-bold mb-2">
         <span>Gesamt</span>
-        <span class="cart-total-price">{{ total | currency:'EUR' }}</span>
+        <span class="cart-total-price">{{ cartTotal | currency:'EUR' }}</span>
       </div>
       <button type="button" class="btn-bezahlen"
               [disabled]="items.length === 0"
@@ -251,6 +259,9 @@
       <div class="checkout-summary">
         <div>
           <span>{{ items.length }} Position(en)</span>
+          @if (customerDiscount > 0) {
+            <div class="checkout-discount-line">10 % Kundenrabatt (−{{ customerDiscount | currency:'EUR' }})</div>
+          }
           @if (checkoutForm.controls.checkoutType.value === 'Liefern') {
             <div class="checkout-fee-line">Lieferung (+{{ deliveryFee | currency:'EUR' }})</div>
           }
@@ -270,6 +281,24 @@
   </div>
 }
 
+@if (thankYouVisible && lastOrder) {
+  <div class="thank-you-overlay" role="dialog" aria-modal="true" aria-labelledby="thank-you-title">
+    <div class="thank-you-modal">
+      <div class="thank-you-icon" aria-hidden="true">✅</div>
+      <h2 id="thank-you-title">Vielen Dank für deine Bestellung!</h2>
+      <p>
+        Deine Bestellung <strong>#{{ lastOrder.id }}</strong> wurde erfolgreich bestätigt.
+      </p>
+      <p class="thank-you-hint">
+        Wir bereiten alles für {{ lastOrder.checkoutType === 'Liefern' ? 'die Lieferung' : 'die Abholung' }} vor.
+      </p>
+      <button type="button" class="thank-you-button" (click)="closeThankYou()">
+        Schließen
+      </button>
+    </div>
+  </div>
+}
+
 @if (lastOrder) {
   <div class="bon-card mt-3 mx-3">
     <div class="bon-header">Bestellung #{{ lastOrder.id }} – Vielen Dank!</div>
@@ -285,6 +314,12 @@
         <span>Gesamt</span>
         <span>{{ lastOrder.total | currency:'EUR' }}</span>
       </div>
+      @if (lastOrder.discount > 0) {
+        <div class="d-flex justify-content-between small text-success">
+          <span>10 % Kundenrabatt</span>
+          <span>−{{ lastOrder.discount | currency:'EUR' }}</span>
+        </div>
+      }
       <div class="d-flex justify-content-between small mt-2">
         <span>{{ lastOrder.checkoutType }}</span>
         <span>{{ lastOrder.pickupTime }} Uhr</span>

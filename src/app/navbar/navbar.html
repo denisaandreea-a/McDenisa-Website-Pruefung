@@ -23,6 +23,18 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/contact" routerLinkActive="active">Kontakt</a>
         </li>
+        @if (customerAuth.customer()) {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/meine-bestellungen" routerLinkActive="active">Meine Bestellungen</a>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="nav-link customer-logout" (click)="logoutCustomer()">Ausloggen</button>
+          </li>
+        } @else {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/konto" routerLinkActive="active">Einloggen</a>
+          </li>
+        }
         <li class="nav-item ms-2">
           <a class="nav-link" routerLink="/admin" routerLinkActive="active">Admin</a>
         </li>

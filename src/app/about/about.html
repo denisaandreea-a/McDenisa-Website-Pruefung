@@ -132,13 +132,8 @@
                             <p>{{ member.superpower }}</p>
                           </div>
                           <div>
-                            @if (member.funFact) {
-                              <h6>🐜 Fun Fact</h6>
-                              <p>{{ member.funFact }}</p>
-                            } @else {
-                              <h6>🎯 Ziel</h6>
-                              <p>{{ member.goal }}</p>
-                            }
+                            <h6>🎯 Ziel</h6>
+                            <p>{{ member.goal }}</p>
                           </div>
                         </section>
 
@@ -151,14 +146,10 @@
                           </div>
                         </section>
 
-                        @if (member.funFact) {
-                          <section>
-                            <h6>🎯 Ziel</h6>
-                            <p>{{ member.goal }}</p>
-                          </section>
-                        }
-
-                        <blockquote>💬 „{{ member.motto }}“</blockquote>
+                        <blockquote>
+                          <span aria-hidden="true">{{ member.mottoEmoji }}</span>
+                          „{{ member.motto }}“
+                        </blockquote>
                       </div>
                     </div>
                   </div>

@@ -225,6 +225,27 @@
   color: #fff;
 }
 
+.customer-discount-line,
+.checkout-discount-line {
+  color: #218838;
+  font-weight: 800;
+}
+
+.customer-discount-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+  font-size: 0.84rem;
+}
+
+.customer-discount-login {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--mc-maroon);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
 .checkout-overlay {
   position: fixed;
   inset: 0;
@@ -234,6 +255,60 @@
   justify-content: center;
   background: rgba(34, 18, 10, 0.58);
   padding: 18px;
+}
+
+.thank-you-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(42, 10, 10, 0.66);
+}
+
+.thank-you-modal {
+  width: min(100%, 460px);
+  padding: 2rem;
+  border: 3px solid #ffd700;
+  border-radius: 22px;
+  background: #fffaf2;
+  box-shadow: 0 24px 70px rgba(42, 10, 10, 0.35);
+  color: #2a0a0a;
+  text-align: center;
+}
+
+.thank-you-icon {
+  margin-bottom: 0.65rem;
+  font-size: 3rem;
+}
+
+.thank-you-modal h2 {
+  margin-bottom: 0.75rem;
+  color: var(--mc-maroon);
+  font-weight: 900;
+}
+
+.thank-you-modal p {
+  margin-bottom: 0.45rem;
+}
+
+.thank-you-hint {
+  color: #6b4a3b;
+}
+
+.thank-you-button {
+  margin-top: 1.25rem;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.7rem 1.8rem;
+  background: var(--mc-maroon);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.thank-you-button:hover {
+  background: #a00000;
 }
 
 .checkout-modal {

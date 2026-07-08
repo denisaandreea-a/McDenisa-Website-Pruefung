@@ -2,3 +2,8 @@
   height: 38px;
   width: auto;
 }
+
+.customer-logout {
+  border: 0;
+  background: transparent;
+}

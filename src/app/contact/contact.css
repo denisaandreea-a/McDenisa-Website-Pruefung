@@ -58,8 +58,10 @@
   margin-top: 4px;
 }
 
-.feedback-comment {
+.side-info-card .feedback-comment {
   color: #2f1717;
   font-size: 0.82rem;
   margin: 6px 0 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }

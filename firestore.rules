@@ -5,5 +5,10 @@ service cloud.firestore {
     match /products/{productId} {
       allow read, write: if true;
     }
+
+    match /users/{userId}/orders/{orderId} {
+      allow read, create: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if false;
+    }
   }
 }

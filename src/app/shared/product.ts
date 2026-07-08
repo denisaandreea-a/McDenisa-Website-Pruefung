@@ -102,21 +102,35 @@ export class ProductService {
   }
 
   async getAll(): Promise<Product[]> {
-    const firestore = await this.getFirestore();
-    if (!firestore) {
+    try {
+      const firestore = await this.getFirestore();
+      if (!firestore) {
+        return this.sortedProducts(this.objects);
+      }
+
+      const { api, db } = firestore;
+      const snapshot = await this.withTimeout(
+        api.getDocs(api.collection(db, this.collectionName)),
+        5000,
+        'Firestore antwortet nicht. Es werden lokale Produkte verwendet.',
+      );
+      const products = snapshot.docs.map(productDoc =>
+        this.fromFirestore(productDoc.id, productDoc.data() as ProductData)
+      );
+
+      if (products.length === 0) {
+        await this.seedDefaultProducts();
+        return this.sortedProducts(this.objects);
+      }
+
+      this.firestoreError = null;
+      return this.sortedProducts(products);
+    } catch (error) {
+      this.firestoreError = error instanceof Error
+        ? error.message
+        : 'Produkte konnten nicht aus Firestore geladen werden.';
       return this.sortedProducts(this.objects);
     }
-
-    const { api, db } = firestore;
-    const snapshot = await api.getDocs(api.collection(db, this.collectionName));
-    const products = snapshot.docs.map(productDoc => this.fromFirestore(productDoc.id, productDoc.data() as ProductData));
-
-    if (products.length === 0) {
-      await this.seedDefaultProducts();
-      return this.sortedProducts(this.objects);
-    }
-
-    return this.sortedProducts(products);
   }
 
   async getById(id: string): Promise<Product | undefined> {
@@ -195,7 +209,9 @@ export class ProductService {
     this.validateFirebaseConfig();
     const firebaseApp = await import('firebase/app');
     const firestore = await import('firebase/firestore');
-    const app = firebaseApp.initializeApp(this.firebaseConfig.config);
+    const app = firebaseApp.getApps().length > 0
+      ? firebaseApp.getApp()
+      : firebaseApp.initializeApp(this.firebaseConfig.config);
 
     this.firestoreApi = firestore;
     this.db = firestore.getFirestore(app);
@@ -251,6 +267,23 @@ export class ProductService {
     return products.slice().sort((a, b) => {
       const categoryCompare = a.category.localeCompare(b.category);
       return categoryCompare !== 0 ? categoryCompare : a.name.localeCompare(b.name);
+    });
+  }
+
+  private withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const timeoutId = setTimeout(() => reject(new Error(message)), timeoutMs);
+
+      promise.then(
+        value => {
+          clearTimeout(timeoutId);
+          resolve(value);
+        },
+        error => {
+          clearTimeout(timeoutId);
+          reject(error);
+        },
+      );
     });
   }
 }

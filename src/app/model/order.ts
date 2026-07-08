@@ -13,6 +13,8 @@ export class Order {
     public pickupTime: string,   // Gewuenschte Uhrzeit
     public customerName: string, // Name des Kunden
     public phone: string,        // Handynummer fuer Rueckfragen
-    public address: string       // Lieferadresse, falls geliefert wird
+    public address: string,      // Lieferadresse, falls geliefert wird
+    public subtotal: number = total,
+    public discount: number = 0
   ) {}
 }

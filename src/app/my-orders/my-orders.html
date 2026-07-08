@@ -1,0 +1,49 @@
+<div class="container orders-page">
+  <div class="orders-header">
+    <div>
+      <p class="orders-eyebrow">Kundenkonto</p>
+      <h2>Meine Bestellungen</h2>
+    </div>
+    <a class="btn btn-outline-secondary" routerLink="/order">Neue Bestellung</a>
+  </div>
+
+  @if (loading) {
+    <div class="orders-state">Bestellungen werden geladen …</div>
+  } @else if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  } @else if (orders.length === 0) {
+    <div class="orders-state">
+      <div class="orders-state-icon">🧾</div>
+      <h3>Noch keine Bestellungen</h3>
+      <p>Deine nächste Bestellung erscheint nach dem Abschluss automatisch hier.</p>
+    </div>
+  } @else {
+    <div class="orders-list">
+      @for (order of orders; track order.id + order.createdAt) {
+        <article class="order-history-card">
+          <div class="order-history-head">
+            <div>
+              <strong>Bestellung #{{ order.id }}</strong>
+              <div>{{ order.createdAt }}</div>
+            </div>
+            <strong>{{ order.total | currency:'EUR' }}</strong>
+          </div>
+
+          @for (item of order.items; track item.name) {
+            <div class="order-history-item">
+              <span>{{ item.quantity }} × {{ item.name }}</span>
+              <span>{{ item.price * item.quantity | currency:'EUR' }}</span>
+            </div>
+          }
+
+          <div class="order-history-summary">
+            <span>{{ order.checkoutType }} · {{ order.pickupTime }} Uhr</span>
+            @if (order.discount > 0) {
+              <span class="order-discount">10 % Rabatt: −{{ order.discount | currency:'EUR' }}</span>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

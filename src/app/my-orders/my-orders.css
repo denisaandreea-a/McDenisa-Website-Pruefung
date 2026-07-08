@@ -1,0 +1,78 @@
+.orders-page {
+  padding-block: 2rem 3rem;
+}
+
+.orders-header,
+.order-history-head,
+.order-history-item,
+.order-history-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.orders-header {
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.orders-header h2 {
+  color: var(--mc-maroon);
+  font-weight: 900;
+}
+
+.orders-eyebrow {
+  margin: 0;
+  color: #8b4513;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.orders-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.order-history-card,
+.orders-state {
+  border: 1px solid #ead8bd;
+  border-radius: 16px;
+  padding: 1.25rem;
+  background: #fffaf2;
+}
+
+.order-history-head {
+  margin-bottom: 0.8rem;
+  color: var(--mc-maroon);
+}
+
+.order-history-head div div {
+  color: #80675d;
+  font-size: 0.8rem;
+}
+
+.order-history-item {
+  padding-block: 0.3rem;
+  border-bottom: 1px dashed #e3cfc0;
+}
+
+.order-history-summary {
+  margin-top: 0.8rem;
+  color: #6b4c43;
+  font-size: 0.86rem;
+}
+
+.order-discount {
+  color: #218838;
+  font-weight: 800;
+}
+
+.orders-state {
+  padding: 3rem;
+  text-align: center;
+}
+
+.orders-state-icon {
+  font-size: 3rem;
+}

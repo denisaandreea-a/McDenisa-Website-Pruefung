@@ -1,0 +1,51 @@
+<div class="container account-page">
+  <div class="account-card">
+    @if (customerAuth.customer(); as customer) {
+      <div class="account-success-icon">👋</div>
+      <h2>Hallo {{ customer.displayName }}!</h2>
+      <p>Du bist mit <strong>{{ customer.email }}</strong> eingeloggt.</p>
+      <div class="account-benefit">🎉 Auf jede Bestellung erhältst du 10 % Kundenrabatt.</div>
+      <div class="account-actions">
+        <a class="btn account-primary" routerLink="/meine-bestellungen">Meine Bestellungen</a>
+        <button type="button" class="btn btn-outline-secondary" (click)="logout()">Ausloggen</button>
+      </div>
+    } @else {
+      <div class="account-tabs">
+        <button type="button" [class.active]="!registerMode" (click)="setMode(false)">Einloggen</button>
+        <button type="button" [class.active]="registerMode" (click)="setMode(true)">Registrieren</button>
+      </div>
+
+      <h2>{{ registerMode ? 'Kundenkonto erstellen' : 'Willkommen zurück' }}</h2>
+      <p class="text-muted">Einloggen, 10 % sparen und frühere Bestellungen ansehen.</p>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        @if (registerMode) {
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Name *</label>
+            <input class="form-control" formControlName="displayName" autocomplete="name">
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">E-Mail-Adresse *</label>
+          <input type="email" class="form-control" formControlName="email" autocomplete="email">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Passwort *</label>
+          <input type="password" class="form-control" formControlName="password"
+                 [autocomplete]="registerMode ? 'new-password' : 'current-password'">
+          <div class="form-text">Mindestens 6 Zeichen.</div>
+        </div>
+
+        <button type="submit" class="btn account-primary w-100" [disabled]="loading">
+          {{ loading ? 'Bitte warten …' : (registerMode ? 'Registrieren' : 'Einloggen') }}
+        </button>
+      </form>
+    }
+  </div>
+</div>
