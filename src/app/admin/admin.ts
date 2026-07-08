@@ -14,6 +14,8 @@ import { AuthService } from '../shared/auth.service';
 export class Admin implements OnInit {
 
   products: Product[] = [];
+  isLoading = true;
+  errorMessage = '';
 
   constructor(
     public productService: ProductService,
@@ -32,12 +34,24 @@ export class Admin implements OnInit {
   }
 
   async loadProducts(): Promise<void> {
-    this.products = await this.productService.getAll();
+    this.isLoading = true;
+    this.errorMessage = '';
+    try {
+      this.products = await this.productService.getAll();
+    } catch (error) {
+      this.errorMessage = error instanceof Error ? error.message : 'Produkte konnten nicht geladen werden.';
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   async deleteProduct(product: Product): Promise<void> {
     if (confirm(`"${product.name}" wirklich löschen?`)) {
-      await this.productService.remove(product);
+      try {
+        await this.productService.remove(product);
+      } catch (error) {
+        this.errorMessage = error instanceof Error ? error.message : 'Produkt konnte nicht gelöscht werden.';
+      }
     }
   }
 }

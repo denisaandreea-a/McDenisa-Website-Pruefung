@@ -41,8 +41,14 @@ This will compile your project and store the build artifacts in the `dist/` dire
 To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
 
 ```bash
-ng test
+npm test
 ```
+
+## Firebase / Firestore
+
+The product administration is prepared for Firebase Firestore. The app uses local starter data by default and can be switched to Firestore in `src/environments/environment.ts`.
+
+See `docs/firebase-pruefung.md` for the activation steps, collection structure, and demo rules.
 
 ## Running end-to-end tests
 

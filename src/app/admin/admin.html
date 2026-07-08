@@ -7,6 +7,28 @@
   </div>
 </div>
 
+<div class="alert alert-info d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <div>
+    <strong>Datenquelle:</strong> {{ productService.getDataSourceName() }}
+    <span class="ms-2">Collection: {{ productService.getCollectionName() }}</span>
+  </div>
+  @if (productService.isFirestoreEnabled()) {
+    <span class="badge text-bg-success">Firestore aktiv</span>
+  } @else {
+    <span class="badge text-bg-secondary">Offline-Modus</span>
+  }
+</div>
+
+@if (errorMessage) {
+  <div class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+}
+
+@if (isLoading) {
+  <div class="alert alert-light border">Produkte werden geladen...</div>
+}
+
 <table class="table table-bordered table-hover">
   <thead class="table-dark">
     <tr>
