@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import type { Firestore } from 'firebase/firestore';
 import { Product } from '../model/product';
-import { environment } from '../../environments/environment';
+import { FIREBASE_CONFIG, FirebaseConfig } from './firebase.config';
 
 type ProductData = {
   name: string;
@@ -21,7 +21,8 @@ export class ProductService {
   private db: Firestore | null;
   private firestoreApi: FirestoreApi | null = null;
   private readonly firestoreReady: Promise<void> | null;
-  private readonly collectionName = environment.firebase.collectionName;
+  private readonly collectionName: string;
+  private firestoreError: string | null = null;
 
   private readonly objects: Product[] = [
 
@@ -70,14 +71,34 @@ export class ProductService {
     new Product('d5', 'Softeis',               1.00, 'Desserts'),
   ];
 
-  constructor() {
-    if (environment.firebase.enabled) {
+  constructor(@Inject(FIREBASE_CONFIG) private firebaseConfig: FirebaseConfig) {
+    this.collectionName = this.firebaseConfig.collectionName;
+    if (this.firebaseConfig.enabled) {
       this.db = null;
-      this.firestoreReady = this.initFirestore();
+      this.firestoreReady = this.initFirestore().catch((error: unknown) => {
+        this.firestoreError = error instanceof Error ? error.message : 'Firestore konnte nicht gestartet werden.';
+        throw error;
+      });
     } else {
       this.db = null;
       this.firestoreReady = null;
     }
+  }
+
+  isFirestoreEnabled(): boolean {
+    return this.firebaseConfig.enabled;
+  }
+
+  getDataSourceName(): string {
+    return this.firebaseConfig.enabled ? 'Firebase Firestore' : 'Lokale Startdaten';
+  }
+
+  getCollectionName(): string {
+    return this.collectionName;
+  }
+
+  getFirestoreError(): string | null {
+    return this.firestoreError;
   }
 
   async getAll(): Promise<Product[]> {
@@ -171,25 +192,47 @@ export class ProductService {
   }
 
   private async initFirestore(): Promise<void> {
+    this.validateFirebaseConfig();
     const firebaseApp = await import('firebase/app');
     const firestore = await import('firebase/firestore');
-    const app = firebaseApp.initializeApp(environment.firebase.config);
+    const app = firebaseApp.initializeApp(this.firebaseConfig.config);
 
     this.firestoreApi = firestore;
     this.db = firestore.getFirestore(app);
   }
 
   private async getFirestore(): Promise<{ api: FirestoreApi; db: Firestore } | null> {
-    if (!environment.firebase.enabled || !this.firestoreReady) {
+    if (!this.firebaseConfig.enabled || !this.firestoreReady) {
       return null;
     }
 
-    await this.firestoreReady;
+    try {
+      await this.firestoreReady;
+    } catch (error) {
+      this.firestoreError = error instanceof Error ? error.message : 'Firestore konnte nicht gestartet werden.';
+      throw error;
+    }
     if (!this.firestoreApi || !this.db) {
       throw new Error('Firestore konnte nicht initialisiert werden.');
     }
 
     return { api: this.firestoreApi, db: this.db };
+  }
+
+  private validateFirebaseConfig(): void {
+    const config = this.firebaseConfig.config;
+    const requiredValues = [
+      config.apiKey,
+      config.authDomain,
+      config.projectId,
+      config.storageBucket,
+      config.messagingSenderId,
+      config.appId,
+    ];
+
+    if (requiredValues.some(value => !value || value.includes('DEIN') || value.includes('DEINE'))) {
+      throw new Error('Firebase ist aktiviert, aber die Firebase-Konfiguration enthält noch Platzhalter.');
+    }
   }
 
   private toFirestore(product: Product): ProductData {

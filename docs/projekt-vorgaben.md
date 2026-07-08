@@ -38,7 +38,7 @@ Dieses Projekt folgt den Mustern aus dem Kursbuch "Web-Frontends" von Prof. Alex
 - Kap. 9: Routing, RouterLink, RouterOutlet
 - Kap. 9.5: Navbar mit routerLinkActive
 - Kap. 10.2: Route Guard (CanActivateFn) — umgesetzt in `admin.guard.ts`
-- Kap. 10.3: AuthService-Muster — noch offen
+- Kap. 10.3: AuthService-Muster — umgesetzt in `auth.service.ts`
 - Kap. 11: Reactive Forms
 - Kap. 11.4: Custom Validator — umgesetzt in `validators.ts`
-- Kap. 12: Firebase/Firestore — technisch vorbereitet; Firebase-Projekt und Konfigurationsdaten müssen noch eingetragen werden
+- Kap. 12: Firebase/Firestore — umgesetzt und aktiv, Konfiguration per `InjectionToken` in `firebase.config.ts`
