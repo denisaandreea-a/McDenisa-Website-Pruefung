@@ -116,6 +116,21 @@ flowchart TD
 | Produkte fehlten bei langsamer Verbindung | lokale Startprodukte als Fallback |
 | Feedback-Kommentar war nicht lesbar | CSS-Farbe und Zeilenumbrüche korrigiert |
 | Tests sollten nicht gegen echte Firebase laufen | Firebase-Konfiguration über Injection Token |
+| Burger-Menü auf dem Handy ließ sich nicht anklicken | Bootstrap-CSS war eingebunden, aber Bootstrap-JS fehlte in `angular.json` → `bootstrap.bundle.min.js` als Script ergänzt |
+| Kategorie-Leiste auf dem Handy kaum sichtbar/nutzbar | `.category-slider` und `.cat-card` waren nur für Desktop-Breite gebaut (8 Kacheln mit `flex: 1`) → Media Query ab 700px macht die Leiste horizontal scrollbar und die Kacheln kleiner |
+
+### Prüfungserklärung: Responsive Layout
+
+Das Kassenlayout (`.pos-layout`, `.pos-cart` mit fester Breite `280px`, `.category-slider`) wurde ursprünglich für Desktop gebaut und nicht mit Media Queries abgesichert. Auf dem Handy führte das zu zwei sichtbaren Fehlern:
+
+1. **Burger-Menü tot:** Der Button nutzt Bootstraps `data-bs-toggle="collapse"`. Das ist reines JavaScript-Verhalten – ohne das Bootstrap-JS-Bundle registriert Bootstrap keinen Klick-Handler, der Button sieht nur so aus, als würde er funktionieren.
+2. **Kategorien verschwinden:** `.category-slider` ist eine Flexbox-Zeile, in der jede der 8 `.cat-card`-Kacheln `flex: 1` bekommt. Auf schmalen Bildschirmen bleibt für jede Kachel kaum Platz, Bild/Icon/Text (mit `overflow: hidden`) werden unlesbar klein.
+
+Merksatz für die mündliche Prüfung:
+
+> „Ich habe Media Queries benutzt, weil das ursprüngliche POS-Layout für Desktop gebaut war. Auf mobilen Geräten wird die Kategorieauswahl horizontal scrollbar und die Kacheln werden kleiner, statt sich zusammenzuquetschen.“
+
+Optionaler nächster Schritt (noch nicht umgesetzt): `.pos-layout` und `.pos-cart` unter einem Breakpoint auf ein einspaltiges Layout umstellen (Kategorien/Produkte zuerst, Warenkorb darunter oder als kompakter Bereich), statt die feste `280px`-Breite des Warenkorbs beizubehalten.
 
 ## Definition of Done
 
