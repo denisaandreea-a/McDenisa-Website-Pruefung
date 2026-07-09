@@ -32,14 +32,12 @@ export class CustomerOrderService {
       return;
     }
 
-    const { db, api } = await this.getFirestore();
-    await api.addDoc(api.collection(db, 'users', customer.uid, 'orders'), {
-      orderNumber: order.id,
+    const savedOrder: SavedCustomerOrder = {
+      id: order.id,
       total: order.total,
       subtotal: order.subtotal,
       discount: order.discount,
       createdAt: order.createdAt,
-      createdAtIso: new Date().toISOString(),
       checkoutType: order.checkoutType,
       pickupTime: order.pickupTime,
       customerName: order.customerName,
@@ -48,7 +46,22 @@ export class CustomerOrderService {
         price: item.product.price,
         quantity: item.quantity,
       })),
-    });
+    };
+    this.saveLocally(customer.uid, savedOrder);
+
+    const { db, api } = await this.getFirestore();
+    await this.withTimeout(api.addDoc(api.collection(db, 'users', customer.uid, 'orders'), {
+      orderNumber: savedOrder.id,
+      total: savedOrder.total,
+      subtotal: savedOrder.subtotal,
+      discount: savedOrder.discount,
+      createdAt: savedOrder.createdAt,
+      createdAtIso: new Date().toISOString(),
+      checkoutType: savedOrder.checkoutType,
+      pickupTime: savedOrder.pickupTime,
+      customerName: savedOrder.customerName,
+      items: savedOrder.items,
+    }), 5000);
   }
 
   async getAll(): Promise<SavedCustomerOrder[]> {
@@ -58,20 +71,27 @@ export class CustomerOrderService {
       return [];
     }
 
-    const { db, api } = await this.getFirestore();
-    const ordersQuery = api.query(
-      api.collection(db, 'users', customer.uid, 'orders'),
-      api.orderBy('createdAtIso', 'desc'),
-    );
-    const snapshot = await api.getDocs(ordersQuery);
+    const localOrders = this.loadLocally(customer.uid);
 
-    return snapshot.docs.map(orderDoc => {
-      const data = orderDoc.data() as Omit<SavedCustomerOrder, 'id'> & { orderNumber?: string };
-      return {
-        ...data,
-        id: data.orderNumber ?? orderDoc.id,
-      };
-    });
+    try {
+      const { db, api } = await this.getFirestore();
+      const ordersQuery = api.query(
+        api.collection(db, 'users', customer.uid, 'orders'),
+        api.orderBy('createdAtIso', 'desc'),
+      );
+      const snapshot = await this.withTimeout(api.getDocs(ordersQuery), 5000);
+      const onlineOrders = snapshot.docs.map(orderDoc => {
+        const data = orderDoc.data() as Omit<SavedCustomerOrder, 'id'> & { orderNumber?: string };
+        return {
+          ...data,
+          id: data.orderNumber ?? orderDoc.id,
+        };
+      });
+
+      return onlineOrders.length > 0 ? onlineOrders : localOrders;
+    } catch {
+      return localOrders;
+    }
   }
 
   private async getFirestore(): Promise<{
@@ -90,5 +110,45 @@ export class CustomerOrderService {
 
     this.db ??= api.getFirestore(app);
     return { db: this.db, api };
+  }
+
+  private getStorageKey(uid: string): string {
+    return `mcdenisaCustomerOrders:${uid}`;
+  }
+
+  private loadLocally(uid: string): SavedCustomerOrder[] {
+    try {
+      const saved = localStorage.getItem(this.getStorageKey(uid));
+      return saved ? JSON.parse(saved) as SavedCustomerOrder[] : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private saveLocally(uid: string, order: SavedCustomerOrder): void {
+    const orders = this.loadLocally(uid);
+    localStorage.setItem(
+      this.getStorageKey(uid),
+      JSON.stringify([order, ...orders].slice(0, 50)),
+    );
+  }
+
+  private withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const timeoutId = setTimeout(
+        () => reject(new Error('Firestore antwortet nicht.')),
+        timeoutMs,
+      );
+      promise.then(
+        value => {
+          clearTimeout(timeoutId);
+          resolve(value);
+        },
+        error => {
+          clearTimeout(timeoutId);
+          reject(error);
+        },
+      );
+    });
   }
 }

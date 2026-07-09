@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CustomerOrderService, SavedCustomerOrder } from '../shared/customer-order.service';
@@ -10,19 +10,19 @@ import { CustomerOrderService, SavedCustomerOrder } from '../shared/customer-ord
   styleUrl: './my-orders.css',
 })
 export class MyOrders implements OnInit {
-  orders: SavedCustomerOrder[] = [];
-  loading = true;
-  errorMessage = '';
+  readonly orders = signal<SavedCustomerOrder[]>([]);
+  readonly loading = signal(true);
+  readonly errorMessage = signal('');
 
   constructor(public customerOrders: CustomerOrderService) {}
 
   async ngOnInit(): Promise<void> {
     try {
-      this.orders = await this.customerOrders.getAll();
+      this.orders.set(await this.customerOrders.getAll());
     } catch {
-      this.errorMessage = 'Die Bestellungen konnten gerade nicht geladen werden.';
+      this.errorMessage.set('Die Bestellungen konnten gerade nicht geladen werden.');
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 }

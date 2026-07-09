@@ -13,7 +13,7 @@ export class OrderService {
   public changed$ = this.changed.asObservable();
 
   private currentItems: OrderItem[] = [];
-  private orderCounter = 1;
+  private readonly orderCounterKey = 'mcdenisaNextOrderNumber';
 
   constructor(public customerAuth: CustomerAuthService) {}
 
@@ -65,7 +65,7 @@ export class OrderService {
     const subtotal = this.getTotal();
     const discount = this.getDiscount();
     const order = new Order(
-      String(this.orderCounter++),
+      this.createNextOrderId(),
       this.currentItems.slice(),
       this.getCheckoutTotal(checkoutType),
       new Date().toLocaleString('de-DE'),
@@ -85,5 +85,37 @@ export class OrderService {
   clearCart(): void {
     this.currentItems = [];
     this.changed.next();
+  }
+
+  private createNextOrderId(): string {
+    const customer = this.customerAuth.customer();
+    if (!customer) {
+      return '';
+    }
+
+    const counterKey = `${this.orderCounterKey}:${customer.uid}`;
+    const historyKey = `mcdenisaCustomerOrders:${customer.uid}`;
+    let nextNumber = Number(localStorage.getItem(counterKey)) || 1;
+
+    for (let index = 0; index < localStorage.length; index++) {
+      const key = localStorage.key(index);
+      if (key !== historyKey) {
+        continue;
+      }
+
+      try {
+        const orders = JSON.parse(localStorage.getItem(key) ?? '[]') as Array<{ id?: string }>;
+        const highestSavedNumber = orders.reduce(
+          (highest, order) => Math.max(highest, Number(order.id) || 0),
+          0,
+        );
+        nextNumber = Math.max(nextNumber, highestSavedNumber + 1);
+      } catch {
+        // Ungültige alte Browserdaten werden ignoriert.
+      }
+    }
+
+    localStorage.setItem(counterKey, String(nextNumber + 1));
+    return String(nextNumber);
   }
 }

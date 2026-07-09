@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CustomerAuthService } from '../shared/customer-auth.service';
@@ -10,9 +10,9 @@ import { CustomerAuthService } from '../shared/customer-auth.service';
   styleUrl: './account.css',
 })
 export class Account {
-  registerMode = false;
-  loading = false;
-  errorMessage = '';
+  readonly registerMode = signal(false);
+  readonly loading = signal(false);
+  readonly errorMessage = signal('');
 
   form = new FormGroup({
     displayName: new FormControl(''),
@@ -26,8 +26,8 @@ export class Account {
   ) {}
 
   setMode(registerMode: boolean): void {
-    this.registerMode = registerMode;
-    this.errorMessage = '';
+    this.registerMode.set(registerMode);
+    this.errorMessage.set('');
     const nameControl = this.form.controls.displayName;
     if (registerMode) {
       nameControl.setValidators([Validators.required, Validators.minLength(2)]);
@@ -38,27 +38,27 @@ export class Account {
   }
 
   async submit(): Promise<void> {
-    this.setMode(this.registerMode);
+    this.setMode(this.registerMode());
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.loading = true;
-    this.errorMessage = '';
+    this.loading.set(true);
+    this.errorMessage.set('');
     const { displayName, email, password } = this.form.getRawValue();
 
     try {
-      if (this.registerMode) {
+      if (this.registerMode()) {
         await this.customerAuth.register(email!, password!, displayName!);
       } else {
         await this.customerAuth.login(email!, password!);
       }
       await this.router.navigate(['/order']);
     } catch (error) {
-      this.errorMessage = this.customerAuth.getGermanError(error);
+      this.errorMessage.set(this.customerAuth.getGermanError(error));
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 

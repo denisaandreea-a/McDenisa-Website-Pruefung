@@ -2,6 +2,35 @@
   border: 0;
 }
 
+.project-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid #e7c96f;
+  border-radius: 14px;
+  background: #fff8df;
+  color: #4b3511;
+}
+
+.project-info__icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.project-info h5 {
+  margin: 0 0 0.35rem;
+  color: var(--mc-maroon);
+  font-weight: 900;
+}
+
+.project-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .team-section {
   position: relative;
   overflow: hidden;
@@ -70,7 +99,6 @@
 
 .team-card {
   width: min(100%, 400px);
-  min-height: 680px;
   cursor: pointer;
   outline: none;
   perspective: 1400px;
@@ -78,8 +106,8 @@
 
 .team-card__inner {
   position: relative;
+  display: grid;
   width: 100%;
-  min-height: inherit;
   transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
   transform-style: preserve-3d;
   border-radius: 16px;
@@ -95,8 +123,7 @@
 }
 
 .team-card__face {
-  position: absolute;
-  inset: 0;
+  grid-area: 1 / 1;
   overflow: hidden;
   border-radius: 16px;
   backface-visibility: hidden;
@@ -275,10 +302,6 @@
 
   .team-section__header {
     align-items: flex-start;
-  }
-
-  .team-card {
-    min-height: 760px;
   }
 
   .team-card__image {

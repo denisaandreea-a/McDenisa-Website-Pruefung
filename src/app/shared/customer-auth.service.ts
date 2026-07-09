@@ -25,14 +25,16 @@ export class CustomerAuthService {
 
   async register(email: string, password: string, displayName: string): Promise<void> {
     const { auth, api } = await this.getAuth();
-    const credential = await api.createUserWithEmailAndPassword(auth, email, password);
-    await api.updateProfile(credential.user, { displayName });
+    const credential = await this.withTimeout(
+      api.createUserWithEmailAndPassword(auth, email, password),
+    );
+    await this.withTimeout(api.updateProfile(credential.user, { displayName }));
     this.setCustomer(credential.user);
   }
 
   async login(email: string, password: string): Promise<void> {
     const { auth, api } = await this.getAuth();
-    await api.signInWithEmailAndPassword(auth, email, password);
+    await this.withTimeout(api.signInWithEmailAndPassword(auth, email, password));
   }
 
   async logout(): Promise<void> {
@@ -41,6 +43,10 @@ export class CustomerAuthService {
   }
 
   getGermanError(error: unknown): string {
+    if (error instanceof Error && error.message === 'Firebase antwortet nicht.') {
+      return 'Firebase antwortet nicht. Bitte prüfe deine Internetverbindung und versuche es erneut.';
+    }
+
     const code = typeof error === 'object' && error && 'code' in error
       ? String(error.code)
       : '';
@@ -95,5 +101,24 @@ export class CustomerAuthService {
           displayName: user.displayName ?? user.email?.split('@')[0] ?? 'Kunde',
         }
       : null);
+  }
+
+  private withTimeout<T>(promise: Promise<T>, timeoutMs = 10000): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const timeoutId = setTimeout(
+        () => reject(new Error('Firebase antwortet nicht.')),
+        timeoutMs,
+      );
+      promise.then(
+        value => {
+          clearTimeout(timeoutId);
+          resolve(value);
+        },
+        error => {
+          clearTimeout(timeoutId);
+          reject(error);
+        },
+      );
+    });
   }
 }

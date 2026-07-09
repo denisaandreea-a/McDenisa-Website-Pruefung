@@ -7,11 +7,11 @@
     <a class="btn btn-outline-secondary" routerLink="/order">Neue Bestellung</a>
   </div>
 
-  @if (loading) {
+  @if (loading()) {
     <div class="orders-state">Bestellungen werden geladen …</div>
-  } @else if (errorMessage) {
-    <div class="alert alert-danger">{{ errorMessage }}</div>
-  } @else if (orders.length === 0) {
+  } @else if (errorMessage()) {
+    <div class="alert alert-danger">{{ errorMessage() }}</div>
+  } @else if (orders().length === 0) {
     <div class="orders-state">
       <div class="orders-state-icon">🧾</div>
       <h3>Noch keine Bestellungen</h3>
@@ -19,7 +19,7 @@
     </div>
   } @else {
     <div class="orders-list">
-      @for (order of orders; track order.id + order.createdAt) {
+      @for (order of orders(); track order.id + order.createdAt) {
         <article class="order-history-card">
           <div class="order-history-head">
             <div>

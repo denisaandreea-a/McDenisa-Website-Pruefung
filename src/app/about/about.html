@@ -1,6 +1,21 @@
 <div class="container mt-4 about-page">
 <h4>Über uns</h4>
 
+<aside class="project-info" aria-labelledby="project-info-title">
+  <div class="project-info__icon" aria-hidden="true">🎓</div>
+  <div>
+    <h5 id="project-info-title">Hinweis zum Schulprojekt</h5>
+    <p>
+      Diese Website ist ein fiktives Schulprojekt von <strong>Denisa-Andreea Anton</strong>,
+      erstellt im Sommersemester 2026 im Modul <strong>Web-Frontends mit Angular</strong>.
+      Ziel des Projekts ist es, zentrale Angular-Konzepte wie Components, Routing,
+      Reactive Forms, Services, Guards sowie Firebase praktisch in einer
+      Kassen-Webanwendung umzusetzen. Die dargestellten Inhalte und Bestellvorgänge
+      dienen ausschließlich Lern- und Demonstrationszwecken.
+    </p>
+  </div>
+</aside>
+
 <!-- Bootstrap-Grid: auf großen Bildschirmen zwei Spalten, auf Handy untereinander -->
 <div class="row mt-4">
 
@@ -9,7 +24,7 @@
     <h5>Geschichte</h5>
     <p>
       Das McDonald's in Ahlen ist seit vielen Jahren ein fester Bestandteil der Stadt.
-      Das Restaurant befindet sich an der Beckumer Straße und bedient täglich hunderte
+      Das fiktive Restaurant befindet sich in Ahlen und bedient in diesem Projektszenario
       Gäste aus Ahlen und Umgebung. Das Team legt großen Wert auf Freundlichkeit,
       Schnelligkeit und Qualität.
     </p>
@@ -17,11 +32,12 @@
     <h5 class="mt-4">Kontakt & Adresse</h5>
     <!-- list-unstyled: Bootstrap entfernt die Aufzählungspunkte -->
     <ul class="list-unstyled">
-      <li><strong>Adresse:</strong> Beckumer Str. 105, 59229 Ahlen</li>
-      <li><strong>Telefon:</strong> +49 2382 60942</li>
+      <li><strong>Adresse:</strong> Musterstraße 12, 59227 Ahlen</li>
+      <li><strong>Telefon:</strong> 00000 / 000000</li>
+      <li><strong>E-Mail:</strong> schulprojekt&#64;example.com</li>
     </ul>
 
-    <h5 class="mt-4">Öffnungszeiten</h5>
+    <h5 class="mt-4">Beispiel-Öffnungszeiten</h5>
     <!-- Bootstrap-Tabelle: table-sm macht die Abstände kompakter -->
     <table class="table table-bordered table-sm">
       <thead class="table-dark">
@@ -43,12 +59,12 @@
          title ist wichtig für die Barrierefreiheit (Screenreader).
          loading="lazy": Die Karte wird erst geladen wenn sie sichtbar wird – spart Ladezeit. -->
     <iframe
-      title="McDonald's Ahlen auf Google Maps"
+      title="Allgemeiner Projektstandort Ahlen auf Google Maps"
       class="maps-frame"
       width="100%"
       height="350"
       loading="lazy"
-      src="https://www.google.com/maps?q=Beckumer+Str.+105,+59229+Ahlen&output=embed">
+      src="https://www.google.com/maps?q=Ahlen,+Deutschland&output=embed">
     </iframe>
   </div>
 </div>
@@ -82,7 +98,7 @@
     <div class="team-carousel__track" [style.transform]="'translateX(-' + activeTeamPage * 100 + '%)'">
       @for (page of teamPages; track $index) {
         <div class="team-carousel__page">
-          @for (member of page; track member.name) {
+          @for (member of page; track member.id) {
             <article class="team-carousel__item">
               <div
                 class="team-card"
@@ -145,6 +161,13 @@
                             }
                           </div>
                         </section>
+
+                        @if (member.funFact) {
+                          <section>
+                            <h6>🎉 Fun Fact</h6>
+                            <p>{{ member.funFact }}</p>
+                          </section>
+                        }
 
                         <blockquote>
                           <span aria-hidden="true">{{ member.mottoEmoji }}</span>

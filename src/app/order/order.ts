@@ -362,7 +362,7 @@ export class Order implements OnInit {
 
   cancelCheckout(): void {
     this.checkoutVisible = false;
-    this.thankYouVisible = true;
+    this.thankYouVisible = false;
     this.checkoutForm.reset();
     this.updateAddressValidators();
   }
@@ -389,6 +389,7 @@ export class Order implements OnInit {
       // Die Bestellung bleibt erfolgreich; nur die Online-Historie war nicht erreichbar.
     });
     this.checkoutVisible = false;
+    this.thankYouVisible = true;
     this.checkoutForm.reset();
     this.updateAddressValidators();
   }

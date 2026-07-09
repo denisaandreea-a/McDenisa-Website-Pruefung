@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 type TeamMember = {
+  id: string;
   name: string;
   alias: string;
   role: string;
@@ -27,24 +28,27 @@ type TeamMember = {
 export class About {
   teamMembers: TeamMember[] = [
     {
-      name: 'Othmane',
+      id: 'othmane',
+      name: 'O.',
       alias: 'Drive Star',
       role: 'Schichtleiter',
       image: '/assets/team/othmane.jpeg',
       favoriteFood: 'McCrispy Chicken & Chicken McNuggets',
-      focusTitle: '🍔 Signature Order',
-      focusText: 'McCrispy Chicken & Chicken McNuggets',
+      focusTitle: '🚀 Meine Stärke',
+      focusText:
+        'Ich bringe frischen Schwung und gute Laune in jede Schicht - am Drive bin ich schnell, freundlich und behalte auch in stressigen Momenten den Kopf oben.',
       traits: ['Locker', 'Positiv', 'Extrovertiert', 'Witzig', 'Ehrgeizig', 'Modebewusst'],
       superpower: 'Schnell bleiben, auch wenn es stressig wird.',
       goal: 'Mich weiterentwickeln, mehr Verantwortung übernehmen und jeden Tag besser werden.',
       motto: 'Gute Laune, Tempo und Teamwork - so läuft die Schicht.',
       mottoEmoji: '⚡',
       about:
-        'Hi, ich bin Othmane. Ich bin ein positiver, offener und ehrgeiziger Mensch, der gerne gute Stimmung ins Team bringt. Viele unterschätzen mich manchmal, weil ich noch jung wirke - aber ich zeige, wie schnell, konzentriert und zuverlässig ich arbeiten kann.',
+        'Hi, ich bin O. Ich bin ein positiver, offener und ehrgeiziger Mensch, der gerne gute Stimmung ins Team bringt. Viele unterschätzen mich manchmal, weil ich noch jung wirke - aber ich zeige, wie schnell, konzentriert und zuverlässig ich arbeiten kann.',
       flipped: false,
     },
     {
-      name: 'Maria',
+      id: 'maria',
+      name: 'M.',
       alias: 'Küchenherz',
       role: 'Schichtleiterin',
       image: '/assets/team/maria.jpeg',
@@ -58,18 +62,19 @@ export class About {
       motto: 'Gemeinsam sind wir stark.',
       mottoEmoji: '🤝',
       about:
-        'Hi, ich bin Maria. Seit vielen Jahren bin ich Teil des McDonald’s-Teams und kenne die Abläufe genau. Ich fühle mich an jeder Station wohl, bleibe auch in stressigen Momenten ruhig und unterstütze mein Team, wo ich kann. Heute arbeite ich als Schichtleiterin und übernehme meine Aufgaben mit viel Herz und Verantwortung.',
+        'Hi, ich bin M. Seit vielen Jahren bin ich Teil des McDonald’s-Teams und kenne die Abläufe genau. Ich fühle mich an jeder Station wohl, bleibe auch in stressigen Momenten ruhig und unterstütze mein Team, wo ich kann. Heute arbeite ich als Schichtleiterin und übernehme meine Aufgaben mit viel Herz und Verantwortung.',
       flipped: false,
     },
     {
-      name: 'Apitz',
+      id: 'apitz',
+      name: 'A.',
       alias: 'Süss und Sauer',
       role: 'Schichtleiter',
       image: '/assets/team/apitz.jpeg',
       favoriteFood: 'Big Rösti',
       focusTitle: '💬 Meine Stärke',
       focusText:
-        'Ich komme sehr gut mit Gästen und Mitarbeitern klar. Wenn jemand ein Problem hat, höre ich zu, versuche die Situation zu verstehen und gemeinsam eine faire Lösung zu finden. Egal ob es um Arbeit oder auch mal um private Themen geht: Ich versuche immer, fair zu bleiben und einen guten Kompromiss zu finden.',
+        'Ich höre zu, verstehe die Situation und finde gemeinsam mit Gästen und Team eine faire Lösung - egal ob es um Arbeit oder private Themen geht.',
       traits: ['Professionell', 'Freundlich', 'Humorvoll', 'Direkt', 'Kommunikationsstark', 'Lösungsorientiert'],
       superpower: 'Zuhören, verstehen und aus schwierigen Situationen eine faire Lösung machen.',
       funFact: 'Ich habe Ameisen als Haustiere.',
@@ -77,11 +82,12 @@ export class About {
       motto: 'Klar in der Arbeit, offen im Gespräch.',
       mottoEmoji: '💬',
       about:
-        'Hi, ich bin Apitz. Nach meiner Zeit bei der Bundeswehr habe ich meinen Weg bei McDonald’s gefunden. Zuerst war ich als Mitarbeiter tätig, und seit 2004 arbeite ich als Schichtleiter. Bei der Arbeit bin ich klar, zuverlässig und professionell - aber wer mich kennt, weiß, dass ich auch freundlich, humorvoll und immer für ein gutes Gespräch offen bin.',
+        'Hi, ich bin A. Nach meiner Zeit bei der Bundeswehr habe ich meinen Weg bei McDonald’s gefunden - erst als Mitarbeiter, seit 2004 als Schichtleiter. Bei der Arbeit bin ich klar und professionell, aber wer mich kennt, weiß: ich bin auch freundlich, humorvoll und offen für ein gutes Gespräch.',
       flipped: false,
     },
     {
-      name: 'Frau Grabaz',
+      id: 'grabaz',
+      name: 'Frau G.',
       alias: 'Vollgas seit 1997',
       role: 'Schichtleiterin',
       image: '/assets/team/grabaz.jpeg',
@@ -95,11 +101,12 @@ export class About {
       motto: 'Energie kennt kein Alter.',
       mottoEmoji: '🔥',
       about:
-        'Hi, ich bin Frau Grabaz. Seit der Neueröffnung des McDonald’s in Ahlen im Dezember 1997 bin ich Teil des Teams. Angefangen habe ich damals als Minijobberin, heute arbeite ich seit vielen Jahren als Schichtleiterin. In dieser Zeit habe ich viele Veränderungen, Herausforderungen und besondere Momente erlebt – aber meine Energie und Motivation sind bis heute geblieben.',
+        'Hi, ich bin Frau G. Seit der Neueröffnung des McDonald’s in Ahlen im Dezember 1997 bin ich Teil des Teams. Angefangen habe ich damals als Minijobberin, heute arbeite ich seit vielen Jahren als Schichtleiterin. In dieser Zeit habe ich viele Veränderungen, Herausforderungen und besondere Momente erlebt – aber meine Energie und Motivation sind bis heute geblieben.',
       flipped: false,
     },
     {
-      name: 'Dino',
+      id: 'dino',
+      name: 'D.',
       alias: 'Mr. Chill',
       role: 'Schichtleiter',
       image: '/assets/team/dino.jpeg',
@@ -114,11 +121,12 @@ export class About {
       motto: 'Arbeit macht Spaß, wenn man sie ohne Stress angeht.',
       mottoEmoji: '😎',
       about:
-        'Hi, ich bin Dino. Seit rund vier Jahren bin ich Teil des McDonald’s-Teams. Auch wenn ich auf den ersten Blick streng oder ernst wirke, bin ich eigentlich sehr locker und leicht zum Lachen zu bringen - mich aus der Ruhe zu bringen ist dagegen schon eine Kunst. Stress und Streit sind nicht mein Ding, ich bleibe lieber freundlich und entspannt. Am wichtigsten ist mir, dass unsere Gäste zufrieden sind.',
+        'Hi, ich bin D. Seit rund vier Jahren bin ich Teil des McDonald’s-Teams. Auch wenn ich auf den ersten Blick streng oder ernst wirke, bin ich eigentlich sehr locker und leicht zum Lachen zu bringen - mich aus der Ruhe zu bringen ist dagegen schon eine Kunst. Stress und Streit sind nicht mein Ding, ich bleibe lieber freundlich und entspannt. Am wichtigsten ist mir, dass unsere Gäste zufrieden sind.',
       flipped: false,
     },
     {
-      name: 'Frau Saitinidou',
+      id: 'saitinidou',
+      name: 'Frau S.',
       alias: 'Mama',
       role: 'Restaurantleiterin',
       image: '/assets/team/saitinidou.jpeg',
@@ -132,11 +140,12 @@ export class About {
       motto: 'Regeln sind da, damit alles reibungslos läuft.',
       mottoEmoji: '📋',
       about:
-        'Hi, ich bin Frau Saitinidou. Als Restaurantleiterin sorge ich dafür, dass bei uns alles nach Plan läuft. Ich bin professionell, direkt und lege Wert auf klare Regeln und Disziplin. Im Team werde ich liebevoll „Mama“ genannt - auch wenn viele zunächst etwas Respekt vor mir haben, weiß jeder, dass ich es nur gut mit dem Team meine.',
+        'Hi, ich bin Frau S. Als Restaurantleiterin sorge ich dafür, dass bei uns alles nach Plan läuft. Ich bin professionell, direkt und lege Wert auf klare Regeln und Disziplin. Im Team werde ich liebevoll „Mama“ genannt - auch wenn viele zunächst etwas Respekt vor mir haben, weiß jeder, dass ich es nur gut mit dem Team meine.',
       flipped: false,
     },
     {
-      name: 'Alina',
+      id: 'alina',
+      name: 'A.',
       alias: 'Ordnungsqueen',
       role: 'Schichtleiterin',
       image: '/assets/team/alina.jpeg',
@@ -150,26 +159,26 @@ export class About {
       motto: 'Ordnung ist das halbe Leben - Spaß die andere Hälfte.',
       mottoEmoji: '✨',
       about:
-        'Hi, ich bin Alina. Seit 10 Jahren bin ich Teil des Teams und arbeite mittlerweile als Schichtleiterin. Planung, Sauberkeit und klare Regeln sind mir sehr wichtig - wer meine Anweisungen nicht befolgt, merkt schnell, dass ich es auch streng kann. Aktuell mache ich zusätzlich meine Ausbildung in der Gastronomie, weil mir Weiterentwicklung wichtig ist. Außerhalb der Arbeit bin ich aber ein richtiger Partymensch und liebe es, Spaß zu haben.',
+        'Hi, ich bin A. Seit 10 Jahren bin ich Teil des Teams und arbeite mittlerweile als Schichtleiterin. Planung, Sauberkeit und klare Regeln sind mir sehr wichtig - wer meine Anweisungen nicht befolgt, merkt schnell, dass ich es auch streng kann. Aktuell mache ich zusätzlich meine Ausbildung in der Gastronomie, weil mir Weiterentwicklung wichtig ist. Außerhalb der Arbeit bin ich aber ein richtiger Partymensch und liebe es, Spaß zu haben.',
       flipped: false,
     },
   ];
 
   private readonly teamPageSize = 1;
   private readonly visibleTeamOrder = [
-    'Frau Saitinidou',
-    'Apitz',
-    'Frau Grabaz',
-    'Maria',
-    'Alina',
-    'Dino',
-    'Othmane',
+    'saitinidou',
+    'apitz',
+    'grabaz',
+    'maria',
+    'alina',
+    'dino',
+    'othmane',
   ];
   activeTeamPage = 0;
 
   get teamPages(): TeamMember[][] {
     const visibleTeamMembers = this.visibleTeamOrder
-      .map(name => this.teamMembers.find(member => member.name === name))
+      .map(id => this.teamMembers.find(member => member.id === id))
       .filter((member): member is TeamMember => member !== undefined);
     const pages: TeamMember[][] = [];
     for (let i = 0; i < visibleTeamMembers.length; i += this.teamPageSize) {

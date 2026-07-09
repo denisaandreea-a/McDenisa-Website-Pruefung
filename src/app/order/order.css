@@ -257,23 +257,12 @@
   padding: 18px;
 }
 
-.thank-you-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  background: rgba(42, 10, 10, 0.66);
-}
-
 .thank-you-modal {
-  width: min(100%, 460px);
+  align-items: center;
+  justify-content: center;
   padding: 2rem;
   border: 3px solid #ffd700;
-  border-radius: 22px;
   background: #fffaf2;
-  box-shadow: 0 24px 70px rgba(42, 10, 10, 0.35);
   color: #2a0a0a;
   text-align: center;
 }
