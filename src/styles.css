@@ -196,6 +196,32 @@ body {
 .cat-mccafe    { background: var(--cat-mccafe); color: #3d2000; }
 .cat-desserts  { background: var(--cat-desserts); }
 
+@media (max-width: 700px) {
+  .category-slider {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .category-slider::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cat-card {
+    flex: 0 0 auto;
+    width: 92px;
+    height: 110px;
+  }
+
+  .cat-icon {
+    font-size: 1.8rem;
+  }
+
+  .cat-name {
+    font-size: 0.72rem;
+    min-height: 1.8em;
+  }
+}
+
 /* ===== PRODUKTKACHELN ===== */
 
 .products-grid {
