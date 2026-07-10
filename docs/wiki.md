@@ -61,6 +61,76 @@ Repository: `https://github.com/denisaandreea-a/McDenisa-Website-Pruefung`
 | Authentication | Kundenregistrierung und Login |
 | Resilienz | Timeouts und lokale Fallbacks |
 
+## Architekturüberblick
+
+Wie Seiten, Services und Datenhaltung zusammenhängen: Komponenten rufen nie direkt Firebase auf, sondern immer über einen Service. Jeder Service hat einen lokalen Fallback (Array oder `localStorage`), falls Firebase nicht erreichbar ist.
+
+```mermaid
+flowchart LR
+  subgraph Seiten["Komponenten (Seiten)"]
+    Order["Order (Kasse)"]
+    Admin["Admin / ProductForm"]
+    Account["Account / Login"]
+    MyOrders["MyOrders"]
+  end
+
+  subgraph Services["Services (shared/)"]
+    ProductSvc["ProductService"]
+    OrderSvc["OrderService"]
+    CustAuth["CustomerAuthService"]
+    CustOrder["CustomerOrderService"]
+    Auth["AuthService"]
+  end
+
+  subgraph Daten["Datenhaltung"]
+    Firestore[("Firebase Firestore")]
+    FireAuth[("Firebase Authentication")]
+    Local[("localStorage / sessionStorage")]
+  end
+
+  Order --> ProductSvc
+  Order --> OrderSvc
+  Order --> CustOrder
+  Admin --> ProductSvc
+  Account --> CustAuth
+  MyOrders --> CustOrder
+  Order -.PIN.-> Auth
+
+  ProductSvc --> Firestore
+  ProductSvc -. Fallback .-> Local
+  CustOrder --> Firestore
+  CustOrder -. Fallback .-> Local
+  CustAuth --> FireAuth
+  OrderSvc --> CustAuth
+  Auth --> Local
+```
+
+### Routing-Tabelle
+
+| Pfad | Komponente | Guard | Öffentlich? |
+|---|---|---|---|
+| `/order` | Order | – | ja |
+| `/about` | About | – | ja |
+| `/career` | Career | – | ja |
+| `/contact` | Contact | – | ja |
+| `/login` | Login | – | ja |
+| `/konto` | Account | – | ja |
+| `/meine-bestellungen` | MyOrders | `customerGuard` | nur eingeloggte Kunden |
+| `/admin` | Admin | `adminGuard` | nur Admin-PIN |
+| `/admin/product/new` | ProductForm | `adminGuard` | nur Admin-PIN |
+| `/admin/product/:id` | ProductForm | `adminGuard` | nur Admin-PIN |
+| `**` | PageNotFound | – | ja |
+
+### Services im Überblick
+
+| Service | Zustand | Aufgabe |
+|---|---|---|
+| `ProductService` | Array + Firestore | Produktkatalog lesen/anlegen/bearbeiten/löschen |
+| `OrderService` | In-Memory (`currentItems`) | aktueller Warenkorb, Rabatt, Bestellnummer |
+| `CustomerAuthService` | `signal<Customer\|null>` | Kunden-Registrierung/Login über Firebase Auth |
+| `CustomerOrderService` | Firestore + `localStorage` | Bestellhistorie pro Kunde speichern/laden |
+| `AuthService` | `sessionStorage`-Flag | einfacher Admin-Login-Status |
+
 ## Scope
 
 ### In Scope
