@@ -10,5 +10,10 @@ service cloud.firestore {
       allow read, create: if request.auth != null && request.auth.uid == userId;
       allow update, delete: if false;
     }
+
+    match /feedbacks/{feedbackId} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
   }
 }

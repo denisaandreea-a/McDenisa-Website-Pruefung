@@ -1,16 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
-interface Feedback {
-  name: string;
-  besuchsdatum?: string;
-  besuchszeit: string;
-  bestellung: string;
-  kommentar: string;
-  bewertung: number;
-  erstelltAm: string;
-}
+import { Feedback, FeedbackService } from '../shared/feedback.service';
 
 // Kontakt-Seite: Kunden können eine Bewertung über ihre Bestellung abgeben.
 @Component({
@@ -19,11 +10,15 @@ interface Feedback {
   templateUrl: './contact.html',
   styleUrl: './contact.css',
 })
-export class Contact {
-  private readonly storageKey = 'mcdenisaFeedbacks';
-
+export class Contact implements OnInit {
   submitted = false;
-  feedbacks: Feedback[] = this.loadFeedbacks();
+
+  /* signal() statt normaler Felder, weil die App ohne zone.js läuft: ein
+     normales Feld wie "feedbacks: Feedback[] = []" löst nach einem await
+     kein Re-Render aus, ein signal().set(...) dagegen schon - genau wie bei
+     MyOrders/CustomerAuthService in diesem Projekt */
+  readonly loadingFeedbacks = signal(true);
+  readonly feedbacks = signal<Feedback[]>([]);
 
   // Die Sternebewertung als eigene Variable (1–5), da ein Custom-UI verwendet wird.
   bewertung = 0;
@@ -37,6 +32,13 @@ export class Contact {
     kommentar:  new FormControl(''),
   });
 
+  constructor(private feedbackService: FeedbackService) {}
+
+  async ngOnInit(): Promise<void> {
+    this.feedbacks.set(await this.feedbackService.getAll());
+    this.loadingFeedbacks.set(false);
+  }
+
   // Wird aufgerufen wenn der Nutzer auf einen Stern klickt.
   setSterne(n: number): void {
     this.bewertung = n;
@@ -45,7 +47,7 @@ export class Contact {
   /* speichert das Feedback nur wenn Formular gültig UND mindestens ein Stern
      gewählt ist (bewertung wird separat geprüft weil es kein normales
      FormControl ist sondern ein eigenes kleines UI) */
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.form.valid && this.bewertung > 0) {
       const { name, besuchsdatum, besuchszeit, bestellung, kommentar } = this.form.value;
       const feedback: Feedback = {
@@ -57,9 +59,10 @@ export class Contact {
         bewertung: this.bewertung,
         erstelltAm: new Date().toLocaleString('de-DE'),
       };
-      this.feedbacks = [feedback, ...this.feedbacks];
-      this.saveFeedbacks();
+      this.feedbacks.update(current => [feedback, ...current]);
       this.submitted = true;
+      // Absenden blockiert die Anzeige nicht: Feedback ist lokal schon sichtbar, Firestore-Schreiben läuft nebenbei
+      await this.feedbackService.save(feedback);
     }
   }
 
@@ -67,20 +70,6 @@ export class Contact {
     this.form.reset();
     this.bewertung = 0;
     this.submitted = false;
-  }
-
-  // alle bisherigen Feedbacks liegen in localStorage, bleiben dadurch auch nach nem Reload sichtbar, aber halt nur in diesem einen Browser
-  private loadFeedbacks(): Feedback[] {
-    try {
-      const saved = localStorage.getItem(this.storageKey);
-      return saved ? JSON.parse(saved) as Feedback[] : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveFeedbacks(): void {
-    localStorage.setItem(this.storageKey, JSON.stringify(this.feedbacks));
   }
 
   formatDate(value: string | undefined): string {

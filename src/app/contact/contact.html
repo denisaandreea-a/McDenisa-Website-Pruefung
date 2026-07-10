@@ -99,11 +99,13 @@
       <hr class="my-3">
 
       <div class="side-info-header">Öffentliche Feedbacks</div>
-      @if (feedbacks.length === 0) {
+      @if (loadingFeedbacks()) {
+        <p class="feedback-empty small mb-0">Bewertungen werden geladen …</p>
+      } @else if (feedbacks().length === 0) {
         <p class="feedback-empty small mb-0">Noch keine Bewertungen vorhanden.</p>
       } @else {
         <div class="feedback-list">
-          @for (feedback of feedbacks; track feedback.erstelltAm + feedback.name) {
+          @for (feedback of feedbacks(); track feedback.erstelltAm + feedback.name) {
             <div class="feedback-card">
               <div class="feedback-card-head">
                 <strong>{{ feedback.name }}</strong>
