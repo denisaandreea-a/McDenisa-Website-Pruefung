@@ -189,6 +189,14 @@ flowchart TD
 | Burger-Menü auf dem Handy ließ sich nicht anklicken | Bootstrap-CSS war eingebunden, aber Bootstrap-JS fehlte in `angular.json` → `bootstrap.bundle.min.js` als Script ergänzt |
 | Kategorie-Leiste auf dem Handy kaum sichtbar/nutzbar | `.category-slider` und `.cat-card` waren nur für Desktop-Breite gebaut (8 Kacheln mit `flex: 1`) → Media Query ab 700px macht die Leiste horizontal scrollbar und die Kacheln kleiner |
 | Warenkorb auf dem Handy nahm fast die ganze Breite weg | `.pos-cart` hatte auf jeder Bildschirmgröße eine feste Breite von 280px → ab 700px wird `.pos-layout` einspaltig, Kategorien/Produkte stehen zuerst, der Warenkorb kommt darunter mit eigener Scroll-Höhe |
+| Live-Seite zeigte alten Stand trotz `git push` | `git push` aktualisiert nur GitHub, nicht Firebase Hosting → manuell mit `ng build` + `firebase deploy --only hosting` veröffentlicht |
+
+### Wichtig: GitHub Push ≠ Live-Deploy
+
+Diese App wird über **Firebase Hosting** bereitgestellt (`firebase.json`, Projekt `mcdenisa-f479f`), nicht direkt über GitHub. `git push` aktualisiert nur das Repository. Damit eine Änderung auf `mcdenisa-f479f.web.app` live sichtbar wird, braucht es zwei zusätzliche, manuelle Schritte, weil es (noch) keine automatische CI/CD-Pipeline gibt:
+
+1. `ng build` – baut das Projekt nach `dist/mcdenisa-kasse/browser`.
+2. `firebase deploy --only hosting` – lädt diesen Ordner zu Firebase Hosting hoch.
 
 ### Prüfungserklärung: Responsive Layout
 
