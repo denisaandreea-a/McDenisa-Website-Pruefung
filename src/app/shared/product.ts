@@ -12,9 +12,17 @@ type ProductData = {
 
 type FirestoreApi = typeof import('firebase/firestore');
 
+/* verwaltet den ganzen Produktkatalog. wenn Firebase an ist wird alles in
+   Firestore gespeichert, ist Firebase grad nicht erreichbar (oder im Test
+   deaktiviert) nutz ich stattdessen die lokale Liste "objects" weiter unten.
+   die Komponenten merken davon nix, die rufen einfach nur getAll()/add()/
+   update()/remove() auf */
 @Injectable({ providedIn: 'root' })
 export class ProductService {
 
+  /* eigenes kleines Event-System: sobald sich was ändert (Produkt hinzugefügt/
+     bearbeitet/gelöscht) sag ich per changed.next() bescheid, damit z.b die
+     Admin-Tabelle die Liste automatisch neu lädt */
   private changed = new Subject<void>();
   public changed$ = this.changed.asObservable();
 
@@ -24,6 +32,9 @@ export class ProductService {
   private readonly collectionName: string;
   private firestoreError: string | null = null;
 
+  /* das sind meine Start-/Fallback-Produkte, liegen fest im code damit die
+     App auch ohne Firebase-Verbindung sofort was anzeigen kann. beim ersten
+     Start werden die einmalig nach Firestore kopiert, siehe seedDefaultProducts() */
   private readonly objects: Product[] = [
 
     new Product('m1', 'Big Mac Menü',           8.99, 'Menüs'),
@@ -101,6 +112,12 @@ export class ProductService {
     return this.firestoreError;
   }
 
+  /* holt alle Produkte, läuft ungefähr so ab:
+     1. ist Firebase aus -> direkt die lokale Liste zurückgeben
+     2. ist Firebase an -> Firestore abfragen (mit 5 sek timeout)
+     3. ist die Firestore Collection leer -> einmalig mit den lokalen
+        Startprodukten befüllen (seedDefaultProducts)
+     4. geht iwas schief -> einfach die lokale Liste als Rettung nehmen */
   async getAll(): Promise<Product[]> {
     try {
       const firestore = await this.getFirestore();
@@ -191,6 +208,9 @@ export class ProductService {
     }
   }
 
+  /* schreibt einmalig alle lokalen Startprodukte in eine leere Firestore-
+     Collection. writeBatch fasst mehrere Schreibvorgänge in einen einzigen
+     Vorgang zusammen statt jedes Produkt einzeln hochzuladen */
   private async seedDefaultProducts(): Promise<void> {
     const firestore = await this.getFirestore();
     if (!firestore) {
@@ -205,6 +225,7 @@ export class ProductService {
     await batch.commit();
   }
 
+  // await import(...) lädt Firebase erst dann wenn ichs wirklich brauch (spart Ladezeit beim App-Start)
   private async initFirestore(): Promise<void> {
     this.validateFirebaseConfig();
     const firebaseApp = await import('firebase/app');
@@ -235,6 +256,10 @@ export class ProductService {
     return { api: this.firestoreApi, db: this.db };
   }
 
+  /* kleine Sicherheitsprüfung: wenn man "enabled: true" setzt aber vergisst
+     die echten Firebase-Werte einzutragen (also noch "DEIN..." als Platzhalter
+     drin steht), soll die App das nicht erst später mit nem kryptischen
+     Firebase-Fehler merken sondern gleich sagen was fehlt */
   private validateFirebaseConfig(): void {
     const config = this.firebaseConfig.config;
     const requiredValues = [
@@ -263,6 +288,7 @@ export class ProductService {
     return new Product(id, data.name, data.price, data.category);
   }
 
+  // nur für die Anzeige: erst nach Kategorie sortieren, innerhalb ner Kategorie dann nach Name
   private sortedProducts(products: Product[]): Product[] {
     return products.slice().sort((a, b) => {
       const categoryCompare = a.category.localeCompare(b.category);

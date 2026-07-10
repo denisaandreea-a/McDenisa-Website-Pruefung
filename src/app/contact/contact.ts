@@ -42,6 +42,9 @@ export class Contact {
     this.bewertung = n;
   }
 
+  /* speichert das Feedback nur wenn Formular gültig UND mindestens ein Stern
+     gewählt ist (bewertung wird separat geprüft weil es kein normales
+     FormControl ist sondern ein eigenes kleines UI) */
   onSubmit(): void {
     if (this.form.valid && this.bewertung > 0) {
       const { name, besuchsdatum, besuchszeit, bestellung, kommentar } = this.form.value;
@@ -66,6 +69,7 @@ export class Contact {
     this.submitted = false;
   }
 
+  // alle bisherigen Feedbacks liegen in localStorage, bleiben dadurch auch nach nem Reload sichtbar, aber halt nur in diesem einen Browser
   private loadFeedbacks(): Feedback[] {
     try {
       const saved = localStorage.getItem(this.storageKey);

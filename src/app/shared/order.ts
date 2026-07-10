@@ -5,10 +5,15 @@ import { OrderItem } from '../model/order-item';
 import { Product } from '../model/product';
 import { CustomerAuthService } from './customer-auth.service';
 
+/* das ist mein Warenkorb. lebt nur im Arbeitsspeicher (currentItems), bei
+   nem Reload der Seite ist er wieder leer weil ich ihn nirgends speicher */
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   readonly deliveryFee = 2;
 
+  /* changed$ ist mein eigenes kleines Benachrichtigungs-System: immer wenn sich
+     der Warenkorb ändert ruf ich changed.next() auf. die Order-Komponente hört
+     da drauf und holt sich dann die neuen daten mit getItems()/getTotal() */
   private changed = new Subject<void>();
   public changed$ = this.changed.asObservable();
 
@@ -17,6 +22,7 @@ export class OrderService {
 
   constructor(public customerAuth: CustomerAuthService) {}
 
+  // .slice() gibt ne Kopie zurück, damit keiner von aussen aus versehen direkt im array rumfummelt
   getItems(): OrderItem[] {
     return this.currentItems.slice();
   }
@@ -31,12 +37,15 @@ export class OrderService {
     return this.getTotal() - this.getDiscount() + (checkoutType === 'Liefern' ? this.deliveryFee : 0);
   }
 
+  // 10 % Rabatt gibt es nur für eingeloggte Kunden, Gäste zahlen den vollen Preis.
   getDiscount(): number {
     return this.customerAuth.isLoggedIn()
       ? Number((this.getTotal() * 0.1).toFixed(2))
       : 0;
   }
 
+  /* fügt ein Produkt zum Warenkorb hinzu. gibts das Produkt (gleiche id) schon
+     im Warenkorb erhöh ich nur die Menge statt ne zweite Zeile anzulegen */
   addProduct(product: Product, quantity: number = 1): void {
     const existing = this.currentItems.find(i => i.product.id === product.id);
     if (existing) {
@@ -55,6 +64,7 @@ export class OrderService {
     }
   }
 
+  // macht aus dem aktuellen Warenkorb ne fertige Bestellung und leert danach den Warenkorb
   checkout(
     checkoutType: string,
     pickupTime: string,
@@ -87,6 +97,11 @@ export class OrderService {
     this.changed.next();
   }
 
+  /* erzeugt die nächste Bestellnummer pro Kunden-Konto (uid), Gäste bekommen
+     keine. speicher den Zähler in localStorage damit die Nummer nach nem Reload
+     nicht wieder bei 1 anfängt, und gleich ihn zusätzlich noch mit der schon
+     gespeicherten Bestellhistorie ab falls der Zähler mal weg war aber alte
+     Bestellungen noch da sind (kam bei mir tatsächlich mal vor beim testen) */
   private createNextOrderId(): string {
     const customer = this.customerAuth.customer();
     if (!customer) {

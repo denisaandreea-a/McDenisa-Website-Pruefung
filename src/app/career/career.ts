@@ -9,6 +9,7 @@ import { phoneValidator } from '../shared/validators';
   templateUrl: './career.html',
   styleUrl: './career.css',
 })
+// ein reines Bewerbungsformular, wird nirgends gespeichert (kein Service, kein Firestore), zeig nach dem Absenden nur ne Erfolgsmeldung
 export class Career {
 
   submitted = false;

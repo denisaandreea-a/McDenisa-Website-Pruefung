@@ -9,6 +9,7 @@ import { CustomerOrderService, SavedCustomerOrder } from '../shared/customer-ord
   templateUrl: './my-orders.html',
   styleUrl: './my-orders.css',
 })
+// zeigt die Bestellhistorie vom eingeloggten Kunden. nur über den customerGuard erreichbar, drum muss ich hier nicht extra prüfen ob überhaupt wer eingeloggt ist
 export class MyOrders implements OnInit {
   readonly orders = signal<SavedCustomerOrder[]>([]);
   readonly loading = signal(true);

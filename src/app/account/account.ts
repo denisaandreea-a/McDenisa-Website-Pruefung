@@ -9,6 +9,9 @@ import { CustomerAuthService } from '../shared/customer-auth.service';
   templateUrl: './account.html',
   styleUrl: './account.css',
 })
+/* die Kunden-Konto-Seite: ein Formular, zwei Modi (Login oder Registrieren)
+   gesteuert über registerMode. nutzt CustomerAuthService, NICHT den
+   Admin-Login (der ist komplett getrennt davon) */
 export class Account {
   readonly registerMode = signal(false);
   readonly loading = signal(false);
@@ -25,6 +28,9 @@ export class Account {
     public router: Router,
   ) {}
 
+  /* wechselt zwischen Login und Registrieren. der Name ist nur bei der
+     Registrierung Pflicht, beim Login brauch man ihn nicht, drum setz/entfern
+     ich den Validator hier je nach Modus */
   setMode(registerMode: boolean): void {
     this.registerMode.set(registerMode);
     this.errorMessage.set('');
@@ -56,6 +62,7 @@ export class Account {
       }
       await this.router.navigate(['/order']);
     } catch (error) {
+      // getGermanError übersetzt den technischen Firebase-Fehlercode in nen verständlichen deutschen Satz für die Anzeige
       this.errorMessage.set(this.customerAuth.getGermanError(error));
     } finally {
       this.loading.set(false);

@@ -9,6 +9,10 @@ import { ProductService } from '../shared/product';
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })
+/* achtung: diese Komponente wird aktuell von keiner Route und keinem Template
+   benutzt (kein Eintrag in app.routes.ts, kein <app-product-list> irgendwo).
+   war glaub ich mal ein früher Prototyp für ne einfache Produktliste, den
+   ich dann später durch die Kategorie-Ansicht in Order ersetzt hab */
 export class ProductList implements OnInit {
 
   products: Product[] = [];

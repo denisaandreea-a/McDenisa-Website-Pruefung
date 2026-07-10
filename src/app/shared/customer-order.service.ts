@@ -16,6 +16,10 @@ export type SavedCustomerOrder = {
   items: Array<{ name: string; price: number; quantity: number }>;
 };
 
+/* speichert die Bestellhistorie von einem eingeloggten Kunden. ich speicher
+   IMMER doppelt: einmal sofort in localStorage (schnell, geht auch offline)
+   und zusätzlich in Firestore damit die Historie auch auf nem anderen Gerät
+   sichtbar ist. Gäste ohne Login kriegen keine Historie */
 @Injectable({ providedIn: 'root' })
 export class CustomerOrderService {
   private db: Firestore | null = null;
@@ -25,6 +29,10 @@ export class CustomerOrderService {
     public customerAuth: CustomerAuthService,
   ) {}
 
+  /* speichert eine fertige Bestellung. erst lokal (sofort, kann nicht
+     fehlschlagen), dann Firestore (mit timeout, könnte fehlschlagen, wird
+     aber vom Aufrufer in Order.checkout() bewusst ignoriert weil die
+     Bestellung ja schon lokal gesichert ist) */
   async save(order: Order): Promise<void> {
     await this.customerAuth.ready;
     const customer = this.customerAuth.customer();
@@ -64,6 +72,10 @@ export class CustomerOrderService {
     }), 5000);
   }
 
+  /* lädt die Bestellhistorie. erst versuch ich Firestore (die "richtige"
+     Quelle), aber wenns leer ist, zu lang dauert oder fehlschlägt fall ich
+     auf die lokal gespeicherte Kopie zurück, so bleibt die Seite auch bei
+     schlechter Verbindung benutzbar */
   async getAll(): Promise<SavedCustomerOrder[]> {
     await this.customerAuth.ready;
     const customer = this.customerAuth.customer();

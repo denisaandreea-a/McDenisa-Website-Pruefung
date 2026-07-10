@@ -1,8 +1,8 @@
-// Wir importieren die Product-Klasse, weil ein OrderItem ein Produkt enthält.
+// importier die Product-Klasse weil ein OrderItem ein Produkt enthält
 import { Product } from './product';
 
-// Ein OrderItem ist eine einzelne Zeile im Warenkorb.
-// Zum Beispiel: 2x Big Mac – das Produkt ist "Big Mac" und die Menge ist 2.
+/* ein OrderItem ist eine einzelne Zeile im Warenkorb, zum Beispiel: 2x Big Mac,
+   das Produkt ist dann "Big Mac" und die Menge ist 2 */
 export class OrderItem {
   removedIngredients: string[] = [];
   extraIngredients: Record<string, number> = {};

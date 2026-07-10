@@ -11,18 +11,23 @@ import { CustomerAuthService } from '../shared/customer-auth.service';
 import { CustomerOrderService } from '../shared/customer-order.service';
 import { RouterLink } from '@angular/router';
 
+/* ein "Schritt" im Zusatzfragen-Dialog, z.b "Welche Beilage?" mit den möglichen
+   Antworten. AccStep = Accessoire/Zusatzoptionen-Step, kam mir grad als Name in den Sinn */
 interface AccStep {
   title:    string;
   options:  string[];
   selected: string | null;
 }
 
+// feste Options-Listen die bei mehreren Produkten gebraucht werden
 const SOSSEN = ['Ketchup', 'Mayonnaise', 'BBQ-Sauce', 'Süß-Sauer-Sauce', 'Senf', 'Honig-Senf'];
 const HM_DRINKS = ['Cola', 'Fanta', 'Sprite', 'Wasser', 'Apfelsaft'];
 const HM_DESSERT = ['Apfeltüte', 'Fruchtquatsch', 'McFreezy Eis'];
 const MCCAFE_COUNTED_EXTRAS = ['Zucker', 'Kaffeesahne', 'Süßstoff'];
 const MCCAFE_MILK_OPTIONS = ['Hafermilch', 'Laktosefreie Milch'];
 
+/* welche Zutaten ein Produkt hat, damit man sie später im Warenkorb abwählen
+   kann (z.b "ohne Zwiebeln"). Key ist die Basis-Produkt-ID */
 const INGREDIENT_MAP: Record<string, string[]> = {
   'm1': ['Salat', 'Zwiebeln', 'Gurken', 'Käse', 'Big-Mac-Sauce'],
   'm2': ['Salat', 'Tomaten', 'Zwiebeln', 'Gurken', 'Käse', 'Senf', 'Mayo'],
@@ -47,6 +52,9 @@ const INGREDIENT_MAP: Record<string, string[]> = {
   templateUrl: './order.html',
   styleUrl: './order.css',
 })
+/* das ist die Kassen-Seite, mit Abstand die grösste Komponente im ganzen
+   Projekt. Ablauf: Kategorie klicken -> Produkt klicken -> falls nötig noch
+   n paar Zusatzfragen beantworten (accSteps) -> landet im Warenkorb */
 export class Order implements OnInit {
 
   products: Product[] = [];
@@ -89,6 +97,9 @@ export class Order implements OnInit {
     public customerOrders: CustomerOrderService,
   ) {}
 
+  /* ngOnInit läuft einmal wenn die Seite geöffnet wird. ich abonnier hier die
+     "changed$" Events von den Services, damit sich die Anzeige automatisch
+     aktualisiert sobald sich Produkte oder der Warenkorb ändern */
   ngOnInit(): void {
     this.loadProducts();
     this.productService.changed$.subscribe(() => this.loadProducts());
@@ -96,6 +107,7 @@ export class Order implements OnInit {
       this.items = this.orderService.getItems();
       this.total = this.orderService.getTotal();
     });
+    // sobald sich "Abholen"/"Liefern" ändert muss die Adresse Pflichtfeld werden oder nicht, siehe updateAddressValidators()
     this.checkoutForm.controls.checkoutType.valueChanges.subscribe(() => {
       this.updateAddressValidators();
     });
@@ -123,6 +135,7 @@ export class Order implements OnInit {
     return map[category] ?? 'tile-burger';
   }
 
+  // wird beim Klick auf ne Kategorie-Kachel aufgerufen, setzt nen eventuell offenen Zusatzfragen-Dialog zurück
   selectCategory(name: string): void {
     this.selectedCategory = name;
     this.accSteps         = [];
@@ -133,6 +146,9 @@ export class Order implements OnInit {
     this.selectedQuantity = quantity;
   }
 
+  /* wird aufgerufen wenn man in ner Kategorie ein Produkt anklickt. gibts
+     Zusatzfragen (z.b bei nem Menü: Beilage/Soße/Getränk) zeig ich die erste
+     Frage an, gibts keine landet das Produkt sofort im Warenkorb */
   onProductSelected(product: Product): void {
     this.pendingProduct = product;
     this.accSteps       = [];
@@ -145,6 +161,10 @@ export class Order implements OnInit {
     }
   }
 
+  /* wird aufgerufen wenn man eine Antwort auf ne Zusatzfrage anklickt. merkt
+     sich die Antwort, fragt getNextStep() ob noch ne Frage kommt und hängt
+     sie ggf dran. ist die letzte Frage beantwortet landet das fertig
+     konfigurierte Produkt im Warenkorb */
   onStepChosen(stepIndex: number, option: string): void {
     this.accSteps[stepIndex].selected = option;
     this.accSteps = this.accSteps.slice(0, stepIndex + 1);
@@ -164,6 +184,11 @@ export class Order implements OnInit {
     this.pendingProduct = null;
   }
 
+  /* das Herzstück vom Zusatzfragen-Dialog: entscheidet je nach Produkt/
+     Kategorie und den bisherigen Antworten (sel) welche Frage als nächstes
+     kommt. "step" ist einfach die Anzahl der bisher beantworteten Fragen
+     (0 = erste Frage, 1 = zweite Frage usw). kommt keine Frage mehr geb ich
+     null zurück, dann ist der Dialog fertig */
   private getNextStep(product: Product, sel: string[]): AccStep | null {
     const step = sel.length;
 
@@ -237,6 +262,10 @@ export class Order implements OnInit {
     return null;
   }
 
+  /* baut aus dem Produkt + den gewählten Optionen ein neues Produkt-Objekt mit
+     eigener ID (varId) und legt es in den Warenkorb. der Grund für die eigene
+     ID: "Cola klein" und "Cola gross" sollen als zwei verschiedene Positionen
+     im Warenkorb auftauchen, nicht als eine Zeile zusammengefasst werden */
   private commitToCart(product: Product, selections: string[]): void {
     const delta = this.getPriceDelta(product, selections);
     const label = selections.length > 0
@@ -256,6 +285,7 @@ export class Order implements OnInit {
     this.thankYouVisible = false;
   }
 
+  // manche Auswahlen kosten extra (z.b grosses Getränk = +1€), gibt den Aufpreis zurück der in commitToCart draufgerechnet wird
   private getPriceDelta(product: Product, sel: string[]): number {
     if (product.name === 'Pommes') {
       if (sel[0]?.includes('Mittel')) return 0.50;
@@ -269,6 +299,9 @@ export class Order implements OnInit {
     return 0;
   }
 
+  /* die varId sieht z.b so aus: "b1_Groß". der Teil vor dem "_" ist die
+     Basis-ID, mit der ich in INGREDIENT_MAP nachschau welche Zutaten dieses
+     Produkt überhaupt hat (damit man sie im Warenkorb abwählen kann) */
   getIngredients(item: OrderItem): string[] {
     const baseId = item.product.id.split('_')[0];
     return INGREDIENT_MAP[baseId] ?? [];
@@ -288,6 +321,7 @@ export class Order implements OnInit {
       || this.getMcCafeMilkOptions(item).length > 0;
   }
 
+  // öffnet/schliesst den kleinen "Zutaten anpassen"-Bereich unter ner Warenkorb-Position, nochmal klicken macht ihn wieder zu
   toggleEditor(item: OrderItem): void {
     this.editingItem = this.editingItem === item ? null : item;
   }
@@ -304,6 +338,9 @@ export class Order implements OnInit {
     return item.extraIngredients[extra] ?? 0;
   }
 
+  /* +/- Buttons bei den McCafé-Extras (Zucker, Sahne, Süßstoff). delta ist +1
+     oder -1, wird der Zähler 0 entfern ich den Eintrag ganz aus dem Objekt
+     statt ne 0 zu speichern */
   changeExtra(item: OrderItem, extra: string, delta: number): void {
     const nextCount = Math.max(0, this.getExtraCount(item, extra) + delta);
     if (nextCount === 0) {
@@ -371,6 +408,9 @@ export class Order implements OnInit {
     this.thankYouVisible = false;
   }
 
+  /* wird beim Absenden vom Checkout-Formular aufgerufen. markAllAsTouched()
+     sorgt dafür dass bei nem ungültigen Formular sofort ALLE Fehlermeldungen
+     sichtbar werden, nicht erst nach und nach */
   checkout(): void {
     this.updateAddressValidators();
     if (this.checkoutForm.invalid) {
@@ -385,8 +425,11 @@ export class Order implements OnInit {
       phone!,
       address ?? ''
     ) as OrderModel;
+    /* zusätzlich in die Online-Historie speichern, passiert bewusst "nebenbei"
+       (void ... .catch): die Bestellung ist für den Kunden schon fertig auch
+       wenn das Speichern in Firestore mal fehlschlägt */
     void this.customerOrders.save(this.lastOrder).catch(() => {
-      // Die Bestellung bleibt erfolgreich; nur die Online-Historie war nicht erreichbar.
+      // Bestellung bleibt trotzdem erfolgreich, nur die Online-Historie war halt grad nicht erreichbar
     });
     this.checkoutVisible = false;
     this.thankYouVisible = true;
@@ -394,6 +437,7 @@ export class Order implements OnInit {
     this.updateAddressValidators();
   }
 
+  // die Adresse ist nur Pflicht wenn "Liefern" gewählt ist, bei "Abholen" entfern ich die Validierung wieder sonst könnt man nie abschicken
   private updateAddressValidators(): void {
     const addressControl = this.checkoutForm.controls.address;
     if (this.checkoutForm.controls.checkoutType.value === 'Liefern') {

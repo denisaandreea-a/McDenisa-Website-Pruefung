@@ -25,6 +25,9 @@ type TeamMember = {
   templateUrl: './about.html',
   styleUrl: './about.css',
 })
+/* die "Über uns"-Seite mit den Team-Flip-Cards. alle Daten stehen fest in
+   teamMembers, für ein neues Teammitglied reicht ein neuer Eintrag, das
+   Template baut die Karte dann automatisch draus */
 export class About {
   teamMembers: TeamMember[] = [
     {
@@ -164,6 +167,9 @@ export class About {
     },
   ];
 
+  /* nicht alle Teammitglieder werden angezeigt (visibleTeamOrder entscheidet
+     wer und in welcher Reihenfolge), und es wird immer nur teamPageSize
+     Personen gleichzeitig gezeigt, dadurch wirkts wie ein Karussell */
   private readonly teamPageSize = 1;
   private readonly visibleTeamOrder = [
     'saitinidou',
@@ -176,6 +182,9 @@ export class About {
   ];
   activeTeamPage = 0;
 
+  /* teilt die sichtbaren Teammitglieder in "Seiten" auf (bei teamPageSize = 1
+     ist das eine Person pro Seite). die Pfeile im Template blättern dann
+     einfach zwischen den Einträgen von teamPages durch */
   get teamPages(): TeamMember[][] {
     const visibleTeamMembers = this.visibleTeamOrder
       .map(id => this.teamMembers.find(member => member.id === id))
@@ -195,6 +204,9 @@ export class About {
     this.setActiveTeamPage(this.activeTeamPage + 1);
   }
 
+  /* blättert zur gewünschten Seite. geht man vor der ersten oder nach der
+     letzten Seite weiter, springt man ans jeweils andere Ende (Wrap-Around),
+     so kann man quasi endlos im Kreis weiterklicken */
   setActiveTeamPage(index: number): void {
     const lastIndex = this.teamPages.length - 1;
 
@@ -211,10 +223,14 @@ export class About {
     this.activeTeamPage = index;
   }
 
+  // Dreht eine einzelne Karte um (Vorderseite <-> Rückseite mit Steckbrief).
+  // Jede Karte hat ihr eigenes flipped-Feld, die anderen Karten bleiben also unberührt.
   toggleTeamCard(member: TeamMember): void {
     member.flipped = !member.flipped;
   }
 
+  // Damit man die Karte nicht nur mit der Maus, sondern auch mit der
+  // Tastatur (Enter oder Leertaste) umdrehen kann - wichtig für Barrierefreiheit.
   onTeamCardKeydown(event: KeyboardEvent, member: TeamMember): void {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();

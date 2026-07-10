@@ -1,8 +1,7 @@
-// Wir importieren OrderItem, weil eine Bestellung mehrere Positionen enthält.
+// importier OrderItem weil eine Bestellung mehrere Positionen enthält
 import { OrderItem } from './order-item';
 
-// Eine Order ist eine komplette, abgeschlossene Bestellung.
-// Sie wird erstellt wenn der Kunde auf "Bezahlen" drückt.
+// eine Order ist eine komplette, abgeschlossene Bestellung, wird erstellt wenn der Kunde auf "Bezahlen" drückt
 export class Order {
   constructor(
     public id: string,           // Die Bestellnummer, z.B. "1", "2", "3"

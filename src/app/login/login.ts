@@ -9,6 +9,9 @@ import { AuthService } from '../shared/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
+/* der Admin-Login, ganz bewusst simpel gehalten: ein fest eingetragener PIN
+   im Code, kein Firebase, kein Hashing. reicht für dieses Schulprojekt, wäre
+   aber für ne echte Anwendung natürlich viel zu unsicher */
 export class Login {
   wrong = false;
 

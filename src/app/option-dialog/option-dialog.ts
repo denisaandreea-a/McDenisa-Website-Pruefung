@@ -1,11 +1,11 @@
-// Input: Daten die von aussen reinkommen (vom Order-Component)
-// Output: Ereignisse die nach aussen gesendet werden (Auswahl oder Abbrechen)
+/* Input: Daten die von aussen reinkommen (vom Order-Component)
+   Output: Ereignisse die nach aussen gesendet werden (Auswahl oder Abbrechen) */
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-// Dieser Dialog funktioniert genau wie das OptionWindow im Avalonia-Projekt:
-// Es zeigt einen Titel und eine Liste von Auswahl-Buttons.
-// Wenn der Nutzer einen Button klickt, wird die Auswahl nach aussen gesendet.
+/* dieser Dialog funktioniert genau wie das OptionWindow aus meinem alten
+   Avalonia-Projekt: zeigt einen Titel und ne Liste von Auswahl-Buttons, klickt
+   man auf einen Button wird die Auswahl nach aussen gesendet */
 @Component({
   selector: 'app-option-dialog',
   imports: [CommonModule],

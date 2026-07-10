@@ -33,6 +33,9 @@ export class ProductForm implements OnInit {
     public router: Router
   ) {}
 
+  /* schaut in der URL nach ob eine :id mitgegeben wurde.
+     /admin/product/new -> keine id -> neues Produkt anlegen
+     /admin/product/5   -> id = "5" -> Produkt 5 laden und bearbeiten */
   ngOnInit(): void {
     this.productId  = this.route.snapshot.paramMap.get('id');
     this.isEditMode = this.productId !== null;
@@ -52,6 +55,9 @@ export class ProductForm implements OnInit {
     }
   }
 
+  /* speichert das Formular. im Edit-Modus wird die bestehende ID
+     wiederverwendet (update), sonst kriegt das neue Produkt einfach den
+     aktuellen Zeitstempel als eindeutige ID (Date.now()) */
   async onSubmit(): Promise<void> {
     if (this.form.invalid) return;
     this.isSaving = true;

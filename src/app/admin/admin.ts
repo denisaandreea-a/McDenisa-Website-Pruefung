@@ -11,6 +11,8 @@ import { AuthService } from '../shared/auth.service';
   templateUrl: './admin.html',
   styleUrl: './admin.css',
 })
+/* die Produktverwaltung für den Admin: Liste anzeigen, löschen, und über Links
+   zu ProductForm neue Produkte anlegen bzw bestehende bearbeiten. nur über adminGuard erreichbar */
 export class Admin implements OnInit {
 
   products: Product[] = [];
@@ -30,6 +32,7 @@ export class Admin implements OnInit {
 
   ngOnInit(): void {
     this.loadProducts();
+    // neu laden sobald sich irgendwo ein Produkt ändert (z.b nach dem Speichern im ProductForm)
     this.productService.changed$.subscribe(() => this.loadProducts());
   }
 
@@ -45,6 +48,7 @@ export class Admin implements OnInit {
     }
   }
 
+  // confirm() ist ein einfaches Browser-Popup ("OK"/"Abbrechen"), reicht hier weil man das Löschen eh nicht rückgängig machen kann
   async deleteProduct(product: Product): Promise<void> {
     if (confirm(`"${product.name}" wirklich löschen?`)) {
       try {

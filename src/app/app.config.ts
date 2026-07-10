@@ -1,14 +1,14 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-// provideRouter aktiviert das Routing-System in der App.
+// provideRouter aktiviert das Routing-System in der App
 import { provideRouter } from '@angular/router';
-// Die Routen die wir in app.routes.ts definiert haben.
+// die Routen die ich in app.routes.ts definiert hab
 import { routes } from './app.routes';
 
-// Hier wird die App konfiguriert – zum Beispiel welche Features aktiv sind.
-// Das ist die moderne Angular-Methode, ohne NgModules zu benutzen.
+/* hier wird die App konfiguriert, z.b welche Features aktiv sind.
+   das ist die moderne Angular-Methode ohne NgModules zu benutzen */
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(), // Fängt allgemeine Browser-Fehler ab
-    provideRouter(routes)                 // Aktiviert das Routing mit unseren Routen
+    provideBrowserGlobalErrorListeners(), // fängt allgemeine Browser-Fehler ab
+    provideRouter(routes)                 // aktiviert das Routing mit meinen Routen von oben
   ]
 };
