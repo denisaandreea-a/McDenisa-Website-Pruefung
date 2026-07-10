@@ -190,6 +190,7 @@ flowchart TD
 | Kategorie-Leiste auf dem Handy kaum sichtbar/nutzbar | `.category-slider` und `.cat-card` waren nur für Desktop-Breite gebaut (8 Kacheln mit `flex: 1`) → Media Query ab 700px macht die Leiste horizontal scrollbar und die Kacheln kleiner |
 | Warenkorb auf dem Handy nahm fast die ganze Breite weg | `.pos-cart` hatte auf jeder Bildschirmgröße eine feste Breite von 280px → ab 700px wird `.pos-layout` einspaltig, Kategorien/Produkte stehen zuerst, der Warenkorb kommt darunter mit eigener Scroll-Höhe |
 | Live-Seite zeigte alten Stand trotz `git push` | `git push` aktualisiert nur GitHub, nicht Firebase Hosting → manuell mit `ng build` + `firebase deploy --only hosting` veröffentlicht |
+| Kontakt-Feedback nur auf dem eigenen Gerät sichtbar | lag nur in `localStorage` → neuer `FeedbackService` speichert zusätzlich in Firestore; zusätzlich `feedbacks`/`loadingFeedbacks` von normalen Feldern auf `signal()` umgestellt, weil ohne `zone.js` sonst kein Re-Render nach dem Laden passierte |
 
 ### Wichtig: GitHub Push ≠ Live-Deploy
 
