@@ -188,6 +188,7 @@ flowchart TD
 | Tests sollten nicht gegen echte Firebase laufen | Firebase-Konfiguration über Injection Token |
 | Burger-Menü auf dem Handy ließ sich nicht anklicken | Bootstrap-CSS war eingebunden, aber Bootstrap-JS fehlte in `angular.json` → `bootstrap.bundle.min.js` als Script ergänzt |
 | Kategorie-Leiste auf dem Handy kaum sichtbar/nutzbar | `.category-slider` und `.cat-card` waren nur für Desktop-Breite gebaut (8 Kacheln mit `flex: 1`) → Media Query ab 700px macht die Leiste horizontal scrollbar und die Kacheln kleiner |
+| Warenkorb auf dem Handy nahm fast die ganze Breite weg | `.pos-cart` hatte auf jeder Bildschirmgröße eine feste Breite von 280px → ab 700px wird `.pos-layout` einspaltig, Kategorien/Produkte stehen zuerst, der Warenkorb kommt darunter mit eigener Scroll-Höhe |
 
 ### Prüfungserklärung: Responsive Layout
 
@@ -200,7 +201,7 @@ Merksatz für die mündliche Prüfung:
 
 > „Ich habe Media Queries benutzt, weil das ursprüngliche POS-Layout für Desktop gebaut war. Auf mobilen Geräten wird die Kategorieauswahl horizontal scrollbar und die Kacheln werden kleiner, statt sich zusammenzuquetschen.“
 
-Optionaler nächster Schritt (noch nicht umgesetzt): `.pos-layout` und `.pos-cart` unter einem Breakpoint auf ein einspaltiges Layout umstellen (Kategorien/Produkte zuerst, Warenkorb darunter oder als kompakter Bereich), statt die feste `280px`-Breite des Warenkorbs beizubehalten.
+Mittlerweile umgesetzt: Ab 700px wechselt `.pos-layout` per `flex-direction: column` auf ein einspaltiges Layout. `.pos-content` bekommt `order: 1` (Kategorien/Produkte zuerst), `.pos-cart` bekommt `order: 2`, volle Breite und `max-height: 45vh` mit eigenem Scrollbereich, statt weiter die feste `280px`-Breite zu behalten.
 
 ## Definition of Done
 
