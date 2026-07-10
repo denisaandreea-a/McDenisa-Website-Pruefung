@@ -380,4 +380,27 @@
     height: min(640px, calc(100vh - 20px));
     padding: 14px;
   }
+
+  /* auf dem Handy die 280px-Fixbreite vom Warenkorb aufgeben: Kategorien/Produkte
+     zuerst untereinander anzeigen, der Warenkorb kommt darunter mit eigener
+     Scroll-Höhe statt der ganzen Seite die Breite wegzunehmen */
+  .pos-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 62px - 150px);
+  }
+
+  .pos-content {
+    order: 1;
+    padding: 1rem;
+  }
+
+  .pos-cart {
+    order: 2;
+    width: 100%;
+    min-width: 0;
+    max-height: 45vh;
+    border-right: none;
+    border-top: 1px solid #ead8bd;
+  }
 }
